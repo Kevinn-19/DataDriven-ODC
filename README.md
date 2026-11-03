@@ -64,6 +64,14 @@ Crea `dist/ODC_DataDrivenManager_SCORM12.zip`. En Moodle: *Agregar una actividad
 
 Se aprueba con **70 o más**. El estado `passed`/`failed` se envía al terminar la evaluación final; antes, el estado es `incomplete`. Los pesos y la nota mínima se cambian en `WEIGHTS` y `PASS_SCORE`, en [`scorm/js/app.js`](scorm/js/app.js).
 
+## Apariencia y accesibilidad
+
+- **Fondo animado:** una red de datos con pulsos que viajan entre nodos, manchas de color que cambian con el módulo y entrada escalonada de las tarjetas.
+- **Modo oscuro/claro:** botón de luna/sol en la barra superior. Al inicio sigue el tema del sistema; la elección queda guardada en el navegador.
+- **Pausar animaciones:** botón de pausa en la barra superior. Si el sistema tiene activado «reducir movimiento», el curso empieza con las animaciones en pausa.
+
+Los colores de ambos temas están en las variables de `:root` y `:root[data-theme="dark"]`, en [`scorm/css/styles.css`](scorm/css/styles.css).
+
 ## Audio de Insight
 
 Por defecto, Insight lee el guion de cada pantalla con la voz del navegador. Para usar locuciones grabadas, guárdalas como `scorm/audio/pantalla-01.mp3`, `pantalla-02.mp3`, … (número de pantalla con dos dígitos), agrégalas a `imsmanifest.xml` y cambia `USE_AUDIO_FILES` a `true` en `scorm/js/app.js`.

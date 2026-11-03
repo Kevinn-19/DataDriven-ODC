@@ -21,7 +21,6 @@
   var screens = $$('.screen');
   var current = 0;
 
-  var PILL_COLORS = { teal: '#13A89E', blue: '#2F6FDE', orange: '#F2A541', purple: '#6C4AB6', green: '#2E9E5B', red: '#C00000', navy: '#0B2545' };
 
   /* ------------------------------------------------------------------ */
   /* Estado persistente (cmi.suspend_data)                               */
@@ -134,7 +133,10 @@
     $('#screenTitle').textContent = s.dataset.title;
     var pill = $('#screenPill');
     pill.textContent = s.dataset.pill || '';
-    pill.style.background = PILL_COLORS[s.dataset.color] || PILL_COLORS.navy;
+    pill.style.background = 'var(--' + (s.dataset.color || 'navy') + ')';
+    // El fondo animado y la línea de la barra toman el color del módulo
+    var accent = s.dataset.color && s.dataset.color !== 'navy' ? s.dataset.color : (s.dataset.color ? 'blue' : 'teal');
+    $('#app').style.setProperty('--accent', 'var(--' + accent + ')');
 
     $('#counter').textContent = (i + 1) + ' / ' + screens.length;
     $('#progressBar').style.width = ((i + 1) / screens.length * 100) + '%';
@@ -699,8 +701,8 @@
     var s = '';
     for (var v = min; v <= max + 1e-9; v += step) {
       var y = y0 - (v - min) / (max - min) * h;
-      s += '<line x1="' + x0 + '" x2="' + (x0 + w) + '" y1="' + y + '" y2="' + y + '" stroke="#E5E9EE"/>' +
-        '<text x="' + (x0 - 6) + '" y="' + (y + 3.5) + '" text-anchor="end" font-size="10" fill="#6B7280">' + (digits ? v.toFixed(digits).replace('.', ',') : fmt(v)) + '</text>';
+      s += '<line x1="' + x0 + '" x2="' + (x0 + w) + '" y1="' + y + '" y2="' + y + '" style="stroke:var(--grid)"/>' +
+        '<text x="' + (x0 - 6) + '" y="' + (y + 3.5) + '" text-anchor="end" font-size="10" style="fill:var(--muted)">' + (digits ? v.toFixed(digits).replace('.', ',') : fmt(v)) + '</text>';
     }
     return s;
   }
@@ -711,15 +713,15 @@
     var px = function (i) { return x0 + 16 + i * (w - 32) / 5; };
     var py = function (v) { return y0 - (v - min) / (max - min) * h; };
     var s = '<svg viewBox="0 0 300 190" role="img" aria-label="Pedidos semanales frente a la meta">' + axisY(x0, y0, h, min, max, 200, w);
-    s += '<polyline fill="none" stroke="#6B7280" stroke-width="2" points="' + vals.map(function (v, i) { return px(i) + ',' + py(meta); }).join(' ') + '"/>';
-    vals.forEach(function (v, i) { s += '<rect x="' + (px(i) - 4) + '" y="' + (py(meta) - 4) + '" width="8" height="8" fill="#6B7280"/>'; });
+    s += '<polyline fill="none" style="stroke:var(--muted)" stroke-width="2" points="' + vals.map(function (v, i) { return px(i) + ',' + py(meta); }).join(' ') + '"/>';
+    vals.forEach(function (v, i) { s += '<rect x="' + (px(i) - 4) + '" y="' + (py(meta) - 4) + '" width="8" height="8" style="fill:var(--muted)"/>'; });
     s += '<polyline fill="none" stroke="#13A89E" stroke-width="2.5" points="' + vals.map(function (v, i) { return px(i) + ',' + py(v); }).join(' ') + '"/>';
     vals.forEach(function (v, i) {
       s += '<circle cx="' + px(i) + '" cy="' + py(v) + '" r="4" fill="#13A89E"><title>S' + (i + 1) + ': ' + fmt(v) + ' pedidos</title></circle>' +
-        '<text x="' + px(i) + '" y="' + (y0 + 14) + '" text-anchor="middle" font-size="10" fill="#6B7280">S' + (i + 1) + '</text>';
+        '<text x="' + px(i) + '" y="' + (y0 + 14) + '" text-anchor="middle" font-size="10" style="fill:var(--muted)">S' + (i + 1) + '</text>';
     });
-    s += '<g font-size="10" fill="#1F2937"><circle cx="100" cy="180" r="4" fill="#13A89E"/><text x="108" y="183">Pedidos</text>' +
-      '<rect x="160" y="176" width="8" height="8" fill="#6B7280"/><text x="172" y="183">Meta (4.500)</text></g></svg>';
+    s += '<g font-size="10" style="fill:var(--ink)"><circle cx="100" cy="180" r="4" fill="#13A89E"/><text x="108" y="183">Pedidos</text>' +
+      '<rect x="160" y="176" width="8" height="8" style="fill:var(--muted)"/><text x="172" y="183">Meta (4.500)</text></g></svg>';
     return s;
   }
 
@@ -729,13 +731,13 @@
     var s = '<svg viewBox="0 0 300 190" role="img" aria-label="Conversión por canal">';
     for (var v = 0; v <= max + 1e-9; v += 0.5) {
       var x = x0 + v / max * w;
-      s += '<line x1="' + x + '" x2="' + x + '" y1="10" y2="160" stroke="#E5E9EE"/><text x="' + x + '" y="174" text-anchor="middle" font-size="10" fill="#6B7280">' + String(v).replace('.', ',') + '</text>';
+      s += '<line x1="' + x + '" x2="' + x + '" y1="10" y2="160" style="stroke:var(--grid)"/><text x="' + x + '" y="174" text-anchor="middle" font-size="10" style="fill:var(--muted)">' + String(v).replace('.', ',') + '</text>';
     }
     data.forEach(function (d, i) {
       var y = 22 + i * 48;
-      s += '<text x="' + (x0 - 6) + '" y="' + (y + 15) + '" text-anchor="end" font-size="11" fill="#1F2937">' + d[0] + '</text>' +
+      s += '<text x="' + (x0 - 6) + '" y="' + (y + 15) + '" text-anchor="end" font-size="11" style="fill:var(--ink)">' + d[0] + '</text>' +
         '<rect x="' + x0 + '" y="' + y + '" width="' + (d[1] / max * w) + '" height="24" fill="#2F6FDE"><title>' + d[0] + ': ' + String(d[1]).replace('.', ',') + ' %</title></rect>' +
-        '<text x="' + (x0 + d[1] / max * w + 5) + '" y="' + (y + 16) + '" font-size="11" fill="#1F2937">' + String(d[1]).replace('.', ',') + '</text>';
+        '<text x="' + (x0 + d[1] / max * w + 5) + '" y="' + (y + 16) + '" font-size="11" style="fill:var(--ink)">' + String(d[1]).replace('.', ',') + '</text>';
     });
     return s + '</svg>';
   }
@@ -745,9 +747,9 @@
     var s = '<svg viewBox="0 0 300 190" role="img" aria-label="Ventas del producto A y B">' + axisY(x0, y0, h, min, max, step, w);
     [['Producto A', 98], ['Producto B', 100]].forEach(function (d, i) {
       var bx = x0 + 30 + i * 120, top = y0 - (d[1] - min) / (max - min) * h;
-      s += '<rect x="' + bx + '" y="' + top + '" width="70" height="' + (y0 - top) + '" fill="' + color + '" stroke="#1F2937" stroke-width=".5"/>' +
-        '<text x="' + (bx + 35) + '" y="' + (top - 4) + '" text-anchor="middle" font-size="10" fill="#1F2937">' + d[1] + '</text>' +
-        '<text x="' + (bx + 35) + '" y="' + (y0 + 15) + '" text-anchor="middle" font-size="10" fill="#6B7280">' + d[0] + '</text>';
+      s += '<rect x="' + bx + '" y="' + top + '" width="70" height="' + (y0 - top) + '" fill="' + color + '" style="stroke:var(--ink)" stroke-width=".5"/>' +
+        '<text x="' + (bx + 35) + '" y="' + (top - 4) + '" text-anchor="middle" font-size="10" style="fill:var(--ink)">' + d[1] + '</text>' +
+        '<text x="' + (bx + 35) + '" y="' + (y0 + 15) + '" text-anchor="middle" font-size="10" style="fill:var(--muted)">' + d[0] + '</text>';
     });
     return s + '</svg>';
   }
@@ -764,12 +766,12 @@
     s += '<polyline fill="none" stroke="#13A89E" stroke-width="2.5" points="' + pts.join(' ') + '"/>';
     for (var q = 20; q <= 100; q += 10) {
       s += '<path d="M' + px(q) + ' ' + (py(profit(q)) - 4) + ' l4 4 l-4 4 l-4 -4z" fill="#13A89E"/>' +
-        '<text x="' + px(q) + '" y="' + (y0 + 14) + '" text-anchor="middle" font-size="10" fill="#6B7280">' + q + '</text>';
+        '<text x="' + px(q) + '" y="' + (y0 + 14) + '" text-anchor="middle" font-size="10" style="fill:var(--muted)">' + q + '</text>';
     }
     var u = profit(price);
-    s += '<line x1="' + px(price) + '" x2="' + px(price) + '" y1="' + y0 + '" y2="' + py(u) + '" stroke="#0B2545" stroke-dasharray="3 3"/>' +
-      '<circle cx="' + px(price) + '" cy="' + py(u) + '" r="6" fill="#F2A541" stroke="#0B2545" stroke-width="1.5"/>' +
-      '<text x="' + Math.min(px(price) + 8, 340) + '" y="' + Math.max(py(u) - 8, 14) + '" font-size="11" font-weight="700" fill="#0B2545">' + price + ' usd · ' + fmt(u) + '</text>';
+    s += '<line x1="' + px(price) + '" x2="' + px(price) + '" y1="' + y0 + '" y2="' + py(u) + '" style="stroke:var(--heading)" stroke-dasharray="3 3"/>' +
+      '<circle cx="' + px(price) + '" cy="' + py(u) + '" r="6" fill="#F2A541" style="stroke:var(--heading)" stroke-width="1.5"/>' +
+      '<text x="' + Math.min(px(price) + 8, 340) + '" y="' + Math.max(py(u) - 8, 14) + '" font-size="11" font-weight="700" style="fill:var(--heading)">' + price + ' usd · ' + fmt(u) + '</text>';
     return s + '</svg>';
   }
 
@@ -987,8 +989,208 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Fondo animado: red de datos con pulsos que viajan entre nodos        */
+  /* ------------------------------------------------------------------ */
+  var root = document.documentElement;
+
+  var background = (function () {
+    var canvas = $('#bgNet');
+    var ctx = canvas.getContext && canvas.getContext('2d');
+    if (!ctx) return { refresh: function () {}, update: function () {} };
+
+    var COLORS = ['#13A89E', '#2F6FDE', '#F2A541', '#6C4AB6'];
+    var LINK = 130, REACH = 150;
+    var nodes = [], pulses = [], W = 0, H = 0, raf = 0, last = 0, frames = 0;
+    var running = false, pointer = null;
+    var lineColor = 'rgb(11,37,69)', lineAlpha = 0.16, nodeAlpha = 0.55, accent = COLORS[0];
+
+    function readTheme() {
+      var cs = getComputedStyle(root);
+      lineColor = 'rgb(' + cs.getPropertyValue('--net-line').trim() + ')';
+      lineAlpha = parseFloat(cs.getPropertyValue('--net-alpha')) || lineAlpha;
+      nodeAlpha = parseFloat(cs.getPropertyValue('--node-alpha')) || nodeAlpha;
+      accent = getComputedStyle($('#app')).getPropertyValue('--accent').trim() || accent;
+    }
+
+    function makeNode() {
+      return {
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        r: 1.4 + Math.random() * 2.2, c: COLORS[Math.random() * COLORS.length | 0], ph: Math.random() * 6.28
+      };
+    }
+
+    function resize() {
+      var r = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var target = Math.max(18, Math.min(70, Math.round(W * H / 15000)));
+      while (nodes.length < target) nodes.push(makeNode());
+      nodes.length = target;
+      draw(0);
+    }
+
+    function line(a, b, color, alpha) {
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = color;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = 1;
+      for (var i = 0; i < nodes.length; i++) {
+        for (var j = i + 1; j < nodes.length; j++) {
+          var a = nodes[i], b = nodes[j], dx = a.x - b.x, dy = a.y - b.y, d = dx * dx + dy * dy;
+          if (d >= LINK * LINK) continue;
+          line(a, b, lineColor, lineAlpha * (1 - Math.sqrt(d) / LINK));
+          if (running && pulses.length < 6 && Math.random() < 0.0005) pulses.push({ a: a, b: b, t: 0 });
+        }
+      }
+      // Constelación alrededor del puntero, con el color del módulo
+      if (pointer) {
+        nodes.forEach(function (n) {
+          var d = Math.hypot(n.x - pointer.x, n.y - pointer.y);
+          if (d < REACH) line(n, pointer, accent, 0.35 * (1 - d / REACH));
+        });
+      }
+      nodes.forEach(function (n) {
+        ctx.globalAlpha = nodeAlpha * (0.7 + 0.3 * Math.sin(t / 900 + n.ph));
+        ctx.fillStyle = n.c;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 6.283); ctx.fill();
+      });
+      // Pulsos de datos que recorren los enlaces
+      pulses.forEach(function (p) {
+        var x = p.a.x + (p.b.x - p.a.x) * p.t, y = p.a.y + (p.b.y - p.a.y) * p.t;
+        var g = ctx.createRadialGradient(x, y, 0, x, y, 8);
+        g.addColorStop(0, p.a.c);
+        g.addColorStop(1, 'transparent');
+        ctx.globalAlpha = Math.min(1, nodeAlpha + 0.3) * Math.sin(p.t * Math.PI);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, y, 8, 0, 6.283); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function step(dt) {
+      nodes.forEach(function (n) {
+        n.x += n.vx * dt;
+        n.y += n.vy * dt;
+        if (n.x < -10) n.x = W + 10; else if (n.x > W + 10) n.x = -10;
+        if (n.y < -10) n.y = H + 10; else if (n.y > H + 10) n.y = -10;
+        if (pointer) { // los nodos se apartan suavemente del puntero
+          var dx = n.x - pointer.x, dy = n.y - pointer.y, d = Math.hypot(dx, dy);
+          if (d > 1 && d < 110) { var f = (1 - d / 110) * 0.8 * dt; n.x += dx / d * f; n.y += dy / d * f; }
+        }
+      });
+      pulses = pulses.filter(function (p) {
+        p.t += 0.012 * dt;
+        return p.t < 1 && Math.hypot(p.a.x - p.b.x, p.a.y - p.b.y) < LINK;
+      });
+    }
+
+    function frame(t) {
+      var dt = last ? Math.min(t - last, 50) / 16.7 : 1;
+      last = t;
+      if (++frames % 30 === 0) accent = getComputedStyle($('#app')).getPropertyValue('--accent').trim() || accent;
+      step(dt);
+      draw(t);
+      raf = requestAnimationFrame(frame);
+    }
+
+    // Se detiene si las animaciones están desactivadas o la pestaña no está visible
+    function update() {
+      var should = !root.classList.contains('no-motion') && !document.hidden;
+      if (should && !running) { running = true; last = 0; raf = requestAnimationFrame(frame); }
+      if (!should && running) { running = false; cancelAnimationFrame(raf); pulses = []; draw(0); }
+    }
+
+    readTheme();
+    resize();
+    update();
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', update);
+    $('#app').addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var r = canvas.getBoundingClientRect();
+      pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
+    });
+    $('#app').addEventListener('pointerleave', function () { pointer = null; if (!running) draw(0); });
+
+    return { refresh: function () { readTheme(); if (!running) draw(0); }, update: update };
+  })();
+
+  /* ------------------------------------------------------------------ */
+  /* Accesibilidad: modo oscuro/claro y pausa de animaciones              */
+  /* ------------------------------------------------------------------ */
+  var ICONS = {
+    moon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5.5v13M15 5.5v13"/></svg>',
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'
+  };
+  var themeTimer = null;
+
+  function savePref(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { /* almacenamiento bloqueado: solo dura esta sesión */ }
+  }
+
+  function renderPrefs() {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    var still = root.classList.contains('no-motion');
+    var tb = $('#themeBtn'), mb = $('#motionBtn');
+    tb.innerHTML = dark ? ICONS.sun : ICONS.moon;
+    tb.setAttribute('aria-label', 'Modo oscuro');
+    tb.setAttribute('aria-pressed', String(dark));
+    tb.title = dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+    mb.innerHTML = still ? ICONS.play : ICONS.pause;
+    mb.setAttribute('aria-label', 'Pausar animaciones');
+    mb.setAttribute('aria-pressed', String(still));
+    mb.title = still ? 'Reanudar animaciones' : 'Pausar animaciones';
+  }
+
+  function setTheme(theme, remember) {
+    root.classList.add('theme-anim');
+    root.setAttribute('data-theme', theme);
+    if (remember) savePref('odc-ddm-tema', theme);
+    renderPrefs();
+    background.refresh();
+    clearTimeout(themeTimer);
+    themeTimer = setTimeout(function () { root.classList.remove('theme-anim'); }, 450);
+  }
+
+  $('#themeBtn').addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    setTheme(next, true);
+    toast(next === 'dark' ? 'Modo oscuro activado' : 'Modo claro activado');
+  });
+
+  $('#motionBtn').addEventListener('click', function () {
+    var still = root.classList.toggle('no-motion');
+    savePref('odc-ddm-animaciones', still ? 'off' : 'on');
+    renderPrefs();
+    background.update();
+    toast(still ? 'Animaciones en pausa' : 'Animaciones activadas');
+  });
+
+  // Si la persona no ha elegido tema, se sigue el del sistema cuando cambia
+  if (window.matchMedia) {
+    var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    var onSystemTheme = function (e) {
+      var saved = null;
+      try { saved = localStorage.getItem('odc-ddm-tema'); } catch (err) { /* sin almacenamiento */ }
+      if (!saved) setTheme(e.matches ? 'dark' : 'light', false);
+    };
+    if (darkQuery.addEventListener) darkQuery.addEventListener('change', onSystemTheme);
+    else if (darkQuery.addListener) darkQuery.addListener(onSystemTheme);
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Arranque                                                             */
   /* ------------------------------------------------------------------ */
+  renderPrefs();
   SCORM.init();
   loadState();
   buildMenu();
