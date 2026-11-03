@@ -1,0 +1,12 @@
+# Paquetes generados (se publican en Releases, no en el repo)
+dist/
+*.zip
+
+# Archivos temporales de Office y del sistema
+~$*
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Python
+__pycache__/
