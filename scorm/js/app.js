@@ -9,6 +9,13 @@
    */
   var USE_AUDIO_FILES = false;
 
+  /*
+   * Video del avatar de Insight: guarda los videos como video/pantalla-01.mp4, video/pantalla-02.mp4, …
+   * (agrégalos también a imsmanifest.xml) y cambia esto a true. La ventana de Insight mostrará el video
+   * de la pantalla actual; si un video no existe, vuelve a la imagen y a la voz del navegador.
+   */
+  var USE_AVATAR_VIDEO = false;
+
   // Ponderación de la nota (storyboard): actividades 40 %, simuladores 35 %, evaluación final 25 %.
   var WEIGHTS = { act: 0.40, sim: 0.35, fin: 0.25 };
   var PASS_SCORE = 70;
@@ -20,6 +27,161 @@
 
   var screens = $$('.screen');
   var current = 0;
+
+  /* Íconos del sprite Lucide incluido en index.html */
+  function icon(name, cls) {
+    return '<svg class="i' + (cls ? ' ' + cls : '') + '" aria-hidden="true"><use href="#i-' + name + '"/></svg>';
+  }
+
+  /* Ícono y color de cada módulo (barra lateral y encabezados de pantalla) */
+  var MODS = {
+    'Introducción': { icon: 'compass', color: 'blue' },
+    'Módulo 1 · Fundamentos': { icon: 'database', color: 'teal' },
+    'Módulo 2 · Calidad y gobernanza': { icon: 'shield-check', color: 'blue' },
+    'Módulo 3 · Tipos de analítica': { icon: 'chart-line', color: 'orange' },
+    'Módulo 4 · Apoyo a la decisión': { icon: 'workflow', color: 'purple' },
+    'Módulo 5 · IA en la gestión': { icon: 'brain-circuit', color: 'green' },
+    'Módulo 6 · Visualización': { icon: 'chart-pie', color: 'navy' },
+    'Módulo 7 · Casos reales': { icon: 'briefcase', color: 'red' },
+    'Módulo 8 · Simuladores': { icon: 'sliders-horizontal', color: 'teal' },
+    'Cierre': { icon: 'award', color: 'orange' }
+  };
+  var SCREEN_ICONS = [
+    [/^Ruta/, 'map'], [/^Actividad/, 'target'], [/^Caso Netflix/, 'tv'], [/^Caso UPS/, 'truck'],
+    [/^Caso Walmart/, 'store'], [/^Simulador 1/, 'tag'], [/^Simulador 2/, 'briefcase'],
+    [/^Evaluación/, 'trophy'], [/^Conclusiones/, 'lightbulb'], [/^Créditos/, 'library']
+  ];
+  function modOf(s) { return MODS[s.dataset.mod] || MODS['Introducción']; }
+  function colorOf(s) { return s.dataset.color || modOf(s).color; }
+  function screenIcon(s) {
+    for (var k = 0; k < SCREEN_ICONS.length; k++) if (SCREEN_ICONS[k][0].test(s.dataset.title)) return SCREEN_ICONS[k][1];
+    return modOf(s).icon;
+  }
+
+  /* Encabezado visible de cada pantalla, a partir de data-title y data-pill */
+  screens.forEach(function (s) {
+    if (s.hasAttribute('data-cover')) return;
+    var c = colorOf(s);
+    var head = document.createElement('header');
+    head.className = 'screen-head';
+    head.style.setProperty('--sh-c', 'var(--' + c + ')');
+    head.style.setProperty('--sh-fg', 'var(--' + c + '-fg)');
+    head.innerHTML = '<span class="sh-icon">' + icon(screenIcon(s)) + '</span><div><p class="sh-eyebrow">' +
+      escapeHTML(s.dataset.pill || '') + '</p><h2 class="sh-title">' + escapeHTML(s.dataset.title) + '</h2></div>';
+    s.insertBefore(head, s.firstChild);
+  });
+
+  /* Ilustración: ícono grande dentro de un círculo con anillos (actividades y cuestionarios) */
+  function spot(name) {
+    return '<div class="spot" aria-hidden="true"><span class="spot-ring"></span><span class="spot-ring r2"></span>' +
+      '<span class="spot-core">' + icon(name) + '</span></div>';
+  }
+
+  /* Mejoras visuales sobre el HTML existente: no cambian ningún texto del contenido */
+  (function enhance() {
+    // Tarjetas: franja ilustrada (ícono grande + marca de agua) y cuerpo de texto aparte
+    $$('.card').forEach(function (card) {
+      var body = document.createElement('div');
+      body.className = 'card-body';
+      Array.prototype.slice.call(card.childNodes).forEach(function (n) {
+        if (n.nodeType === 1 && /\b(ico|num|seen)\b/.test(n.className)) return;
+        body.appendChild(n);
+      });
+      card.appendChild(body);
+      var svg = $('.ico svg', card);
+      if (svg) {
+        var wm = svg.cloneNode(true);
+        wm.setAttribute('class', 'i wm');
+        $('.ico', card).appendChild(wm);
+      }
+    });
+
+    // Citas: salen del medio del texto y se muestran al final del mismo bloque, con su propio diseño.
+    // Cita parentética = paréntesis con «Autor, año» (una o varias separadas por punto y coma).
+    var CITE = /\s*\(([^()]*?,\s*\d{4}[a-z]?(?:\s*;[^()]*?,\s*\d{4}[a-z]?)*)\)/g;
+    var NARRATIVE_END = /\s*(Según [^<.]*?en \d{4}(?:\s*y\s*[^<.]*?en \d{4})*)\s*$/;
+    function citeBox(text) {
+      return '<span class="cite">' + icon('book-open') + '<span>' + text + '</span></span>';
+    }
+    $$('.screen p, .screen li, .screen .stat span').forEach(function (el) {
+      if (el.closest('.audio, .refs, .meta, .quiz') || el.querySelector('p, li')) return;
+      var html = el.innerHTML;
+      var found = [];
+      html = html.replace(CITE, function (m, c) { found.push(c); return ''; });
+      html = html.replace(NARRATIVE_END, function (m, c) { found.push(c); return ''; });
+      if (!found.length) return;
+      el.innerHTML = html + citeBox(found.join('; '));
+    });
+    // Líneas que ya son solo fuentes o referencias: mismo diseño de cita
+    $$('.screen .source, .screen .stat span').forEach(function (el) {
+      if (el.classList.contains('source') || /^Fuente:/.test(el.textContent)) {
+        el.classList.add('cite', 'cite-line');
+        el.insertAdjacentHTML('afterbegin', icon('book-open'));
+      }
+    });
+
+    // Big Data: el centro del mapa de las 5 V lleva su ícono
+    $$('.vmap .core').forEach(function (c) { c.insertAdjacentHTML('afterbegin', '<span class="core-ico">' + icon('database') + '</span>'); });
+
+    // Zonas de arrastrar y soltar con su ícono
+    var ZONE_ICONS = {
+      vol: 'hard-drive', vel: 'zap', 'var': 'shapes', ver: 'badge-check', val: 'gem',
+      desc: 'history', pred: 'trending-up', pres: 'route',
+      verde: 'circle-check', amarillo: 'triangle-alert', rojo: 'octagon-alert',
+      lin: 'chart-line', bar: 'chart-column', disp: 'chart-scatter', hist: 'chart-column-big'
+    };
+    $$('.zone').forEach(function (z) {
+      var st = $('strong', z);
+      if (st && ZONE_ICONS[z.dataset.id]) st.insertAdjacentHTML('afterbegin', '<span class="zone-ico">' + icon(ZONE_ICONS[z.dataset.id]) + '</span>');
+    });
+    $$('.dnd > div > .label').forEach(function (l) {
+      l.insertAdjacentHTML('afterbegin', icon(/Arrastra/.test(l.textContent) ? 'move' : 'target'));
+    });
+
+    // Instrucciones de las actividades como aviso destacado
+    $$('.lead').forEach(function (p) {
+      var b = p.firstElementChild;
+      if (b && b.tagName === 'B' && /^Instrucciones/.test(b.textContent)) {
+        p.classList.add('instr');
+        p.insertAdjacentHTML('afterbegin', '<span class="instr-ico">' + icon('list-checks') + '</span>');
+      }
+    });
+
+    // Detective: botones de clasificación con el ícono de cada característica de calidad
+    var DIM_ICONS = { exactitud: 'crosshair', completitud: 'list-checks', consistencia: 'equal', unicidad: 'fingerprint', validez: 'file-text', oportunidad: 'clock' };
+    $$('.classify button').forEach(function (b) { b.insertAdjacentHTML('afterbegin', icon(DIM_ICONS[b.dataset.dim])); });
+
+    // Ficha de caso: ícono por campo
+    var FIELD_ICONS = ['target', 'database', 'chart-line', 'mouse-pointer-click', 'trending-up', 'shield'];
+    $$('.ficha .field label').forEach(function (l, i) {
+      l.insertAdjacentHTML('afterbegin', '<span class="field-ico">' + icon(FIELD_ICONS[i] || 'pen-line') + '</span>');
+    });
+
+    // Proceso de decisión: cada descripción repite el ícono y el color de su fase
+    var chevs = $$('.chev');
+    $$('.steps-desc > div').forEach(function (d, i) {
+      var s = chevs[i] && $('svg', chevs[i]);
+      if (!s) return;
+      var w = document.createElement('span');
+      w.className = 'step-ico';
+      w.style.setProperty('--c', chevs[i].style.background);
+      w.appendChild(s.cloneNode(true));
+      d.insertBefore(w, d.firstChild);
+      var mark = s.cloneNode(true); // marca de agua para llenar el fondo de la columna
+      mark.setAttribute('class', 'i wm');
+      d.style.setProperty('--c', chevs[i].style.background);
+      d.appendChild(mark);
+    });
+
+    // Insight: tarjeta centrada con marco para el avatar (o su video)
+    $$('.avatar').forEach(function (a) {
+      a.classList.add('insight-card');
+      var b = $('button', a);
+      if (b) b.classList.add('insight-media');
+      var sm = $('small', a);
+      if (sm) sm.insertAdjacentHTML('afterbegin', icon('headphones'));
+    });
+  })();
 
 
   /* ------------------------------------------------------------------ */
@@ -97,7 +259,9 @@
 
   function stars(score) {
     var n = score >= 100 ? 3 : score >= 60 ? 2 : score > 0 ? 1 : 0;
-    return '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n);
+    var html = '<span class="stars" role="img" aria-label="' + n + ' de 3 estrellas">';
+    for (var k = 0; k < 3; k++) html += icon('star', k < n ? 'on' : 'off');
+    return html + '</span>';
   }
 
   function toast(msg) {
@@ -132,11 +296,11 @@
 
     $('#screenTitle').textContent = s.dataset.title;
     var pill = $('#screenPill');
+    var color = colorOf(s);
     pill.textContent = s.dataset.pill || '';
-    pill.style.background = 'var(--' + (s.dataset.color || 'navy') + ')';
+    pill.style.setProperty('--pill-c', 'var(--' + color + '-fg)');
     // El fondo animado y la línea de la barra toman el color del módulo
-    var accent = s.dataset.color && s.dataset.color !== 'navy' ? s.dataset.color : (s.dataset.color ? 'blue' : 'teal');
-    $('#app').style.setProperty('--accent', 'var(--' + accent + ')');
+    $('#app').style.setProperty('--accent', 'var(--' + (color === 'navy' ? 'blue' : color) + ')');
 
     $('#counter').textContent = (i + 1) + ' / ' + screens.length;
     $('#progressBar').style.width = ((i + 1) / screens.length * 100) + '%';
@@ -146,6 +310,7 @@
 
     markVisited(i);
     $$('[data-seen]').forEach(function (el) { el.hidden = !isVisited(indexOfId(el.dataset.seen)); });
+    refreshNav();
     SCORM.set('cmi.core.lesson_location', String(i));
     saveState();
     if (s.querySelector('[data-results]')) renderResults();
@@ -156,8 +321,8 @@
   document.addEventListener('keydown', function (e) {
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'textarea' || tag === 'input') return;
-    if (!$('#drawer').hidden || !$('#menu').hidden) {
-      if (e.key === 'Escape') { closeDrawer(); closeMenu(); }
+    if (!$('#drawer').hidden || menuIsOverlay()) {
+      if (e.key === 'Escape') { closeDrawer(); closeMenu(true); }
       return;
     }
     if (e.key === 'ArrowRight') go(current + 1);
@@ -172,38 +337,100 @@
     if (ins) openDrawer(true);
   });
 
-  /* Índice */
+  /* Índice: barra lateral agrupada por módulo (fija en escritorio, panel en móvil) */
+  var desktopQuery = window.matchMedia ? window.matchMedia('(min-width: 1100px)') : { matches: true };
+  var openGroups = {};
+
   function buildMenu() {
-    var list = $('#menuList');
-    var lastMod = '';
-    var html = '';
+    var groups = [];
     screens.forEach(function (s, i) {
-      if (s.dataset.mod !== lastMod) {
-        lastMod = s.dataset.mod;
-        html += '<li class="mod">' + escapeHTML(lastMod.toUpperCase()) + '</li>';
-      }
-      html += '<li><button data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span>' + escapeHTML(s.dataset.title) +
-        '</span><span class="v" data-v="' + i + '"></span></button></li>';
+      var g = groups[groups.length - 1];
+      if (!g || g.mod !== s.dataset.mod) groups.push(g = { mod: s.dataset.mod, items: [] });
+      g.items.push(i);
     });
+    var html = '';
+    groups.forEach(function (g, gi) {
+      var meta = MODS[g.mod] || MODS['Introducción'];
+      var parts = g.mod.split(' · ');
+      html += '<div class="nav-group" data-g="' + gi + '" style="--m-c:var(--' + meta.color + ');--m-fg:var(--' + meta.color + '-fg)">' +
+        '<button class="nav-mod" aria-expanded="false" aria-controls="navg' + gi + '">' +
+        '<span class="m-ico">' + icon(meta.icon) + '</span>' +
+        '<span class="m-txt">' + (parts[1] ? '<small>' + escapeHTML(parts[0]) + '</small><span>' + escapeHTML(parts[1]) + '</span>'
+          : '<span>' + escapeHTML(parts[0]) + '</span>') + '</span>' +
+        '<span class="m-count" data-count></span>' + icon('chevron-down', 'chev-i') + '</button>' +
+        '<ol class="nav-items" id="navg' + gi + '" hidden>';
+      g.items.forEach(function (i) {
+        html += '<li><button data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span class="t">' +
+          escapeHTML(screens[i].dataset.title) + '</span>' + icon('circle-check', 'v') + '</button></li>';
+      });
+      html += '</ol></div>';
+    });
+    var list = $('#menuList');
     list.innerHTML = html;
     list.addEventListener('click', function (e) {
       var b = e.target.closest('button[data-i]');
-      if (b) { closeMenu(); go(parseInt(b.dataset.i, 10)); }
+      if (b) { go(parseInt(b.dataset.i, 10)); closeMenu(); return; }
+      var m = e.target.closest('.nav-mod');
+      if (m) {
+        var gi = m.parentNode.dataset.g;
+        openGroups[gi] = m.getAttribute('aria-expanded') !== 'true';
+        refreshNav();
+      }
     });
   }
+
+  function refreshNav() {
+    var curGroup = null;
+    $$('#menuList .nav-group').forEach(function (g) {
+      var items = $$('button[data-i]', g);
+      var seen = 0;
+      items.forEach(function (b) {
+        var i = parseInt(b.dataset.i, 10);
+        var isCur = i === current;
+        b.classList.toggle('cur', isCur);
+        b.classList.toggle('seen', isVisited(i));
+        if (isCur) { b.setAttribute('aria-current', 'page'); curGroup = g.dataset.g; } else b.removeAttribute('aria-current');
+        if (isVisited(i)) seen++;
+      });
+      $('[data-count]', g).textContent = seen + '/' + items.length;
+      g.dataset.hasCur = items.some(function (b) { return b.classList.contains('cur'); }) ? '1' : '';
+    });
+    $$('#menuList .nav-group').forEach(function (g) {
+      var open = g.dataset.g === curGroup ? openGroups[g.dataset.g] !== false : !!openGroups[g.dataset.g];
+      $('.nav-mod', g).setAttribute('aria-expanded', String(open));
+      $('.nav-items', g).hidden = !open;
+    });
+    var visited = 0;
+    for (var i = 0; i < screens.length; i++) if (isVisited(i)) visited++;
+    var pct = Math.round(visited / screens.length * 100);
+    $('#visitedPct').textContent = pct + ' %';
+    $('#visitedBar').style.width = pct + '%';
+    $('#visitedText').textContent = visited + ' de ' + screens.length + ' pantallas vistas';
+  }
+
+  function menuIsOverlay() { return $('#menu').classList.contains('open'); }
   function openMenu() {
-    $$('#menuList button[data-i]').forEach(function (b) {
-      var i = parseInt(b.dataset.i, 10);
-      b.classList.toggle('cur', i === current);
-      $('[data-v="' + i + '"]').textContent = isVisited(i) ? '✓' : '';
-    });
-    $('#menu').hidden = false;
+    if (desktopQuery.matches) return;
+    refreshNav();
+    $('#menu').classList.add('open');
     $('#menuBackdrop').hidden = false;
+    $('#menuBtn').setAttribute('aria-expanded', 'true');
+    var cur = $('#menuList button.cur') || $('#menuClose');
+    setTimeout(function () { cur.focus(); }, 60);
   }
-  function closeMenu() { $('#menu').hidden = true; $('#menuBackdrop').hidden = true; }
+  function closeMenu(restoreFocus) {
+    if (!menuIsOverlay()) return;
+    $('#menu').classList.remove('open');
+    $('#menuBackdrop').hidden = true;
+    $('#menuBtn').setAttribute('aria-expanded', 'false');
+    if (restoreFocus) $('#menuBtn').focus();
+  }
   $('#menuBtn').addEventListener('click', openMenu);
-  $('#menuClose').addEventListener('click', closeMenu);
-  $('#menuBackdrop').addEventListener('click', closeMenu);
+  $('#menuClose').addEventListener('click', function () { closeMenu(true); });
+  $('#menuBackdrop').addEventListener('click', function () { closeMenu(true); });
+  var onDesktopChange = function () { closeMenu(false); };
+  if (desktopQuery.addEventListener) desktopQuery.addEventListener('change', onDesktopChange);
+  else if (desktopQuery.addListener) desktopQuery.addListener(onDesktopChange);
 
   /* ------------------------------------------------------------------ */
   /* Insight: guion, lectura y voz                                        */
@@ -211,18 +438,64 @@
   var audioEl = null;
   var speaking = false;
 
+  var videoEl = null;
+  var lastFocus = null;
+
+  function screenFile(ext, folder) {
+    var n = current + 1;
+    return folder + '/pantalla-' + (n < 10 ? '0' : '') + n + '.' + ext;
+  }
+
+  function showAvatarImage() {
+    videoEl = null;
+    $('#insightMedia').innerHTML = '<img src="assets/insight.png" alt="Insight, guía virtual">';
+  }
+  // Si el video no existe o no se puede reproducir: imagen + voz del navegador (una sola vez)
+  function videoFallback() {
+    if (!videoEl) return;
+    var wasPlaying = speaking;
+    showAvatarImage();
+    if (wasPlaying) speak();
+  }
+
+  // En las actividades y la evaluación final Insight no aparece: solo se escucha su voz
+  function isActivity(s) { return /^(Actividad|Evaluación final)/.test(s.dataset.title); }
+
   function openDrawer(autoplay) {
     var s = screens[current];
     var audio = $('.audio', s);
+    var voiceOnly = isActivity(s);
+    lastFocus = document.activeElement;
+    $('#drawer').classList.toggle('voice-only', voiceOnly);
+    $('#drawerSub').textContent = s.dataset.title;
     $('#drawerScript').innerHTML = audio ? audio.innerHTML : '<p>Esta pantalla no tiene audio.</p>';
+    if (USE_AVATAR_VIDEO && !voiceOnly) {
+      $('#insightMedia').innerHTML = '<video src="' + screenFile('mp4', 'video') + '" poster="assets/insight.png" playsinline preload="metadata"></video>';
+      videoEl = $('#insightMedia video');
+      videoEl.addEventListener('error', videoFallback);
+      // Solo cuenta el video que sigue en pantalla (uno descartado puede emitir eventos tarde)
+      var onVideo = function (on) { return function (e) { if (e.target === videoEl) setSpeaking(on); }; };
+      videoEl.addEventListener('play', onVideo(true));
+      videoEl.addEventListener('pause', onVideo(false));
+      videoEl.addEventListener('ended', onVideo(false));
+    } else {
+      showAvatarImage();
+    }
     $('#drawer').hidden = false;
     $('#drawerBackdrop').hidden = false;
+    setTimeout(function () { $('#drawerClose').focus(); }, 50);
     if (autoplay && audio) play();
   }
   function closeDrawer() {
+    if ($('#drawer').hidden) return;
     stopSpeech();
     $('#drawer').hidden = true;
     $('#drawerBackdrop').hidden = true;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  function setSpeaking(on) {
+    $('#drawer').classList.toggle('speaking', on);
+    $('#playBtn span').textContent = on ? 'Reproduciendo…' : 'Escuchar';
   }
 
   function pickVoice() {
@@ -238,12 +511,18 @@
 
   function play() {
     stopSpeech();
+    if (videoEl) { // video del avatar: reemplaza la voz del navegador
+      speaking = true;
+      videoEl.currentTime = 0;
+      videoEl.play().catch(videoFallback);
+      return;
+    }
     if (USE_AUDIO_FILES) {
-      var n = current + 1;
-      audioEl = new Audio('audio/pantalla-' + (n < 10 ? '0' : '') + n + '.mp3');
+      audioEl = new Audio(screenFile('mp3', 'audio'));
       audioEl.addEventListener('error', speak);
+      audioEl.addEventListener('ended', function () { setSpeaking(false); });
       audioEl.play().catch(speak);
-      $('#playBtn').textContent = '▶ Reproduciendo…';
+      setSpeaking(true);
       return;
     }
     speak();
@@ -254,7 +533,7 @@
     var paras = $$('#drawerScript p');
     var voice = pickVoice();
     speaking = true;
-    $('#playBtn').textContent = '▶ Reproduciendo…';
+    setSpeaking(true);
     var i = 0;
     var next = function () {
       paras.forEach(function (p) { p.classList.remove('speaking'); });
@@ -276,8 +555,9 @@
     speaking = false;
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     if (audioEl) { audioEl.pause(); audioEl = null; }
+    if (videoEl && !videoEl.paused) videoEl.pause();
     $$('#drawerScript p').forEach(function (p) { p.classList.remove('speaking'); });
-    $('#playBtn').textContent = '▶ Escuchar';
+    setSpeaking(false);
   }
 
   if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = function () {};
@@ -304,7 +584,7 @@
 
     function showScore() {
       var sc = state.s[key] || 0;
-      scoreBox.textContent = 'Puntos: ' + sc + ' / 100   ' + stars(sc);
+      scoreBox.innerHTML = '<span>Puntos: ' + sc + ' / 100</span>' + stars(sc);
     }
     showScore();
 
@@ -384,7 +664,7 @@
       showScore();
       var perfect = right === chips.length;
       fb.className = 'feedback ' + (perfect ? 'ok' : 'bad');
-      fb.textContent = (perfect ? '✓ ' + root.dataset.ok : '✗ ' + right + ' de ' + chips.length + ' correctas. ' + root.dataset.bad);
+      fb.textContent = (perfect ? root.dataset.ok : right + ' de ' + chips.length + ' correctas. ' + root.dataset.bad);
       if (!perfect && state.t[key] < MAX_ATTEMPTS) { checked = true; verifyBtn.textContent = 'Intentar de nuevo'; }
     });
   }
@@ -401,6 +681,10 @@
     var status = $('[data-status]', root);
     var dimBtns = $$('.classify button', root);
     var lastScore = null;
+    var heads = $$('thead th', root).map(function (th) { return th.textContent; });
+    $$('tbody tr', root).forEach(function (tr) {
+      $$('td', tr).forEach(function (td, c) { td.setAttribute('data-label', heads[c] || ''); });
+    });
 
     function refresh() {
       var n = Object.keys(picks).length;
@@ -470,7 +754,7 @@
       refresh();
       fb.className = 'feedback ' + (ok === 5 ? 'ok' : 'bad');
       fb.textContent = ok === 5
-        ? '✓ ¡Excelente! Encontraste y clasificaste los 5 errores.'
+        ? '¡Excelente! Encontraste y clasificaste los 5 errores.'
         : 'Encontraste ' + ok + ' de 5 errores bien clasificados. Pendientes: ' + misses.join('; ') + '.' +
           (state.t.a2 < MAX_ATTEMPTS ? ' Puedes corregir y verificar de nuevo.' : '');
     });
@@ -483,7 +767,7 @@
     a4: {
       tries: 1,
       questions: [
-        { q: '¿Cuál es la primera fase del proceso de toma de decisiones?', o: ['Implementación', 'Inteligencia', 'Diseño', 'Evaluación'], a: 1,
+        { q: '¿Cuál es la primera fase del proceso de toma de decisiones?', o: ['Implementación', 'Diseño', 'Inteligencia', 'Evaluación'], a: 2,
           e: 'La fase de inteligencia identifica el problema o la oportunidad a partir de los datos.' },
         { q: '¿Qué se hace en la fase de diseño?', o: ['Se ejecuta la decisión elegida.', 'Se plantean y analizan posibles soluciones.', 'Se revisan los resultados finales.', 'Se identifica el problema por primera vez.'], a: 1,
           e: 'En el diseño se generan alternativas y se analizan sus posibles resultados con modelos y escenarios.' },
@@ -497,11 +781,11 @@
     },
     final1: {
       tries: 2, offset: 0, total: 10,
-      note: 'Cada pregunta vale 10 puntos; realimentación inmediata y 2 intentos',
+      note: 'Cada pregunta vale 10 puntos; se muestra realimentación inmediata y se permiten 2 intentos.',
       questions: [
-        { q: 'Una aseguradora combina reclamos en PDF, audios de llamadas y fotos de siniestros. ¿Qué V representa el mayor reto para integrarlos?', o: ['Volumen', 'Velocidad', 'Variedad', 'Veracidad'], a: 2,
+        { q: 'Una aseguradora combina reclamos en PDF, audios de llamadas y fotos de siniestros. ¿Qué V representa el mayor reto para integrarlos?', o: ['Volumen', 'Velocidad', 'Variedad', 'Valor'], a: 2,
           e: 'Se trata de formatos y estructuras distintos (texto, audio, imagen), que es la variedad.' },
-        { q: 'Un reporte de ventas por país muestra dos filas separadas: «COL» y «Colombia». ¿Qué dimensión de calidad se está incumpliendo?', o: ['Exactitud', 'Unicidad', 'Consistencia', 'Oportunidad'], a: 2,
+        { q: 'Un reporte de ventas por país muestra dos filas separadas: COL y Colombia. ¿Qué dimensión de calidad se está incumpliendo?', o: ['Exactitud', 'Unicidad', 'Consistencia', 'Oportunidad'], a: 2,
           e: 'El mismo valor se registra con formatos distintos entre sistemas: es un problema de consistencia.' },
         { q: 'Una empresa quiere usar la base de clientes, recolectada para facturación, en una campaña de marketing sin pedir nueva autorización. ¿Qué debería hacer según la Ley 1581 de 2012 y el Decreto 1377 de 2013?', o: ['Informar la nueva finalidad y obtener la autorización del titular', 'Usarla, porque ya es de la empresa', 'Usarla si los datos son exactos', 'Eliminar todos los datos'], a: 0,
           e: 'Toda nueva finalidad del tratamiento debe informarse y contar con la autorización del titular.' },
@@ -513,7 +797,7 @@
     },
     final2: {
       tries: 2, offset: 5, total: 10,
-      note: 'Cada pregunta vale 10 puntos; 2 intentos · Aprobación: 70 puntos o más',
+      note: 'Aprobación: 70 puntos o más.',
       questions: [
         { q: 'Un tablero muestra 4.820 pedidos (sobre la meta), conversión de 3,1 % y cancelación de 14 %. ¿Cuál es la lectura más acertada?', o: ['Todo va bien, porque se superó la meta', 'Hay que bajar precios', 'La conversión es el único indicador importante', 'El problema no es vender sino retener; hay que investigar las causas de la cancelación'], a: 3,
           e: 'Superar la meta de pedidos no compensa una cancelación del 14 %: el foco es retener.' },
@@ -559,13 +843,15 @@
       var n = isFinal ? cfg.offset + idx + 1 : idx + 1;
       var total = isFinal ? cfg.total : qs.length;
       var letters = 'ABCD';
-      var html = '<p class="label">Pregunta ' + n + ' de ' + total + (cfg.note ? ' · ' + cfg.note : '') + '</p>' + dots() +
-        '<div class="qbox">' + n + '. ' + escapeHTML(q.q) + '</div><div class="options">';
+      var html = '<aside class="quiz-side">' + spot(isFinal ? 'trophy' : 'file-question-mark') +
+        '<p class="quiz-count"><b>Pregunta ' + n + '</b> de ' + total + '</p>' + dots() +
+        (cfg.note ? '<p class="quiz-note">' + icon('info') + cfg.note + '</p>' : '') + '</aside>' +
+        '<div class="quiz-main"><div class="qbox"><span class="qnum">' + n + '</span><span>' + escapeHTML(q.q) + '</span></div><div class="options">';
       q.o.forEach(function (o, i) {
-        html += '<button class="opt" data-o="' + i + '">' + letters[i] + ')&nbsp; ' + escapeHTML(o) + '</button>';
+        html += '<button class="opt" data-o="' + i + '"><span class="opt-key">' + letters[i] + '</span><span>' + escapeHTML(o) + '</span></button>';
       });
       html += '</div><div class="qfoot"><div class="feedback info" data-fb>Elige una opción y comprueba tu respuesta.</div>' +
-        '<button class="btn" data-act-btn disabled>Comprobar →</button></div>';
+        '<button class="btn" data-act-btn disabled>Comprobar' + icon('arrow-right') + '</button></div></div>';
       root.innerHTML = html;
       tries = 0; choice = null; phase = 'ask';
       $$('.opt', root).forEach(function (b) {
@@ -610,7 +896,7 @@
         opt.classList.add('right');
         record(isFinal ? 10 : 20);
         fb.className = 'feedback ok';
-        fb.textContent = '✓ Correcto. ' + q.e;
+        fb.textContent = 'Correcto. ' + q.e;
         endQuestion(btn);
       } else if (tries < cfg.tries) {
         opt.classList.remove('chosen');
@@ -619,14 +905,14 @@
         choice = null;
         btn.disabled = true;
         fb.className = 'feedback bad';
-        fb.textContent = '✗ Aún no. Te queda 1 intento: vuelve a leer la pregunta.';
+        fb.textContent = 'Aún no. Te queda 1 intento: vuelve a leer la pregunta.';
       } else {
         opt.classList.remove('chosen');
         opt.classList.add('wrong');
         $('.opt[data-o="' + q.a + '"]', root).classList.add('right');
         record(0);
         fb.className = 'feedback bad';
-        fb.textContent = '✗ Aún no. ' + q.e;
+        fb.textContent = 'Aún no. ' + q.e;
         endQuestion(btn);
       }
     }
@@ -635,7 +921,7 @@
       phase = 'next';
       $$('.opt', root).forEach(function (b) { b.disabled = true; });
       btn.disabled = false;
-      btn.textContent = firstPending() === -1 ? 'Finalizar →' : 'Siguiente →';
+      btn.innerHTML = (firstPending() === -1 ? 'Finalizar' : 'Siguiente') + icon('arrow-right');
       var d = $('.qdots', root);
       if (d) d.outerHTML = dots();
     }
@@ -649,14 +935,14 @@
         html = '<p class="label">Evaluación final · ' + (cfg.offset === 0 ? 'parte 1' : 'parte 2') + '</p>' +
           '<div class="qbox">Obtuviste ' + part + ' de ' + (qs.length * 10) + ' puntos en esta parte.</div>';
         if (cfg.offset === 0) {
-          html += '<div class="feedback ok">Continúa con las preguntas 6 a 10.</div><div class="row-end"><button class="btn" data-goto="final2">Ir a la parte 2 →</button></div>';
+          html += '<div class="feedback ok">Continúa con las preguntas 6 a 10.</div><div class="row-end"><button class="btn" data-goto="final2">Ir a la parte 2' + icon('arrow-right') + '</button></div>';
         } else if (g.done) {
           html += '<div class="feedback ' + (g.fin >= PASS_SCORE ? 'ok' : 'bad') + '">Evaluación final: ' + g.fin + ' / 100. ' +
             (g.fin >= PASS_SCORE ? '¡Aprobaste la evaluación!' : 'Repasa los módulos y vuelve a intentarlo.') + '</div><div class="row-end">' +
             (g.fin < PASS_SCORE ? '<button class="btn ghost" data-reset-final>Reiniciar evaluación</button>' : '') +
-            '<button class="btn" data-next>Ver resultados →</button></div>';
+            '<button class="btn" data-next>Ver resultados' + icon('arrow-right') + '</button></div>';
         } else {
-          html += '<div class="feedback info">Te faltan preguntas de la parte 1.</div><div class="row-end"><button class="btn" data-goto="final1">Ir a la parte 1 →</button></div>';
+          html += '<div class="feedback info">Te faltan preguntas de la parte 1.</div><div class="row-end"><button class="btn" data-goto="final1">Ir a la parte 1' + icon('arrow-right') + '</button></div>';
         }
       } else {
         var sc = results.reduce(function (a, b) { return a + (b || 0); }, 0);
@@ -664,12 +950,13 @@
         setScore('a4', sc);
         SCORM.interaction('a4_intento' + state.t.a4, 'choice', (sc / 20) + '/5', sc >= 60 ? 'correct' : 'wrong');
         var pass = sc >= 60;
-        html = '<p class="label">Resultado del cuestionario</p><div class="qbox">Puntos: ' + sc + ' / 100 &nbsp; ' + stars(sc) + '</div>' +
+        html = '<p class="label">Resultado del cuestionario</p><div class="qbox score-box">Puntos: ' + sc + ' / 100 ' + stars(sc) + '</div>' +
           '<div class="feedback ' + (pass ? 'ok' : 'bad') + '">' + (pass ? 'Buen trabajo. Has pasado el cuestionario.' : 'Vuelve a revisar las fases de la toma de decisiones e inténtalo de nuevo.') + '</div>' +
-          '<div class="row-end">' + (sc < 100 && state.t.a4 < MAX_ATTEMPTS ? '<button class="btn ghost" data-retry-quiz>Intentar de nuevo (' + (MAX_ATTEMPTS - state.t.a4) + ')</button>' : '') +
-          '<button class="btn" data-next>Continuar →</button></div>';
+          '<div class="row-end">' + (sc < 100 && state.t.a4 < MAX_ATTEMPTS ? '<button class="btn ghost" data-retry-quiz>' + icon('rotate-ccw') + 'Intentar de nuevo (' + (MAX_ATTEMPTS - state.t.a4) + ')</button>' : '') +
+          '<button class="btn" data-next>Continuar' + icon('arrow-right') + '</button></div>';
       }
-      root.innerHTML = html;
+      root.innerHTML = '<aside class="quiz-side">' + spot('award') + '<p class="quiz-count"><b>Resultado</b></p>' + dots() +
+        '</aside><div class="quiz-main">' + html + '</div>';
       var retry = $('[data-retry-quiz]', root);
       if (retry) retry.addEventListener('click', function () { results = []; idx = 0; render(); });
       var reset = $('[data-reset-final]', root);
@@ -715,12 +1002,12 @@
     var s = '<svg viewBox="0 0 300 190" role="img" aria-label="Pedidos semanales frente a la meta">' + axisY(x0, y0, h, min, max, 200, w);
     s += '<polyline fill="none" style="stroke:var(--muted)" stroke-width="2" points="' + vals.map(function (v, i) { return px(i) + ',' + py(meta); }).join(' ') + '"/>';
     vals.forEach(function (v, i) { s += '<rect x="' + (px(i) - 4) + '" y="' + (py(meta) - 4) + '" width="8" height="8" style="fill:var(--muted)"/>'; });
-    s += '<polyline fill="none" stroke="#13A89E" stroke-width="2.5" points="' + vals.map(function (v, i) { return px(i) + ',' + py(v); }).join(' ') + '"/>';
+    s += '<polyline fill="none" style="stroke:var(--teal-fg)" stroke-width="2.5" points="' + vals.map(function (v, i) { return px(i) + ',' + py(v); }).join(' ') + '"/>';
     vals.forEach(function (v, i) {
-      s += '<circle cx="' + px(i) + '" cy="' + py(v) + '" r="4" fill="#13A89E"><title>S' + (i + 1) + ': ' + fmt(v) + ' pedidos</title></circle>' +
+      s += '<circle cx="' + px(i) + '" cy="' + py(v) + '" r="4" style="fill:var(--teal-fg)"><title>S' + (i + 1) + ': ' + fmt(v) + ' pedidos</title></circle>' +
         '<text x="' + px(i) + '" y="' + (y0 + 14) + '" text-anchor="middle" font-size="10" style="fill:var(--muted)">S' + (i + 1) + '</text>';
     });
-    s += '<g font-size="10" style="fill:var(--ink)"><circle cx="100" cy="180" r="4" fill="#13A89E"/><text x="108" y="183">Pedidos</text>' +
+    s += '<g font-size="10" style="fill:var(--ink)"><circle cx="100" cy="180" r="4" style="fill:var(--teal-fg)"/><text x="108" y="183">Pedidos</text>' +
       '<rect x="160" y="176" width="8" height="8" style="fill:var(--muted)"/><text x="172" y="183">Meta (4.500)</text></g></svg>';
     return s;
   }
@@ -736,7 +1023,7 @@
     data.forEach(function (d, i) {
       var y = 22 + i * 48;
       s += '<text x="' + (x0 - 6) + '" y="' + (y + 15) + '" text-anchor="end" font-size="11" style="fill:var(--ink)">' + d[0] + '</text>' +
-        '<rect x="' + x0 + '" y="' + y + '" width="' + (d[1] / max * w) + '" height="24" fill="#2F6FDE"><title>' + d[0] + ': ' + String(d[1]).replace('.', ',') + ' %</title></rect>' +
+        '<rect x="' + x0 + '" y="' + y + '" width="' + (d[1] / max * w) + '" height="24" rx="4" style="fill:var(--blue-fg)"><title>' + d[0] + ': ' + String(d[1]).replace('.', ',') + ' %</title></rect>' +
         '<text x="' + (x0 + d[1] / max * w + 5) + '" y="' + (y + 16) + '" font-size="11" style="fill:var(--ink)">' + String(d[1]).replace('.', ',') + '</text>';
     });
     return s + '</svg>';
@@ -747,7 +1034,7 @@
     var s = '<svg viewBox="0 0 300 190" role="img" aria-label="Ventas del producto A y B">' + axisY(x0, y0, h, min, max, step, w);
     [['Producto A', 98], ['Producto B', 100]].forEach(function (d, i) {
       var bx = x0 + 30 + i * 120, top = y0 - (d[1] - min) / (max - min) * h;
-      s += '<rect x="' + bx + '" y="' + top + '" width="70" height="' + (y0 - top) + '" fill="' + color + '" style="stroke:var(--ink)" stroke-width=".5"/>' +
+      s += '<rect x="' + bx + '" y="' + top + '" width="70" height="' + (y0 - top) + '" rx="4" style="fill:' + color + '"/>' +
         '<text x="' + (bx + 35) + '" y="' + (top - 4) + '" text-anchor="middle" font-size="10" style="fill:var(--ink)">' + d[1] + '</text>' +
         '<text x="' + (bx + 35) + '" y="' + (y0 + 15) + '" text-anchor="middle" font-size="10" style="fill:var(--muted)">' + d[0] + '</text>';
     });
@@ -763,14 +1050,14 @@
     var s = '<svg viewBox="0 0 400 195" role="img" aria-label="Curva de utilidad según precio">' + axisY(x0, y0, h, 0, maxY, 2000, w);
     var pts = [];
     for (var p = 20; p <= 100; p += 2) pts.push(px(p) + ',' + py(profit(p)));
-    s += '<polyline fill="none" stroke="#13A89E" stroke-width="2.5" points="' + pts.join(' ') + '"/>';
+    s += '<polyline fill="none" style="stroke:var(--teal-fg)" stroke-width="2.5" points="' + pts.join(' ') + '"/>';
     for (var q = 20; q <= 100; q += 10) {
-      s += '<path d="M' + px(q) + ' ' + (py(profit(q)) - 4) + ' l4 4 l-4 4 l-4 -4z" fill="#13A89E"/>' +
+      s += '<path d="M' + px(q) + ' ' + (py(profit(q)) - 4) + ' l4 4 l-4 4 l-4 -4z" style="fill:var(--teal-fg)"/>' +
         '<text x="' + px(q) + '" y="' + (y0 + 14) + '" text-anchor="middle" font-size="10" style="fill:var(--muted)">' + q + '</text>';
     }
     var u = profit(price);
     s += '<line x1="' + px(price) + '" x2="' + px(price) + '" y1="' + y0 + '" y2="' + py(u) + '" style="stroke:var(--heading)" stroke-dasharray="3 3"/>' +
-      '<circle cx="' + px(price) + '" cy="' + py(u) + '" r="6" fill="#F2A541" style="stroke:var(--heading)" stroke-width="1.5"/>' +
+      '<circle cx="' + px(price) + '" cy="' + py(u) + '" r="6" style="fill:var(--cta);stroke:var(--heading)" stroke-width="1.5"/>' +
       '<text x="' + Math.min(px(price) + 8, 340) + '" y="' + Math.max(py(u) - 8, 14) + '" font-size="11" font-weight="700" style="fill:var(--heading)">' + price + ' usd · ' + fmt(u) + '</text>';
     return s + '</svg>';
   }
@@ -779,8 +1066,8 @@
     var c;
     if ((c = $('[data-chart="orders"]'))) c.innerHTML = chartOrders();
     if ((c = $('[data-chart="channels"]'))) c.innerHTML = chartChannels();
-    if ((c = $('[data-chart="bad"]'))) c.innerHTML = chartBars(96, 101, 1, '#C00000');
-    if ((c = $('[data-chart="good"]'))) c.innerHTML = chartBars(0, 120, 20, '#2E9E5B');
+    if ((c = $('[data-chart="bad"]'))) c.innerHTML = chartBars(96, 101, 1, 'var(--red-fg)');
+    if ((c = $('[data-chart="good"]'))) c.innerHTML = chartBars(0, 120, 20, 'var(--green-fg)');
   }
 
   /* ------------------------------------------------------------------ */
@@ -792,7 +1079,7 @@
       $$('[data-detail]', grid).forEach(function (card) {
         card.addEventListener('click', function () {
           var parts = card.dataset.detail.split('|');
-          box.style.borderLeftColor = getComputedStyle(card).borderLeftColor;
+          box.style.borderLeftColor = getComputedStyle(card).getPropertyValue('--c').trim();
           box.innerHTML = '<b>' + escapeHTML($('h3', card).textContent) + ':</b> ' + escapeHTML(parts[0]) +
             '<br><b>Pregunta clave:</b> ' + escapeHTML(parts[1]);
           box.hidden = false;
@@ -857,7 +1144,7 @@
     });
     $('[data-save]', root).addEventListener('click', function () {
       saveState(true);
-      fb.textContent = 'Guardado ✓';
+      fb.textContent = 'Guardado';
       toast('Ficha guardada');
     });
     $('[data-send]', root).addEventListener('click', function () {
@@ -869,7 +1156,7 @@
       if (missing.length) {
         fb.textContent = 'Completaste ' + filled + ' de 6 campos. Falta desarrollar: ' + missing.join(', ') + '.';
       } else {
-        fb.textContent = '✓ Ficha enviada: los seis campos están completos. Tu docente podrá revisarla.';
+        fb.textContent = 'Ficha enviada: los seis campos están completos. Tu docente podrá revisarla.';
       }
       SCORM.commit();
     });
@@ -901,7 +1188,7 @@
       var supuestos = ' Supuestos del modelo: la demanda es lineal, el costo unitario es constante y la competencia no reacciona.';
       if (p === 60) {
         fb.className = 'feedback ok';
-        fb.textContent = '✓ ¡Precio óptimo! Con 60 usd la demanda es 400 y la utilidad máxima, 16.000.' + supuestos;
+        fb.textContent = '¡Precio óptimo! Con 60 usd la demanda es 400 y la utilidad máxima, 16.000.' + supuestos;
       } else {
         fb.className = 'feedback bad';
         fb.textContent = 'Tu utilidad: ' + fmt(u) + ' (' + Math.round(score) + ' % del máximo). El óptimo es P* = (100 + 20) / 2 = 60 usd, con utilidad de 16.000.' + supuestos;
@@ -918,7 +1205,7 @@
     var FEED = {
       A: ['bad', 20, 'Bajar precios no corrige la causa y reduce el margen. Antes de actuar, pregunta y verifica los datos.'],
       C: ['bad', 40, 'Gastaste mucho con inventario insuficiente: el problema era el stock, no la demanda.'],
-      B1: ['ok', 100, '✓ Excelente: preguntaste antes de actuar y validaste los datos. Reabasteciste y usaste el modelo prescriptivo para reasignar presupuesto. En entornos inciertos, la analítica ayuda a decidir de forma más racional (Cao & Duan, 2024).'],
+      B1: ['ok', 100, 'Excelente: preguntaste antes de actuar y validaste los datos. Siguiente paso: reabastecer y usar el modelo prescriptivo para reasignar presupuesto. En entornos inciertos, la analítica ayuda a decidir de forma más racional (Cao & Duan, 2024).'],
       B2: ['bad', 60, 'Validar los datos estuvo bien, pero esperar al cierre de mes te hizo perder ventas. Con evidencia suficiente, decide.']
     };
     function reveal(btn) {
@@ -933,7 +1220,7 @@
       setScore('sim2', f[1]);
       SCORM.interaction('sim2_ruta', 'choice', key, f[1] === 100 ? 'correct' : 'wrong');
       fb.className = 'feedback ' + f[0];
-      fb.textContent = 'Puntaje: ' + f[1] + ' / 100. ' + f[2] + ' Lección: los datos de buena calidad y la experiencia no compiten; se combinan según el tipo de decisión.';
+      fb.textContent = 'Puntaje: ' + f[1] + ' / 100. ' + f[2] + ' Lección: los datos de buena calidad y la experiencia no compiten, se combinan según el tipo de decisión (Yu et al., 2022).';
       retry.hidden = f[1] === 100 || state.t.sim2 >= MAX_ATTEMPTS;
     }
     $$('[data-route]', root).forEach(function (btn) {
@@ -998,7 +1285,7 @@
     var ctx = canvas.getContext && canvas.getContext('2d');
     if (!ctx) return { refresh: function () {}, update: function () {} };
 
-    var COLORS = ['#13A89E', '#2F6FDE', '#F2A541', '#6C4AB6'];
+    var COLORS = ['#14B8A6', '#3B82F6', '#F59E0B', '#8B5CF6'];
     var LINK = 130, REACH = 150;
     var nodes = [], pulses = [], W = 0, H = 0, raf = 0, last = 0, frames = 0;
     var running = false, pointer = null;
@@ -1125,12 +1412,7 @@
   /* ------------------------------------------------------------------ */
   /* Accesibilidad: modo oscuro/claro y pausa de animaciones              */
   /* ------------------------------------------------------------------ */
-  var ICONS = {
-    moon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/></svg>',
-    sun: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>',
-    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5.5v13M15 5.5v13"/></svg>',
-    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'
-  };
+  var ICONS = { moon: icon('moon'), sun: icon('sun'), pause: icon('pause'), play: icon('play') };
   var themeTimer = null;
 
   function savePref(key, value) {

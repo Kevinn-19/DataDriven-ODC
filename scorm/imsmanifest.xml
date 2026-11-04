@@ -25,10 +25,10 @@
       <file href="js/scorm.js"/>
       <file href="js/app.js"/>
       <file href="assets/insight.png"/>
-      <file href="fonts/nunito-normal-latin.woff2"/>
-      <file href="fonts/nunito-normal-latin-ext.woff2"/>
-      <file href="fonts/nunito-italic-latin.woff2"/>
-      <file href="fonts/nunito-italic-latin-ext.woff2"/>
+      <file href="assets/LICENSE-lucide.txt"/>
+      <file href="fonts/plus-jakarta-sans-latin-wght-normal.woff2"/>
+      <file href="fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2"/>
+      <file href="fonts/plus-jakarta-sans-latin-wght-italic.woff2"/>
       <file href="fonts/OFL.txt"/>
     </resource>
   </resources>

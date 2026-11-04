@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ODC Data Driven Manager</title>
+<link rel="stylesheet" href="css/styles.css">
+<script>
+  // Aplica el tema y las animaciones guardados antes de pintar, para que no parpadee
+  (function () {
+    var root = document.documentElement, theme = null, motion = null;
+    try { theme = localStorage.getItem('odc-ddm-tema'); motion = localStorage.getItem('odc-ddm-animaciones'); } catch (e) {}
+    var mq = function (q) { return window.matchMedia && window.matchMedia(q).matches; };
+    root.setAttribute('data-theme', theme || (mq('(prefers-color-scheme: dark)') ? 'dark' : 'light'));
+    if (motion === 'off' || (!motion && mq('(prefers-reduced-motion: reduce)'))) root.classList.add('no-motion');
+  })();
+</script>
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Abrir índice de pantallas" title="Índice">☰</button>
+    <h1 id="screenTitle">ODC Data Driven Manager</h1>
+    <span class="pill" id="screenPill">INTRODUCCIÓN</span>
+    <button class="icon-btn" id="motionBtn" aria-pressed="false"></button>
+    <button class="icon-btn" id="themeBtn" aria-pressed="false"></button>
+  </header>
+
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <canvas id="bgNet"></canvas>
+  </div>
+
+  <main class="stage" id="stage">
+
+    <!-- ===================== INTRODUCCIÓN ===================== -->
+    <section class="screen" data-title="Portada" data-pill="INTRODUCCIÓN" data-mod="Introducción" data-cover>
+      <div class="cover">
+        <div>
+          <p class="kicker">UNIVERSIDAD DE CUNDINAMARCA · ESPECIALIZACIÓN EN INTELIGENCIA ARTIFICIAL</p>
+          <h2>ODC Data Driven Manager</h2>
+          <p>Herramientas de Big Data y Analítica para la Toma de Decisiones Organizacionales</p>
+          <p>Kevin Esteban Chiquillo Díaz · Dominic Nicolás Alonso Barajas</p>
+          <button class="start" data-next>Comenzar&nbsp; ▶</button>
+        </div>
+        <div class="dots" aria-hidden="true">
+          <svg viewBox="0 0 160 230">
+            <g fill="#3B6FA8"><circle cx="45" cy="12" r="4.5"/><circle cx="41" cy="5" r="4"/><circle cx="58" cy="66" r="3"/><circle cx="11" cy="133" r="4.5"/><circle cx="135" cy="125" r="6.5"/><circle cx="38" cy="110" r="4.5"/><circle cx="114" cy="178" r="4.5"/><circle cx="79" cy="203" r="3"/><circle cx="35" cy="121" r="6.5"/></g>
+            <g fill="#F2A541"><circle cx="71" cy="17" r="4.5"/><circle cx="31" cy="74" r="3"/><circle cx="89" cy="36" r="4.5"/><circle cx="100" cy="139" r="6.5"/><circle cx="30" cy="135" r="6.5"/><circle cx="31" cy="207" r="6.5"/><circle cx="7" cy="73" r="3"/><circle cx="40" cy="78" r="3"/><circle cx="96" cy="211" r="6.5"/><circle cx="78" cy="193" r="3"/><circle cx="109" cy="146" r="6.5"/><circle cx="37" cy="207" r="4.5"/></g>
+            <g fill="#13A89E"><circle cx="99" cy="176" r="3"/><circle cx="75" cy="167" r="6.5"/><circle cx="121" cy="99" r="6.5"/><circle cx="33" cy="215" r="4.5"/></g>
+            <polyline points="12,197 74,139 141,168" fill="none" stroke="#F2A541" stroke-width="2.5"/>
+            <g fill="#fff"><circle cx="12" cy="197" r="6"/><circle cx="74" cy="139" r="6"/><circle cx="141" cy="168" r="6"/></g>
+          </svg>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt="Insight, guía virtual"></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>Buen día, espero te encuentres muy bien. Soy Insight, tu acompañante digital. Bienvenido al campus de Data Driven Manager.</p>
+        <p>Aquí aprenderemos a convertir los datos y la información en decisiones importantes. Te acompañaré desde entender qué es Big Data hasta ver cómo las decisiones de gerencia transforman a los negocios.</p>
+        <p>Avanza con las flechas, y recuerda que cada módulo termina con un reto.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Ruta de aprendizaje" data-pill="INTRODUCCIÓN" data-mod="Introducción">
+      <p class="label">Ocho módulos de aprendizaje · pulsa uno para ir directamente</p>
+      <div class="grid g4 route">
+        <button class="card c-teal" data-goto="m1"><span class="num">1</span><h3>Fundamentos Big Data y BA</h3><p class="ex">Qué es Big Data, las 5 V, qué es Business Analytics</p></button>
+        <button class="card c-blue" data-goto="m2"><span class="num">2</span><h3>Calidad de datos</h3><p class="ex">Características de calidad de la información</p></button>
+        <button class="card c-orange" data-goto="m3"><span class="num">3</span><h3>Tipos de analítica</h3><p class="ex">Descriptiva · predictiva · prescriptiva</p></button>
+        <button class="card c-purple" data-goto="m4"><span class="num">4</span><h3>Sistemas de apoyo</h3><p class="ex">SAD y proceso decisorio</p></button>
+        <button class="card c-green" data-goto="m5"><span class="num">5</span><h3>IA aplicada a la gestión</h3><p class="ex">Casos de uso y ética</p></button>
+        <button class="card c-navy" data-goto="m6"><span class="num">6</span><h3>Visualización</h3><p class="ex">Elegir, leer y no ser engañado</p></button>
+        <button class="card c-red" data-goto="m7"><span class="num">7</span><h3>Casos reales</h3><p class="ex">Netflix · UPS · Walmart</p></button>
+        <button class="card c-teal" data-goto="m8"><span class="num">8</span><h3>Simuladores</h3><p class="ex">Decide con datos</p></button>
+      </div>
+      <div class="audio" hidden>
+        <p>Este es el mapa de tu ruta de aprendizaje, compuesto por ocho módulos. La idea es empezar desde lo más básico y avanzar poco a poco hasta los últimos módulos. Siempre podrás volver a cualquiera de los módulos para repasar los temas que necesites.</p>
+        <p>En cada módulo encontrarás contenido sobre el tema con un audio de Insight, además de una actividad con su retroalimentación.</p>
+        <p>Como resultado de aprendizaje, esperamos que al finalizar puedas analizar información, elegir herramientas de Big Data y analítica de datos, evaluar la calidad de los datos, interpretar visualizaciones y reconocer los beneficios y riesgos de la inteligencia artificial.</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 1 ===================== -->
+    <section class="screen" id="m1" data-title="Big Data" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Big Data son conjuntos de datos tan grandes o variados que no pueden gestionarse con herramientas tradicionales (Fakhfakh &amp; Mezghani, 2025; Yu et al., 2022).</p>
+          <div class="vmap">
+            <div class="card c-teal" style="grid-area:vol"><h3>Volumen</h3><p class="ex">La cantidad de datos que se generan y almacenan.</p></div>
+            <div class="card c-blue" style="grid-area:vel"><h3>Velocidad</h3><p class="ex">Generación y procesamiento en tiempo real de la información.</p></div>
+            <div class="core">BIG DATA</div>
+            <div class="card c-orange" style="grid-area:var"><h3>Variedad</h3><p class="ex">Formatos y estructuras distintos de la información (tablas, texto, imágenes, audio, sensores).</p></div>
+            <div class="card c-purple" style="grid-area:ver"><h3>Veracidad</h3><p class="ex">Confiabilidad de los datos.</p></div>
+            <div class="card c-green" style="grid-area:val"><h3>Valor</h3><p class="ex">Qué tanto sirven para decidir mejor.</p></div>
+          </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>Big Data no solo es mucha información. Surge de la combinación de las cinco V (Fakhfakh &amp; Mezghani, 2025; Yu et al., 2022).</p>
+        <p>El volumen se refiere a la gran cantidad de datos que se generan y que pueden superar la capacidad de las bases de datos tradicionales.</p>
+        <p>La variedad hace referencia a los diferentes tipos de datos y formatos, como textos, imágenes, audios, videos y datos organizados en tablas.</p>
+        <p>La velocidad corresponde a la rapidez con la que se generan, reciben y procesan los datos.</p>
+        <p>La veracidad se relaciona con la calidad, exactitud y confiabilidad de los datos, aspectos necesarios para obtener resultados útiles.</p>
+        <p>Por último, el valor consiste en aprovechar esa información para obtener conocimientos que ayuden a tomar mejores decisiones y generar beneficios para las organizaciones.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Business Analytics" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Business Analytics, o analítica de negocios, consiste en utilizar datos, estadísticas y modelos analíticos para tomar decisiones más fundamentadas dentro de una organización (Davenport &amp; Harris, 2007). Un dato no decide nada, pero al darle contexto se vuelve información; al interpretarlo se convierte en conocimiento, y cuando se toma una acción, pasa a decisión.</p>
+          <div class="pyr">
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--navy);width:40%">Decisión<small>Acción con responsable y plazo</small></div><div class="pyr-ex">Reabastecer esta semana y reasignar presupuesto al Norte</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--purple);width:60%">Conocimiento<small>Explicación: datos analizados</small></div><div class="pyr-ex">La caída se explica por quiebres de inventario en el canal web</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--blue);width:80%">Información<small>Dato organizado</small></div><div class="pyr-ex">Las ventas del Norte cayeron 12 % frente al mes anterior</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--teal);width:100%">Dato<small>Hecho sin contexto</small></div><div class="pyr-ex">Registro: 14/09 · tienda 27 · SKU 3048 · 12 unidades vendidas</div></div>
+          </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>La analítica de negocios se basa en utilizar datos para tomar decisiones (Davenport &amp; Harris, 2007). Este proceso comienza con la recolección de información, que puede ser interna o externa.</p>
+        <p>Luego, estos datos se limpian, organizan y clasifican para que la información muestre la situación del negocio.</p>
+        <p>Al tener esta información, se realizan análisis para identificar patrones y comprender problemas (Sabherwal &amp; Fernández, 2011; Simonovič et al., 2026).</p>
+        <p>Finalmente, este conocimiento sirve para tomar decisiones o elegir las mejores acciones en la empresa.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 1 · Une cada V con su significado" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
+      <p class="lead"><b>Instrucciones:</b> arrastra cada situación a la V que mejor la describe.</p>
+      <div class="dnd" data-act="a1"
+           data-ok="¡Muy bien! Identificar la V adecuada te ayuda a escoger la herramienta correcta."
+           data-bad="Piensa en la pregunta clave de cada V: ¿cuánto?, ¿qué tan rápido?, ¿qué formatos?, ¿qué tan confiable?, ¿para qué sirve?">
+        <div><p class="label">Arrastra</p><div class="dnd-items">
+          <div class="chip" data-id="banco" data-ans="vel">Un banco procesa miles de pagos por segundo</div>
+          <div class="chip" data-id="tb" data-ans="vol">Se guardan 40 TB de historial de ventas</div>
+          <div class="chip" data-id="pdf" data-ans="var">Facturas PDF + reseñas de texto + fotos</div>
+          <div class="chip" data-id="dup" data-ans="ver">Hay clientes duplicados que distorsionan el análisis</div>
+          <div class="chip" data-id="churn" data-ans="val">El análisis redujo la cancelación de clientes</div>
+        </div></div>
+        <div><p class="label">Suelta aquí</p><div class="dnd-zones">
+          <div class="zone" data-id="vol" style="--c:var(--teal)"><strong>Volumen</strong></div>
+          <div class="zone" data-id="vel" style="--c:var(--blue)"><strong>Velocidad</strong></div>
+          <div class="zone" data-id="var" style="--c:var(--orange)"><strong>Variedad</strong></div>
+          <div class="zone" data-id="ver" style="--c:var(--purple)"><strong>Veracidad</strong></div>
+          <div class="zone" data-id="val" style="--c:var(--green)"><strong>Valor</strong></div>
+        </div></div>
+        <div class="dnd-side">
+          <div class="feedback info">Arrastra cada situación a la V que mejor la describe (o tócala y luego toca la V).</div>
+          <button class="btn block" data-verify>Verificar respuestas</button>
+          <div class="score">Puntos: 0 / 100 ☆☆☆</div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Es tu primer reto. Lee cada situación y arrástrala a la V que mejor la describe.</p>
+        <p>¡Buena suerte!</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 2 ===================== -->
+    <section class="screen" id="m2" data-title="Calidad de los datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Si los datos no son correctos, los análisis tampoco lo serán. La calidad de la información se evalúa con estas características:</p>
+          <div class="grid g3">
+            <div class="card c-teal"><span class="num">1</span><h3>Exactitud</h3><p>¿Los datos son correctos?</p><p class="ex">Ej.: edad = −5 es incorrecta</p></div>
+            <div class="card c-blue"><span class="num">2</span><h3>Completitud</h3><p>¿Faltan campos importantes?</p><p class="ex">Ej.: correo en blanco</p></div>
+            <div class="card c-orange"><span class="num">3</span><h3>Consistencia</h3><p>¿Se maneja la misma estructura en los sistemas?</p><p class="ex">Ej.: COL vs. Colombia</p></div>
+            <div class="card c-purple"><span class="num">4</span><h3>Unicidad</h3><p>¿Existe información duplicada?</p><p class="ex">Ej.: dos clientes tienen la misma cédula</p></div>
+            <div class="card c-green"><span class="num">5</span><h3>Validez</h3><p>¿Los datos cumplen con los formatos establecidos?</p><p class="ex">Ej.: fecha 31/02</p></div>
+            <div class="card c-navy"><span class="num">6</span><h3>Oportunidad</h3><p>¿La información está disponible cuando se necesita?</p><p class="ex">Ej.: inventario de ayer</p></div>
+          </div>
+          <p class="source">Fakhfakh &amp; Mezghani, 2025; Gökalp et al., 2022; Yu et al., 2022.</p>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>La calidad de los datos es importante para tomar buenas decisiones en una organización, ya que los resultados del análisis dependen de la calidad de la información.</p>
+        <p>La exactitud se refiere a que los datos sean correctos y no contengan errores.</p>
+        <p>La completitud permite verificar que los datos estén disponibles y que no falten registros importantes.</p>
+        <p>La consistencia garantiza que la información mantenga la misma estructura en los sistemas.</p>
+        <p>La unicidad asegura que no existan datos importantes duplicados en dos o más registros.</p>
+        <p>La validez comprueba que los datos cumplan con los formatos establecidos.</p>
+        <p>Por último, la oportunidad indica que la información esté disponible y actualizada en el momento en que se necesite (Fakhfakh &amp; Mezghani, 2025; Gökalp et al., 2022; Yu et al., 2022).</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Normativa y gobernanza de datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
+      <div class="with-avatar">
+        <div class="grid g3">
+          <div class="card c-teal"><span class="num">1</span><h3>Ley 1581 de 2012</h3><p>Garantiza que los ciudadanos puedan conocer, actualizar y validar la información que las entidades públicas o privadas tengan sobre ellos en bases de datos o archivos.</p><p class="ex"><a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981" target="_blank" rel="noopener">Ver norma ↗</a></p></div>
+          <div class="card c-blue"><span class="num">2</span><h3>Decreto 1377 de 2013</h3><p>Desarrolla el derecho de las personas a conocer, actualizar, validar y eliminar la información recogida sobre ellas en las bases de datos.</p><p class="ex"><a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=53646" target="_blank" rel="noopener">Ver norma ↗</a></p></div>
+          <div class="card c-orange"><span class="num">3</span><h3>Principio de responsabilidad demostrada</h3><p>Las empresas no solo deben cumplir las normas, sino también demostrar que protegen correctamente los datos (Superintendencia de Industria y Comercio).</p></div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>Ahora vamos a ver qué normas hablan sobre el uso y la protección de los datos personales. En primer lugar está la Ley 1581 de 2012, que nos muestra el uso correcto de la información y los aspectos más relevantes que se deben cumplir.</p>
+        <p>Por otro lado, se encuentra el Decreto 1377 de 2013, que explica cómo las entidades deben informar sobre el tratamiento de los datos: primero deben solicitar la autorización, además de garantizar los derechos de las personas sobre su información personal.</p>
+        <p>Por último, está el principio de responsabilidad de la Superintendencia de Industria y Comercio, que busca que las empresas no solo cumplan las normas, sino que también demuestren que protegen correctamente los datos.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 2 · Detective de datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
+      <div class="detective" data-act="a2">
+        <div>
+          <p class="label">La tabla de clientes tiene cinco problemas. Pulsa cada celda sospechosa y clasifica el error.</p>
+          <div class="dtable-wrap">
+          <table class="dtable">
+            <thead><tr><th>ID</th><th>Cliente</th><th>Edad</th><th>País</th><th>Correo</th><th>Compra</th></tr></thead>
+            <tbody>
+              <tr><td><button>101</button></td><td><button>Ana Ruiz</button></td><td><button>34</button></td><td><button>Colombia</button></td><td><button>ana@mail.co</button></td><td><button>12/03/2026</button></td></tr>
+              <tr><td data-err="e1"><button>101</button></td><td><button>Ana Ruiz</button></td><td><button>34</button></td><td><button>Colombia</button></td><td><button>ana@mail.co</button></td><td><button>12/03/2026</button></td></tr>
+              <tr><td><button>102</button></td><td><button>Luis Pardo</button></td><td data-err="e2"><button>−5</button></td><td data-err="e3"><button>COL</button></td><td><button>luis@mail.co</button></td><td><button>02/04/2026</button></td></tr>
+              <tr><td><button>103</button></td><td><button>Sara Gil</button></td><td><button>41</button></td><td data-err="e3"><button>colombia</button></td><td data-err="e4"><button aria-label="Correo vacío">&nbsp;</button></td><td data-err="e5"><button>15/05/2031</button></td></tr>
+              <tr><td><button>104</button></td><td><button>Juan Mora</button></td><td><button>29</button></td><td><button>Colombia</button></td><td><button>juan@mail.co</button></td><td><button>20/05/2026</button></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="status-line" data-status>Errores encontrados: 0 de 5 · Puntos: 0</p>
+        </div>
+        <div class="dnd-side" style="display:grid;gap:10px">
+          <p class="label" style="margin:0">Clasifica el error</p>
+          <div class="classify">
+            <button data-dim="exactitud" disabled>Exactitud</button>
+            <button data-dim="completitud" disabled>Completitud</button>
+            <button data-dim="consistencia" disabled>Consistencia</button>
+            <button data-dim="unicidad" disabled>Unicidad</button>
+            <button data-dim="validez" disabled>Validez</button>
+            <button data-dim="oportunidad" disabled>Oportunidad</button>
+          </div>
+          <div class="feedback ok" data-fb>Pista: algunos errores parecen normales, pero no lo son.</div>
+          <button class="btn block" data-verify>Verificar</button>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Eres detective de datos. En esta tabla de clientes hay cinco problemas. Encuéntralos, pulsa la celda sospechosa y dime a qué característica de calidad pertenece.</p>
+        <p>Pista: algunos errores parecen normales, pero no lo son.</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 3 ===================== -->
+    <section class="screen" id="m3" data-title="Los tres niveles de la analítica" data-pill="MÓDULO 3 · TIPOS DE ANALÍTICA" data-color="orange" data-mod="Módulo 3 · Tipos de analítica">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">La analítica tiene tres niveles; cada uno tiene más relevancia y responsabilidad.</p>
+          <div class="axis">Mayor valor y mayor dificultad <i>▶</i></div>
+          <div class="levels">
+            <div class="level" style="background:var(--teal);height:170px"><h3>Descriptiva</h3><p>¿Qué sucedió? y ¿qué está ocurriendo ahora?</p><p class="tools">Reportes, indicadores, tableros</p></div>
+            <div class="level" style="background:var(--purple);height:220px"><h3>Predictiva</h3><p>¿Qué sucederá y por qué?</p><p class="tools">Pronósticos y modelos de aprendizaje automático</p></div>
+            <div class="level" style="background:var(--orange);height:275px"><h3>Prescriptiva</h3><p>¿Qué se debe hacer y cuál es la mejor opción?</p><p class="tools">Optimización, simulación y recomendaciones</p></div>
+          </div>
+          <p class="lead after">Un buen modelo predictivo necesita las tres analíticas, no solo una.</p>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>La analítica de negocios se clasifica en tres niveles: descriptiva, predictiva y prescriptiva. La analítica descriptiva se enfoca en responder a las preguntas «¿qué sucedió?» y «¿qué está ocurriendo ahora?»; toma datos históricos, tableros de control y resúmenes estadísticos para ver el estado del negocio (Appan et al., 2024; Cao &amp; Duan, 2024; Hirvonen et al., 2025).</p>
+        <p>La analítica predictiva va hacia la pregunta «¿qué sucederá y por qué?»; usa técnicas de minería de datos, modelos de regresión y aprendizaje automático para ver tendencias, comportamientos de mercado, demandas futuras y riesgos (Appan et al., 2024; Hirvonen et al., 2025; JianGang &amp; Yusof Ali, 2025).</p>
+        <p>La analítica prescriptiva es la etapa más avanzada, ya que responde «¿qué se debe hacer y cuál es la mejor opción?»; combina las predicciones de los modelos, simula y usa sistemas expertos para recomendar acciones o decisiones (Appan et al., 2024; Hirvonen et al., 2025; Yu et al., 2022).</p>
+        <p>La combinación de estas permite que las organizaciones pasen de revisar lo que ocurrió en el pasado a anticiparse a posibles situaciones y tomar decisiones que mejoren su desempeño y sus procesos (Cao &amp; Duan, 2024; Hirvonen et al., 2025; JianGang &amp; Yusof Ali, 2025).</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 3 · ¿Qué tipo de analítica necesito?" data-pill="MÓDULO 3 · TIPOS DE ANALÍTICA" data-color="orange" data-mod="Módulo 3 · Tipos de analítica">
+      <p class="lead"><b>Instrucciones:</b> arrastra cada pregunta al nivel de analítica que la responde.</p>
+      <div class="dnd" data-act="a3"
+           data-ok="Excelente: la clave está en el verbo de la pregunta."
+           data-bad="Revisa la pregunta: ¿habla del pasado, del futuro o de una acción?">
+        <div><p class="label">Arrastra</p><div class="dnd-items">
+          <div class="chip" data-id="q1" data-ans="desc">¿Cuánto vendimos por región el trimestre pasado?</div>
+          <div class="chip" data-id="q2" data-ans="pred">¿Qué clientes cancelarán el próximo mes?</div>
+          <div class="chip" data-id="q3" data-ans="pres">¿A quiénes damos descuento con 10.000 u.m. para maximizar el valor?</div>
+        </div></div>
+        <div><p class="label">Suelta aquí</p><div class="dnd-zones">
+          <div class="zone" data-id="desc" style="--c:var(--teal)"><strong>Descriptiva</strong></div>
+          <div class="zone" data-id="pred" style="--c:var(--purple)"><strong>Predictiva</strong></div>
+          <div class="zone" data-id="pres" style="--c:var(--orange)"><strong>Prescriptiva</strong></div>
+        </div></div>
+        <div class="dnd-side">
+          <div class="feedback info">Fíjate en el verbo de cada pregunta y arrástrala a su nivel.</div>
+          <button class="btn block" data-verify>Verificar respuestas</button>
+          <div class="score">Puntos: 0 / 100 ☆☆☆</div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Reto tres. Encontrarás tres preguntas de gerencia y tres niveles de analítica. Fíjate en el verbo de la pregunta y arrastra cada pregunta a su nivel.</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 4 ===================== -->
+    <section class="screen" id="m4" data-title="Sistemas de apoyo a la decisión" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Un sistema de apoyo a la decisión (SAD) es un sistema interactivo que ayuda a gerentes o analistas a usar datos y modelos para mejorar la toma de decisiones (Seguer, 2022; Simonovič et al., 2026).</p>
+          <div class="sad">
+            <div class="top">Directivo o analista</div>
+            <div class="vline"></div>
+            <div class="ui"><b>Interfaz de usuario:</b> gráficas, simulaciones, consultas, tableros</div>
+            <p class="label" style="margin:0">Procesamiento</p>
+            <div class="grid g3 bases">
+              <div class="card c-teal"><h3>Base de datos</h3><p class="ex">Data warehouse, data lake</p></div>
+              <div class="card c-blue"><h3>Base de modelos</h3><p class="ex">Estadística, machine learning, optimización</p></div>
+              <div class="card c-purple"><h3>Base de conocimiento</h3><p class="ex">Reglas, experiencia, inteligencia artificial</p></div>
+            </div>
+            <p class="label" style="margin:0">Datos</p>
+            <div class="sources"><span>Archivos</span><span>API</span><span>IoT</span><span>Web / redes</span><span>Datos abiertos</span></div>
+          </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>Un sistema de apoyo a la decisión es una herramienta que ayuda a los gerentes a analizar problemas; su función es complementar su conocimiento (Seguer, 2022; Simonovič et al., 2026).</p>
+        <p>Estos sistemas se han convertido en plataformas con inteligencia artificial, en donde se procesan datos en tiempo real, hay aprendizaje automático, simulaciones, análisis predictivo y técnicas de optimización (Bandla, 2026; JianGang &amp; Yusof Ali, 2025; Önden, 2026). Su objetivo es convertir la información en modelos y simulaciones para mejorar la toma de decisiones (Fakhfakh &amp; Mezghani, 2025; Önden, 2026).</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="El proceso de decisión" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
+      <p class="lead">La toma de decisiones tiene cinco fases (Orjatsalo et al., 2025; Seguer, 2022).</p>
+      <div class="chevrons">
+        <div class="chev" style="background:var(--teal)">1 Inteligencia</div>
+        <div class="chev" style="background:var(--blue)">2 Diseño</div>
+        <div class="chev" style="background:var(--purple)">3 Elección</div>
+        <div class="chev" style="background:var(--orange)">4 Implementación</div>
+        <div class="chev" style="background:var(--green)">5 Revisión</div>
+      </div>
+      <div class="steps-desc">
+        <div><b>Identificar un problema o una oportunidad</b>Alertas · tableros</div>
+        <div><b>Generar diferentes soluciones</b>Modelos · escenarios · simulaciones</div>
+        <div><b>Seleccionar la mejor opción</b>Optimización · criterios · costos · tiempo</div>
+        <div><b>Ejecutar la mejor solución</b>Plan de acción</div>
+        <div><b>Medir resultados y aprender</b>KPI · retroalimentación</div>
+      </div>
+      <div class="audio" hidden>
+        <p>La toma de decisiones tiene cinco fases para que las empresas identifiquen problemas y elijan la mejor alternativa (Orjatsalo et al., 2025; Seguer, 2022).</p>
+        <p>Inteligencia: identifica un problema mediante el análisis de datos (Seguer, 2022; Simonovič et al., 2026).</p>
+        <p>Diseño: aquí se plantean diferentes soluciones y se analizan sus posibles resultados (Gökalp et al., 2022; Seguer, 2022).</p>
+        <p>Elección: se comparan las soluciones y se selecciona la mejor (Orjatsalo et al., 2025; Seguer, 2022).</p>
+        <p>Implementación: consiste en poner en práctica la solución (Gökalp et al., 2022; Önden, 2026).</p>
+        <p>Revisión: se revisan los resultados obtenidos para comprobar si se cumplieron los objetivos (Gökalp et al., 2022; Seguer, 2022).</p>
+        <p>En conjunto, estas fases permiten que las organizaciones tomen decisiones y realicen mejoras a partir de la información.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 4 · Cuestionario" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
+      <div class="quiz" data-quiz="a4"></div>
+      <div class="audio" hidden>
+        <p>Hola, para esta actividad se hará un cuestionario. Son cinco preguntas con realimentación. Lee la pregunta, elige una opción y comprueba tu respuesta. Si fallas, te explicaré por qué. ¡Mucho éxito!</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 5 ===================== -->
+    <section class="screen" id="m5" data-title="Inteligencia artificial aplicada a la gestión" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+      <p class="lead">La IA permite automatizar tareas, descubrir patrones y apoyar decisiones (Attia et al., 2026). Sus familias principales: aprendizaje automático, procesamiento de lenguaje natural, visión por computador e IA generativa. Entre sus técnicas predictivas están las regresiones, los árboles de decisión y las redes neuronales.</p>
+      <p class="label">Pulsa cada área para ver un ejemplo y la pregunta clave antes de usar IA</p>
+      <div class="grid g3" data-reveal>
+        <button class="card c-teal" data-detail="Un banco marca en milisegundos las transacciones atípicas para revisión y ajusta el puntaje de crédito con el historial de pagos.|¿Cuánto cuesta un falso positivo para un cliente honesto?"><span class="num">1</span><h3>Finanzas</h3><p class="ex">Detección de fraude y puntaje de riesgo crediticio</p></button>
+        <button class="card c-blue" data-detail="Una tienda en línea agrupa clientes por comportamiento, recomienda productos y detecta quién está a punto de cancelar.|¿Qué datos del cliente es legítimo usar y cuáles no?"><span class="num">2</span><h3>Marketing</h3><p class="ex">Segmentación, recomendación y predicción de cancelación</p></button>
+        <button class="card c-orange" data-detail="Una flota anticipa fallas de motor con datos de sensores y recalcula rutas según el tráfico.|¿Los datos de sensores son confiables y están actualizados?"><span class="num">3</span><h3>Operaciones</h3><p class="ex">Mantenimiento predictivo y optimización de rutas</p></button>
+        <button class="card c-purple" data-detail="Un área de talento humano estima el riesgo de rotación para diseñar planes de retención, no para sancionar.|¿Puedo explicar el resultado a la persona afectada?"><span class="num">4</span><h3>Talento humano</h3><p class="ex">Análisis de rotación (con alto cuidado ético)</p></button>
+        <button class="card c-green" data-detail="Un asistente conversacional resuelve preguntas frecuentes y pasa los casos complejos a una persona.|¿Cuándo debe intervenir un humano?"><span class="num">5</span><h3>Servicio al cliente</h3><p class="ex">Asistentes conversacionales</p></button>
+        <button class="card c-navy" data-detail="La gerencia usa copilotos para resumir informes y comparar escenarios antes del comité.|¿Verifiqué las cifras y las fuentes del resumen?"><span class="num">6</span><h3>Alta dirección</h3><p class="ex">Resúmenes, escenarios y copilotos de análisis</p></button>
+      </div>
+      <div class="detail" data-detail-box hidden></div>
+      <p class="lead after">Una revisión de estudios del 2014 al 2024 reporta mejoras de 20 % a 30 % en eficiencia y reducción de riesgos, 15 % menos rotación de personal y 25 % más ventas en comercio electrónico (JianGang &amp; Yusof Ali, 2025).</p>
+      <div class="audio" hidden>
+        <p>La inteligencia artificial ya está en todas las áreas: detecta fraudes en finanzas, recomienda productos en marketing, anticipa fallas en operaciones y responde clientes en servicio.</p>
+        <p>Una revisión de estudios reporta, por ejemplo, un 15 % menos de rotación de personal y un 25 % más de ventas en comercio electrónico.</p>
+        <p>Pulsa cada área para ver un ejemplo y la pregunta clave que debes hacerte antes de usarla.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="IA generativa y analítica aumentada" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+      <p class="lead">La IA generativa permite consultar datos en lenguaje natural, generar consultas SQL o código en Python y redactar resúmenes de resultados. Es la «analítica aumentada». Los modelos de lenguaje natural también interpretan datos no estructurados, como informes y documentos.</p>
+      <div class="chat" data-chat>
+        <div>
+          <p class="label">Asistente de analítica (simulación) · ejemplo de instrucción (prompt)</p>
+          <div class="bubble user" data-q>Con la tabla de ventas adjunta, resume las 3 principales causas de la caída en el Norte y dime qué datos faltan.</div>
+          <div class="bubble bot" data-a>1) Quiebre de inventario en el canal web.
+2) Caída del tráfico por cambio de campaña.
+3) Pedidos duplicados que inflan la base.
+Faltan: datos de inventario por día y gasto en campaña.</div>
+          <div class="feedback warn">⚠ Regla de oro: verifica cifras y fuentes antes de usar esta respuesta; no cargues datos sensibles en herramientas no autorizadas.</div>
+        </div>
+        <div>
+          <p class="label">Prueba con otra pregunta</p>
+          <div class="prompts">
+            <button data-prompt="0">Resume esta tabla en 3 frases</button>
+            <button data-prompt="1">Escribe una consulta SQL de ventas por región</button>
+            <button data-prompt="2">Explica qué significa MAPE</button>
+            <button class="btn" data-checklist>Lista de verificación</button>
+          </div>
+          <ul class="checklist" data-checklist-box hidden>
+            <li>¿Las cifras coinciden con los datos originales?</li>
+            <li>¿La respuesta cita sus fuentes?</li>
+            <li>¿Compartí datos confidenciales? (no deberías)</li>
+            <li>¿La herramienta está autorizada por tu organización?</li>
+            <li>¿Una persona revisó la conclusión antes de decidir?</li>
+          </ul>
+          <p class="small-text"><b>Ventajas:</b> rapidez, acceso para no programadores, borradores de análisis. En un estudio, los modelos de IA procesaron un documento en 1,9 a 3,2 segundos frente a cerca de 6,2 del sistema tradicional (Bandla, 2024).</p>
+          <p class="small-text"><b>Riesgos:</b> errores plausibles («alucinaciones»), fugas de datos confidenciales y falta de trazabilidad. Los modelos más complejos también son costosos y difíciles de interpretar.</p>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Hoy puedes preguntarle a tus datos en español. Pero cuidado: un asistente de IA puede responder con seguridad algo equivocado.</p>
+        <p>Los modelos de lenguaje natural leen documentos mucho más rápido que un sistema tradicional, pero los más complejos cuestan más y son más difíciles de explicar.</p>
+        <p>Verifica siempre las cifras, pide las fuentes y nunca compartas datos confidenciales en herramientas no autorizadas por tu organización.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="IA responsable" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Un directivo debe poder explicar y responder por las decisiones apoyadas en IA.</p>
+          <div class="grid g3">
+            <div class="card c-teal"><span class="num">1</span><h3>Equidad</h3><p class="ex">Evitar sesgos que perjudiquen a personas o grupos. En un estudio con datos simulados, la IA explicable redujo la diferencia de resultados entre grupos de clientes de 12,9 % a 5,9 % (Yeruva, 2025).</p></div>
+            <div class="card c-blue"><span class="num">2</span><h3>Explicabilidad</h3><p class="ex">Poder justificar por qué el modelo recomienda algo. Herramientas como SHAP y LIME muestran qué variables pesan en cada predicción.</p></div>
+            <div class="card c-orange"><span class="num">3</span><h3>Privacidad</h3><p class="ex">Cumplir la normativa de datos personales (Ley 1581 de 2012).</p></div>
+            <div class="card c-purple"><span class="num">4</span><h3>Supervisión humana</h3><p class="ex">Una persona revisa las decisiones de alto impacto. La IA se usa como apoyo y no como reemplazo de la decisión humana (Ansari et al., 2026).</p></div>
+            <div class="card c-green"><span class="num">5</span><h3>Rendición de cuentas</h3><p class="ex">Roles claros y registro de decisiones.</p></div>
+            <div class="card c-navy"><span class="num">6</span><h3>Seguridad</h3><p class="ex">Proteger datos y modelos.</p></div>
+          </div>
+          <p class="source">Referencias para gobernar la IA: NIST AI Risk Management Framework (2023) y Reglamento de IA de la Unión Europea (2024).</p>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>La IA no responde por sus errores: respondes tú. Antes de usar un modelo, pregunta si trata a las personas de forma justa, si puedes explicar su resultado, si protege los datos y si hay una persona que revise las decisiones importantes.</p>
+        <p>En un estudio, explicar el modelo redujo la diferencia entre grupos de clientes de 12,9 % a 5,9 %. Estos principios están en marcos como el del NIST y el reglamento europeo de IA.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 5 · Semáforo de riesgo" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+      <p class="lead"><b>Instrucciones:</b> arrastra cada uso de IA al semáforo según el nivel de riesgo y la supervisión requerida.</p>
+      <div class="dnd" data-act="a5"
+           data-ok="Correcto: cuanto mayor es el impacto sobre las personas, mayor debe ser la supervisión."
+           data-bad="Piensa en el daño potencial si el modelo se equivoca.">
+        <div><p class="label">Arrastra</p><div class="dnd-items">
+          <div class="chip" data-id="reco" data-ans="verde">Recomendar productos en una tienda en línea</div>
+          <div class="chip" data-id="contr" data-ans="amarillo">Resumir contratos con IA y revisarlos con un abogado</div>
+          <div class="chip" data-id="rot" data-ans="amarillo">Predecir la rotación con un modelo explicable; RR. HH. decide</div>
+          <div class="chip" data-id="cred" data-ans="rojo">Rechazar créditos automáticamente sin revisión</div>
+          <div class="chip" data-id="cv" data-ans="rojo">Filtrar hojas de vida con un modelo no auditado</div>
+        </div></div>
+        <div><p class="label">Suelta aquí</p><div class="dnd-zones">
+          <div class="zone" data-id="verde" style="--c:var(--green)"><strong>Verde · riesgo bajo</strong></div>
+          <div class="zone" data-id="amarillo" style="--c:var(--orange)"><strong>Amarillo · revisión humana</strong></div>
+          <div class="zone" data-id="rojo" style="--c:var(--red)"><strong>Rojo · alto impacto en personas</strong></div>
+        </div></div>
+        <div class="dnd-side">
+          <div class="feedback info">A mayor impacto sobre las personas, mayor supervisión.</div>
+          <button class="btn block" data-verify>Verificar respuestas</button>
+          <div class="score">Puntos: 0 / 100 ☆☆☆</div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Actividad cinco: el semáforo de la IA. Clasifica cada uso según el impacto que tendría sobre las personas si el modelo se equivoca. A mayor impacto, mayor supervisión humana.</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 6 ===================== -->
+    <section class="screen" id="m6" data-title="Principios de visualización" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+      <p class="lead">Visualizar es traducir datos en respuestas visuales. Primero define la pregunta; después elige el gráfico.</p>
+      <div class="grid g5">
+        <div class="vizcard"><h4>¿Cómo comparo categorías?</h4>
+          <svg viewBox="0 0 120 70" aria-hidden="true"><g fill="#13A89E"><rect x="10" y="34" width="20" height="36"/><rect x="36" y="5" width="20" height="65"/><rect x="62" y="23" width="20" height="47"/><rect x="88" y="45" width="20" height="25"/></g></svg>
+          <b style="color:var(--teal)">Barras</b></div>
+        <div class="vizcard"><h4>¿Cómo evoluciona en el tiempo?</h4>
+          <svg viewBox="0 0 120 70" aria-hidden="true"><polyline points="10,58 40,40 70,47 105,12" fill="none" stroke="#2F6FDE" stroke-width="3"/></svg>
+          <b style="color:var(--blue)">Líneas</b></div>
+        <div class="vizcard"><h4>¿Hay relación entre dos variables?</h4>
+          <svg viewBox="0 0 120 70" aria-hidden="true"><g fill="#6C4AB6"><circle cx="15" cy="58" r="4"/><circle cx="33" cy="44" r="4"/><circle cx="46" cy="47" r="4"/><circle cx="64" cy="29" r="4"/><circle cx="70" cy="40" r="4"/><circle cx="82" cy="22" r="4"/><circle cx="101" cy="11" r="4"/></g></svg>
+          <b style="color:var(--purple)">Dispersión</b></div>
+        <div class="vizcard"><h4>¿Cómo se distribuyen los valores?</h4>
+          <svg viewBox="0 0 120 70" aria-hidden="true"><g fill="#F2A541"><rect x="6" y="56" width="18" height="14"/><rect x="25" y="34" width="18" height="36"/><rect x="44" y="5" width="18" height="65"/><rect x="63" y="20" width="18" height="50"/><rect x="82" y="45" width="18" height="25"/><rect x="101" y="59" width="18" height="11"/></g></svg>
+          <b style="color:var(--orange)">Histograma</b></div>
+        <div class="vizcard"><h4>¿De qué se compone el total?</h4>
+          <svg viewBox="0 0 120 70" aria-hidden="true"><rect x="14" y="50" width="24" height="20" fill="#2E9E5B"/><rect x="14" y="34" width="24" height="16" fill="#F2A541"/><rect x="48" y="44" width="24" height="26" fill="#2E9E5B"/><rect x="48" y="23" width="24" height="21" fill="#F2A541"/><rect x="82" y="38" width="24" height="32" fill="#2E9E5B"/><rect x="82" y="12" width="24" height="26" fill="#F2A541"/></svg>
+          <b style="color:var(--green)">Barras apiladas</b><span class="small">Evita 3D y pasteles con muchas categorías</span></div>
+      </div>
+      <p class="lead after"><b>Buenas prácticas:</b> un mensaje por gráfico, títulos que dicen la conclusión, color con propósito, sin efectos 3D y sin pasteles con muchas categorías (Tufte, 2001).</p>
+      <div class="audio" hidden>
+        <p>Antes de elegir un gráfico, elige la pregunta. Si quieres comparar, usa barras. Si hay tiempo de por medio, líneas. Para relaciones, dispersión.</p>
+        <p>Y recuerda: menos adornos y más claridad. Un buen gráfico se entiende en cinco segundos.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Cómo leer un dashboard" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+      <p class="lead">Un tablero combina indicadores, tendencias y comparaciones. Sirve para seguir los indicadores del negocio y reaccionar más rápido a los cambios, siempre que los datos estén organizados, actualizados y estructurados (Huu, 2025). Para interpretarlo, hazle tres preguntas.</p>
+      <div class="dash" data-dashboard>
+        <div>
+          <div class="kpis">
+            <div class="kpi"><b style="color:var(--heading)">4.820</b><span>Pedidos</span><button class="hot" data-hot="0" style="right:8px;top:24px">1</button></div>
+            <div class="kpi"><b style="color:var(--green)">3,1 %</b><span>Conversión</span></div>
+            <div class="kpi"><b style="color:var(--blue)">US$ 62</b><span>Ticket prom.</span></div>
+            <div class="kpi"><b style="color:var(--red)">14 %</b><span>Cancelación</span></div>
+          </div>
+          <div class="charts">
+            <div class="chartbox"><h4>Pedidos semanales vs. meta</h4><div data-chart="orders"></div><button class="hot" data-hot="1" style="right:8px;top:6px">2</button></div>
+            <div class="chartbox"><h4>Conversión por canal (%)</h4><div data-chart="channels"></div><button class="hot" data-hot="2" style="right:8px;top:6px">3</button></div>
+          </div>
+          <div class="detail" data-detail-box hidden></div>
+        </div>
+        <div class="askyou">
+          <b>Pregúntate</b>
+          <ol><li>¿Qué cambió? <span class="small">(variación frente al periodo anterior)</span></li><li>¿Respecto a qué? <span class="small">(meta, histórico, competencia)</span></li><li>¿Es relevante o es ruido? <span class="small">(magnitud, tendencia, contexto)</span></li></ol>
+          <b>Después: ¿qué decisión implica?</b>
+          <p style="margin:4px 0 8px">Ejemplo: los pedidos están sobre la meta, pero la cancelación es del 14 %; el problema no es vender, sino retener.</p>
+          <p class="small">Toca los puntos rojos numerados para practicar.</p>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Mira este tablero. Los pedidos superan la meta: buenas noticias. Pero fíjate en la cancelación: catorce por ciento.</p>
+        <p>Un tablero sirve para seguir los indicadores y reaccionar a tiempo, siempre que los datos estén bien organizados y actualizados.</p>
+        <p>Para leer un tablero, hazte tres preguntas: qué cambió, respecto a qué y si es relevante o es solo ruido. Toca los puntos numerados para practicar.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Gráficos engañosos" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+      <p class="lead">Un mismo dato puede parecer insignificante o dramático según cómo se grafique.</p>
+      <div class="charts mislead">
+        <div class="chartbox"><p class="tag" style="color:var(--red)">✗ Parece que B vende el doble</p><h4>Engañoso: eje desde 96</h4><div data-chart="bad"></div></div>
+        <div class="chartbox"><p class="tag" style="color:var(--green)">✓ La diferencia real es de 2 %</p><h4>Correcto: eje desde 0</h4><div data-chart="good"></div></div>
+      </div>
+      <div class="reflect" style="background:var(--surface);border-color:var(--line);font-weight:400">
+        <b>Trampas frecuentes:</b> eje truncado (empezar el eje en 96 hace que 98 vs. 100 parezca el doble) · escalas distintas entre gráficos comparables · mostrar solo el periodo que conviene (selección de datos) · confundir correlación con causalidad.<br>
+        <b>Pregunta de control:</b> ¿qué verías si el eje comenzara en cero y se mostrara todo el periodo?
+      </div>
+      <div class="audio" hidden>
+        <p>Los mismos datos, dos historias. A la izquierda, el eje empieza en noventa y seis y parece que el producto B vende el doble. A la derecha, con el eje en cero, la diferencia real es de solo dos por ciento.</p>
+        <p>Antes de creer un gráfico, mira los ejes.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 6 · Elige el gráfico" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+      <p class="lead"><b>Instrucciones:</b> une cada pregunta con el gráfico más adecuado.</p>
+      <div class="dnd" data-act="a6"
+           data-ok="¡Bien! La pregunta define el gráfico."
+           data-bad="Revisa: ¿comparas, sigues en el tiempo, relacionas o distribuyes?">
+        <div><p class="label">Arrastra</p><div class="dnd-items">
+          <div class="chip" data-id="ticket" data-ans="lin">Evolución del ticket promedio en 24 meses</div>
+          <div class="chip" data-id="suc" data-ans="bar">Sucursal que más vendió este mes</div>
+          <div class="chip" data-id="pub" data-ans="disp">Relación entre publicidad y ventas</div>
+          <div class="chip" data-id="edad" data-ans="hist">Distribución de la edad de los clientes</div>
+        </div></div>
+        <div><p class="label">Suelta aquí</p><div class="dnd-zones">
+          <div class="zone" data-id="lin" style="--c:var(--teal)"><strong>Líneas</strong></div>
+          <div class="zone" data-id="bar" style="--c:var(--blue)"><strong>Barras</strong></div>
+          <div class="zone" data-id="disp" style="--c:var(--purple)"><strong>Dispersión</strong></div>
+          <div class="zone" data-id="hist" style="--c:var(--orange)"><strong>Histograma</strong></div>
+        </div></div>
+        <div class="dnd-side">
+          <div class="feedback info">Une cada pregunta con el gráfico que mejor la responde.</div>
+          <button class="btn block" data-verify>Verificar respuestas</button>
+          <div class="score">Puntos: 0 / 100 ☆☆☆</div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Actividad seis. Une cada pregunta con el gráfico que mejor la responde. Recuerda: si hay tiempo, líneas; si comparas, barras; si buscas relación, dispersión; y si quieres ver cómo se reparten los valores, un histograma.</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 7 ===================== -->
+    <section class="screen" id="m7" data-title="Casos empresariales reales" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Cada caso sigue la misma ruta: contexto → datos → análisis → decisión → resultado, y termina con una pregunta de reflexión. Elige el que quieras.</p>
+          <div class="grid g3">
+            <button class="card c-red" data-goto="case-netflix"><span class="num">1</span><h3>Netflix</h3><p class="ex">Personalización con analítica y aprendizaje automático</p><span class="seen" data-seen="case-netflix" hidden>Visto ✓</span></button>
+            <button class="card c-orange" data-goto="case-ups"><span class="num">2</span><h3>UPS</h3><p class="ex">Optimización de rutas de reparto con ORION</p><span class="seen" data-seen="case-ups" hidden>Visto ✓</span></button>
+            <button class="card c-blue" data-goto="case-walmart"><span class="num">3</span><h3>Walmart</h3><p class="ex">Pronóstico de demanda ante huracanes</p><span class="seen" data-seen="case-walmart" hidden>Visto ✓</span></button>
+          </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+      </div>
+      <div class="audio" hidden>
+        <p>Aprender de otros es la forma más rápida de mejorar. En este módulo revisarás tres casos reales: Netflix, UPS y Walmart.</p>
+        <p>En cada uno verás qué datos usaron, qué decisión tomaron y qué resultados obtuvieron. Elige el que quieras.</p>
+      </div>
+    </section>
+
+    <section class="screen" id="case-netflix" data-title="Caso Netflix · Personalización" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+      <div class="case">
+        <div style="--c:var(--red)">
+          <div class="stat"><b>≈ 80 %</b><span>de las horas reproducidas están influidas por el sistema de recomendación</span></div>
+          <div class="stat"><b>&gt; US$ 1.000 M</b><span>ahorro anual estimado por la personalización y las recomendaciones (menor cancelación de suscripciones)</span></div>
+          <div class="stat"><b>2015</b><span>Fuente: Gomez-Uribe y Hunt, ACM TMIS</span></div>
+        </div>
+        <div>
+          <div class="flow">
+            <div><h4 style="background:var(--teal)">Contexto</h4><p>Con miles de títulos, el usuario abandona si no encuentra qué ver.</p></div>
+            <div><h4 style="background:var(--blue)">Datos</h4><p>Historial de reproducciones, búsquedas, valoraciones y comportamiento en pantalla.</p></div>
+            <div><h4 style="background:var(--purple)">Análisis</h4><p>Sistemas de recomendación con aprendizaje automático.</p></div>
+            <div><h4 style="background:var(--orange)">Decisión</h4><p>Personalizar la página de inicio de cada usuario.</p></div>
+          </div>
+          <div class="reflect">Reflexión: ¿qué datos personales usarías y cuáles no, para respetar la privacidad del usuario?</div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Netflix no ofrece el mismo catálogo a todos. Analiza lo que ves, lo que buscas y cuándo abandonas, y personaliza tu pantalla de inicio.</p>
+        <p>Sus propios investigadores estiman que las recomendaciones influyen en cerca del ochenta por ciento de las horas reproducidas. Ahora reflexiona: ¿hasta dónde es razonable usar tus datos?</p>
+      </div>
+    </section>
+
+    <section class="screen" id="case-ups" data-title="Caso UPS · Optimización de rutas (ORION)" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+      <div class="case">
+        <div style="--c:var(--orange)">
+          <div class="stat"><b>160</b><span>clientes o más por conductor al día</span></div>
+          <div class="stat"><b>US$ 300–400 M</b><span>ahorro anual estimado con el despliegue completo para 55.000 conductores; hasta fines de 2015 ya se reportaban más de US$ 320 M</span></div>
+          <div class="stat"><b>10 M galones</b><span>de combustible y 100 millones de millas menos al año (estimado)</span></div>
+        </div>
+        <div>
+          <div class="flow">
+            <div><h4 style="background:var(--teal)">Contexto</h4><p>Cada conductor entrega a más de 160 clientes al día y el orden de las paradas importa.</p></div>
+            <div><h4 style="background:var(--blue)">Datos</h4><p>Direcciones, ventanas de entrega, tráfico y mapas.</p></div>
+            <div><h4 style="background:var(--purple)">Análisis</h4><p>Optimización prescriptiva de rutas (ORION).</p></div>
+            <div><h4 style="background:var(--orange)">Decisión</h4><p>Cada mañana el sistema entrega al conductor una secuencia optimizada.</p></div>
+          </div>
+          <div class="reflect">Reflexión: ¿qué decisiones deben seguir en manos del conductor aunque el sistema recomiende otra cosa?</div>
+          <p class="source">ORION ganó el Premio Franz Edelman 2016. Fuente: INFORMS (2016).</p>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Cada mañana, el sistema ORION de UPS le entrega a cada conductor el orden óptimo de sus entregas. Es un ejemplo de analítica prescriptiva: no solo predice, recomienda.</p>
+        <p>UPS estimó ahorros de entre trescientos y cuatrocientos millones de dólares al año. Pero, ¿qué pasa cuando el conductor sabe algo que el sistema no sabe?</p>
+      </div>
+    </section>
+
+    <section class="screen" id="case-walmart" data-title="Caso Walmart · Pronosticar con datos históricos" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+      <div class="case">
+        <div style="--c:var(--blue)">
+          <div class="stat"><b>≈ 7 ×</b><span>su ritmo normal venden las Pop-Tarts de fresa antes de un huracán, según la ejecutiva de información de Wal-Mart</span></div>
+          <div class="stat"><b>Cerveza</b><span>producto más vendido antes del huracán</span></div>
+          <div class="stat"><b>2004</b><span>Fuente: Hays, The New York Times</span></div>
+        </div>
+        <div>
+          <div class="flow">
+            <div><h4 style="background:var(--teal)">Contexto</h4><p>Antes de la llegada del huracán Frances, las tiendas deben tener el inventario correcto.</p></div>
+            <div><h4 style="background:var(--blue)">Datos</h4><p>Ventas históricas durante el huracán Charley.</p></div>
+            <div><h4 style="background:var(--purple)">Análisis</h4><p>Patrones de compra previos a la tormenta.</p></div>
+            <div><h4 style="background:var(--orange)">Decisión</h4><p>Enviar productos a las tiendas en la trayectoria de Frances. La compañía informó que la mayoría se vendió rápido.</p></div>
+          </div>
+          <div class="reflect">Reflexión: ¿un patrón del pasado siempre se repetirá? ¿Qué podría hacer fallar el pronóstico?</div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Antes de que el huracán Frances llegara, Walmart revisó qué había pasado con el huracán anterior. Descubrió patrones de compra inesperados, como que las Pop-Tarts de fresa se vendían unas siete veces más.</p>
+        <p>Con eso, abasteció las tiendas en la ruta de la tormenta. Una lección: el pasado informa, pero no garantiza el futuro.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Actividad 7 · Ficha de análisis de caso" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+      <div class="ficha" data-act="a7">
+        <p class="label">Elige uno de los casos (o uno de tu organización) y completa los seis campos con tus propias palabras.</p>
+        <div class="grid g3">
+          <div class="field"><label for="f1">1 · Problema de negocio</label><textarea id="f1" maxlength="350" placeholder="Escribe tu respuesta…"></textarea></div>
+          <div class="field"><label for="f2">2 · Datos usados</label><textarea id="f2" maxlength="350" placeholder="Escribe tu respuesta…"></textarea></div>
+          <div class="field"><label for="f3">3 · Tipo de analítica</label><textarea id="f3" maxlength="350" placeholder="Descriptiva, diagnóstica, predictiva o prescriptiva…"></textarea></div>
+          <div class="field"><label for="f4">4 · Decisión tomada</label><textarea id="f4" maxlength="350" placeholder="Escribe tu respuesta…"></textarea></div>
+          <div class="field"><label for="f5">5 · Resultado / evidencia</label><textarea id="f5" maxlength="350" placeholder="Escribe tu respuesta…"></textarea></div>
+          <div class="field"><label for="f6">6 · Riesgos y ética</label><textarea id="f6" maxlength="350" placeholder="Escribe tu respuesta…"></textarea></div>
+        </div>
+        <div class="row-end">
+          <span class="small" data-fb></span>
+          <button class="btn" data-save>Guardar</button>
+          <button class="btn teal" data-send>Enviar ▶</button>
+        </div>
+        <p class="small">Realimentación automática: lista de verificación de los seis campos; la valoración de la rúbrica queda registrada para el docente.</p>
+        <details class="support" open>
+          <summary>Casos de apoyo para la ficha</summary>
+          <ul>
+            <li><b>Ámsterdam:</b> analítica prescriptiva para ubicar puntos de carga eléctrica. Una distribución más estratégica podría subir la utilización de la red de 17 % a 20 % sin más inversión (Brandt et al., 2021).</li>
+            <li><b>Manufactura:</b> un modelo clasificó las interrupciones de producción con 78 % de precisión y se redujo su duración (Oberdorf et al., 2021).</li>
+            <li><b>Tailandia:</b> un sistema de inteligencia de negocios con regresiones y cuatro reportes redujo tareas manuales (Kongthanasuwan et al., 2023).</li>
+          </ul>
+        </details>
+      </div>
+      <div class="audio" hidden>
+        <p>Hora de analizar. Elige un caso y completa la ficha de seis campos: problema, datos, tipo de analítica, decisión, resultado y riesgos.</p>
+        <p>Responde con tus propias palabras y cita la fuente. Si prefieres, puedes elegir uno de los casos de apoyo. Esta ficha es evidencia de tu aprendizaje.</p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 8 ===================== -->
+    <section class="screen" id="m8" data-title="Simuladores de decisión" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
+      <p class="lead">Dos simuladores con datos ficticios para decidir sin riesgo. En cada uno recibes un escenario, tomas una decisión y obtienes realimentación comparando tu resultado con el óptimo. <b>Puntaje por simulador:</b> calidad de la decisión (60 %) y comparación con el resultado óptimo (40 %).</p>
+      <div class="grid" style="grid-template-columns:1fr 170px 1fr;align-items:center">
+        <button class="card c-teal" data-goto="sim1"><span class="num">1</span><h3>Precio óptimo</h3><p class="ex">Analítica predictiva y prescriptiva</p><p class="ex">~10 min</p></button>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.png" alt=""></button><span>Insight</span></div>
+        <button class="card c-orange" data-goto="sim2"><span class="num">2</span><h3>Gerente por un día</h3><p class="ex">Decisión con incertidumbre y calidad de datos</p><p class="ex">~15 min</p></button>
+      </div>
+      <div class="audio" hidden>
+        <p>Llegó la hora de practicar. Tienes dos simuladores: fijar un precio y, para cerrar, ser gerente por un día.</p>
+        <p>No hay riesgo real: equivocarte aquí es la mejor forma de aprender. Al final compararemos tu decisión con la óptima.</p>
+      </div>
+    </section>
+
+    <section class="screen" id="sim1" data-title="Simulador 1 · Precio óptimo" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
+      <div class="sim1" data-sim1>
+        <div>
+          <p class="label">Panel de control</p>
+          <div class="pricerow"><label for="price">Precio</label><span data-price>45 usd</span></div>
+          <input type="range" id="price" min="20" max="100" step="1" value="45">
+          <div class="infobox"><b>Escenario:</b> tu empresa vende un producto con costo de 20 usd. por unidad. El área de analítica estimó que la demanda es:<br><b>Demanda = 1.000 − 10 × Precio</b></div>
+          <button class="btn block" data-confirm>Confirmar precio</button>
+          <div class="feedback info" data-fb style="margin-top:10px"><b>Tu tarea:</b> mueve el control de precio y observa demanda, ingresos y utilidad. Antes de confirmar, responde: ¿qué supuestos tiene este modelo?</div>
+        </div>
+        <div class="chartbox"><h4>Utilidad según precio (usd)</h4><div data-chart="profit"></div></div>
+        <div>
+          <div class="kpi" style="margin-bottom:10px"><b style="color:var(--blue)" data-k="d">550 unds.</b><span>Demanda</span></div>
+          <div class="kpi" style="margin-bottom:10px"><b style="color:var(--heading)" data-k="i">24.750</b><span>Ingresos</span></div>
+          <div class="kpi"><b style="color:var(--green)" data-k="u">13.750</b><span>Utilidad</span></div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Eres responsable de fijar el precio. Cada vez que lo mueves, cambian la demanda, los ingresos y la utilidad.</p>
+        <p>Fíjate en la curva: sube, llega a un máximo y vuelve a bajar. Cuando estés seguro, confirma tu precio.</p>
+      </div>
+    </section>
+
+    <section class="screen" id="sim2" data-title="Simulador 2 · Gerente por un día" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
+      <div class="sim2" data-sim2>
+        <div class="start">Ventas del Norte caen 12 %<br><span style="font-weight:400;font-size:13px">El comité te pide una decisión hoy. Recibes tablero, historial y un correo con presión por actuar rápido.</span><br>¿Qué haces primero?</div>
+        <div>
+          <div class="routes" data-step="1">
+            <div class="route-row" style="--c:var(--red)"><button data-route="A">A · Bajar precios 10 % ya</button><div class="conseq masked">Margen cae; la causa no se corrige.</div><div class="pts masked">20 pts</div></div>
+            <div class="route-row" style="--c:var(--green)"><button data-route="B">B · Pedir desglose y revisar calidad de datos</button><div class="conseq masked">Descubres quiebres de inventario en el canal web y duplicados en pedidos.</div><div class="pts masked">90 pts</div></div>
+            <div class="route-row" style="--c:var(--orange)"><button data-route="C">C · Lanzar campaña masiva</button><div class="conseq masked">Gasto alto; el problema sigue siendo el stock.</div><div class="pts masked">40 pts</div></div>
+          </div>
+          <div class="routes" data-step="2" hidden style="margin-top:14px">
+            <p class="label" style="margin:0">Segunda decisión en la ruta B</p>
+            <div class="route-row" style="--c:var(--green)"><button data-route="B1">Reabastecer y reasignar presupuesto con el modelo prescriptivo</button><div class="conseq masked">Corriges la causa con evidencia.</div><div class="pts masked">+10 pts</div></div>
+            <div class="route-row" style="--c:var(--orange)"><button data-route="B2">Esperar al cierre de mes para confirmar</button><div class="conseq masked">Pierdes ventas mientras esperas.</div><div class="pts masked">−30 pts</div></div>
+          </div>
+          <div class="feedback info" data-fb style="margin-top:14px">Cada decisión te mostrará sus consecuencias.</div>
+          <div class="row-end"><button class="btn ghost" data-retry hidden>Intentar de nuevo</button></div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Hoy eres gerente. Las ventas del Norte cayeron doce por ciento y todos esperan una respuesta. Puedes actuar ya o preguntar primero. Cada decisión te mostrará sus consecuencias.</p>
+        <p>Recuerda lo que aprendiste: pregunta, verifica la calidad de los datos y elige el tipo de analítica adecuado. Y recuerda que tu experiencia sigue siendo parte de la decisión.</p>
+      </div>
+    </section>
+
+    <!-- ===================== CIERRE ===================== -->
+    <section class="screen" id="final1" data-title="Evaluación final · Preguntas 1 a 5" data-pill="CIERRE" data-mod="Cierre">
+      <div class="quiz" data-quiz="final1"></div>
+      <div class="audio" hidden>
+        <p>Evaluación final, primera parte. Son cinco preguntas con realimentación inmediata. Lee con calma, elige una opción y comprueba tu respuesta. Si fallas, te explicaré por qué. ¡Mucho éxito!</p>
+      </div>
+    </section>
+
+    <section class="screen" id="final2" data-title="Evaluación final · Preguntas 6 a 10" data-pill="CIERRE" data-mod="Cierre">
+      <div class="quiz" data-quiz="final2"></div>
+      <div class="audio" hidden>
+        <p>Segunda parte de la evaluación final. Esta vez hay preguntas de analítica prescriptiva, inteligencia artificial, visualización y un cálculo del simulador de precio. Recuerda lo que practicaste. ¡Tú puedes!</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Conclusiones y siguientes pasos" data-pill="CIERRE" data-mod="Cierre">
+      <div class="grid" style="grid-template-columns:1.6fr 1fr;align-items:start" data-close>
+        <div class="ideas">
+          <div class="card c-teal"><span class="num">1</span><h3>Pregunta primero, analiza después</h3></div>
+          <div class="card c-blue"><span class="num">2</span><h3>Sin calidad ni gobernanza de datos no hay buena decisión</h3></div>
+          <div class="card c-purple"><span class="num">3</span><h3>Elige el nivel de analítica según la pregunta: describir, diagnosticar, predecir o prescribir</h3></div>
+          <div class="card c-orange"><span class="num">4</span><h3>La visualización debe aclarar, no persuadir</h3></div>
+          <div class="card c-green"><span class="num">5</span><h3>La IA apoya; la responsabilidad de decidir sigue siendo humana</h3></div>
+        </div>
+        <div>
+          <div class="plan" data-plan>
+            <h3>Tu plan de 30 días</h3>
+            <p style="margin:0 0 8px;font-size:13.5px"><b>Siguientes pasos:</b> elige un conjunto de datos abiertos de Colombia (datos.gov.co), evalúa su calidad, formula una pregunta de decisión y construye un tablero de tres indicadores.</p>
+            <label><input type="checkbox"> Elige un dato de tu organización</label>
+            <label><input type="checkbox"> Evalúa su calidad (6 dimensiones)</label>
+            <label><input type="checkbox"> Formula una pregunta de decisión</label>
+            <label><input type="checkbox"> Construye un tablero de 3 KPI</label>
+            <label><input type="checkbox"> Presenta tu hallazgo</label>
+            <a class="btn teal block" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="https://www.datos.gov.co" target="_blank" rel="noopener">Ir a datos.gov.co</a>
+          </div>
+          <div class="plan results" data-results style="margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="audio" hidden>
+        <p>Felicitaciones, completaste el recorrido. Recuerda estas cinco ideas: pregunta primero; cuida la calidad de los datos; elige el tipo de analítica adecuado; visualiza con honestidad; y usa la inteligencia artificial con responsabilidad.</p>
+        <p>Ahora te propongo un plan de treinta días para llevarlo a tu organización.</p>
+      </div>
+    </section>
+
+    <section class="screen" data-title="Créditos y referencias" data-pill="CIERRE" data-mod="Cierre">
+      <div class="grid" style="grid-template-columns:280px 1fr;align-items:start" data-credits>
+        <dl class="plan meta">
+          <h3>Créditos</h3>
+          <dt>Nombre del material</dt><dd>Data Driven Manager: Herramientas de Big Data y Analítica para la Toma de Decisiones Organizacionales</dd>
+          <dt>Área de conocimiento</dt><dd>Inteligencia Artificial · Analítica de datos y gestión organizacional</dd>
+          <dt>Autores</dt><dd>Dominic Nicolás Alonso Barajas<br>Kevin Esteban Chiquillo Díaz</dd>
+          <dt>Diseño y desarrollo</dt><dd>Kevin Esteban Chiquillo Díaz</dd>
+          <dt>Guía virtual</dt><dd>Insight</dd>
+          <dt>Institución</dt><dd>Universidad de Cundinamarca · Oficina de Educación Virtual y a Distancia</dd>
+          <dt>Fecha de creación</dt><dd>12/10/2026</dd>
+          <dt>Nivel educativo</dt><dd>Básico – Intermedio</dd>
+        </dl>
+        <div class="plan">
+          <h3>Referencias (APA 7)</h3>
+          <div class="refs">
+            <p>Ansari, M. E., Tarafder, M. T. R., Chowdhury, A., Rimi, N. N., y Akter, N. (2026). An AI-driven management information system for employee attrition prediction: Enhancing human agency through XGBoost and explainable AI.</p>
+            <p>Attia, E. F., Bamhraz, A., Binsaddig, R., y Qotb, A. S. (2026). Artificial intelligence adoption in accounting information systems: Empirical evidence on performance effects in Saudi Arabia. <i>Journal of Business and Socio-economic Development, 6</i>(4), 413–429. https://doi.org/10.1108/JBSED-02-2026-0152</p>
+            <p>Bandla, S. (2024). Integrating AI based natural language processing for automated data interpretation in management information systems.</p>
+            <p>Brandt, T., Wagner, S., y Neumann, D. (2021). Prescriptive analytics for public value creation: The case of electric vehicle charging infrastructure. <i>European Journal of Operational Research, 291</i>(1), 379–393. https://doi.org/10.1016/j.ejor.2020.09.034</p>
+            <p>Cao, G., y Duan, Y. (2024). Exploring the impact of business analytics on strategic decision-making in uncertain environments. <i>Journal of Management Analytics, 11</i>(4), 577–600. https://doi.org/10.1080/23270012.2024.2420365</p>
+            <p>Congreso de Colombia. (2012). Ley 1581 de 2012, por la cual se dictan disposiciones generales para la protección de datos personales.</p>
+            <p>DAMA International. (2017). <i>DAMA-DMBOK: Data management body of knowledge</i> (2.ª ed.). Technics Publications.</p>
+            <p>Davenport, T. H., y Harris, J. G. (2007). <i>Competing on analytics: The new science of winning</i>. Harvard Business School Press.</p>
+            <p>Deming, W. E. (1986). <i>Out of the crisis</i>. MIT Press.</p>
+            <p>Drucker, P. F. (1999). <i>Management challenges for the 21st century</i>. HarperBusiness.</p>
+            <p>Gomez-Uribe, C. A., y Hunt, N. (2015). The Netflix recommender system: Algorithms, business value, and innovation. <i>ACM Transactions on Management Information Systems, 6</i>(4), Art. 13. https://doi.org/10.1145/2843948</p>
+            <p>Gutierrez-Franco, E., Mejia-Argueta, C., y Rabelo, L. (2021). Data-driven methodology to support long-lasting logistics and decision making for urban last-mile operations. <i>Sustainability, 13</i>(11), 6230.</p>
+            <p>Hays, C. L. (2004, 14 de noviembre). What Wal-Mart knows about customers’ habits. <i>The New York Times</i>.</p>
+            <p>Huu, D. Q. (2025). Retail data visualization, revenue and profit analysis, business intelligence tools, data-driven decision making. <i>Applied Computer Science, 21</i>(2), 154–163.</p>
+            <p>INFORMS. (2016). UPS On-Road Integrated Optimization and Navigation (ORION) project. https://www.informs.org/Impact/O.R.-Analytics-Success-Stories/UPS-On-Road-Integrated-Optimization-and-Navigation-ORION-Project</p>
+            <p>JianGang, Z., y Yusof Ali, H. B. (2025). Predictive analytics model for AI-enhanced decision support in corporate management. <i>Journal of Computers, Mechanical and Management, 4</i>(6), Artículo 25232. https://doi.org/10.57159/jcmm.4.6.25232</p>
+            <p>Kongthanasuwan, T., Sriwiboon, N., Horbanluekit, B., Laesanklang, W., y Krityakierne, T. (2023). Market analysis with business intelligence system for marketing planning. <i>Information, 14</i>(2), Artículo 116. https://doi.org/10.3390/info14020116</p>
+            <p>Laney, D. (2001, 6 de febrero). <i>3-D data management: Controlling data volume, velocity and variety</i> [Nota de investigación]. META Group.</p>
+            <p>Luhn, H. P. (1958). A business intelligence system. <i>IBM Journal of Research and Development, 2</i>(4), 314–319. https://doi.org/10.1147/rd.24.0314</p>
+            <p>National Institute of Standards and Technology. (2023). <i>Artificial intelligence risk management framework (AI RMF 1.0)</i> (NIST AI 100-1). https://doi.org/10.6028/NIST.AI.100-1</p>
+            <p>Oberdorf, F., Stein, N., y Flath, C. M. (2021). Analytics-enabled escalation management: System development and business value assessment. <i>Computers in Industry, 131</i>, Artículo 103481.</p>
+            <p>Orjatsalo, J., Hussinki, H., y Stoklasa, J. (2025). Business analytics in managerial decision-making: Top management perceptions. <i>Measuring Business Excellence, 29</i>(1), 1–17. https://doi.org/10.1108/MBE-09-2023-0130</p>
+            <p>Power, D. J. (2002). <i>Decision support systems: Concepts and resources for managers</i>. Quorum Books.</p>
+            <p>Simon, H. A. (1960). <i>The new science of management decision</i>. Harper &amp; Brothers.</p>
+            <p>Tufte, E. R. (2001). <i>The visual display of quantitative information</i> (2.ª ed.). Graphics Press.</p>
+            <p>Unión Europea. (2024). Reglamento (UE) 2024/1689 por el que se establecen normas armonizadas en materia de inteligencia artificial.</p>
+            <p>Yeruva, V. A. R. (2025). Evaluating explainable AI frameworks in enterprise decision-making systems.</p>
+            <p>Yu, J., Taskin, N., Nguyen, C. P., Li, J., y Pauleen, D. J. (2022). Investigating the determinants of big data analytics adoption in decision making: An empirical study in New Zealand, China, and Vietnam. <i>Pacific Asia Journal of the Association for Information Systems, 14</i>(4), 62–99. https://doi.org/10.17705/1pais.14403</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bottombar">
+    <button class="audio-btn" id="audioBtn">▶&nbsp; Audio de Insight</button>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <span class="counter" id="counter">1 / 33</span>
+    <button class="nav-btn" id="prevBtn" aria-label="Pantalla anterior">‹</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Pantalla siguiente">›</button>
+  </footer>
+
+  <!-- Panel de Insight -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="drawer" id="drawer" hidden aria-label="Insight">
+    <header>
+      <img src="assets/insight.png" alt="">
+      <h2>Insight te cuenta</h2>
+      <button class="icon-btn" id="drawerClose" aria-label="Cerrar">✕</button>
+    </header>
+    <div class="body">
+      <div class="controls">
+        <button class="btn teal" id="playBtn">▶ Escuchar</button>
+        <button class="btn ghost" id="stopBtn">■ Detener</button>
+      </div>
+      <div class="script" id="drawerScript"></div>
+    </div>
+  </aside>
+
+  <!-- Índice -->
+  <div class="drawer-backdrop" id="menuBackdrop" hidden></div>
+  <nav class="menu" id="menu" hidden aria-label="Índice">
+    <h2>Índice <button class="icon-btn" id="menuClose" aria-label="Cerrar">✕</button></h2>
+    <ol id="menuList"></ol>
+  </nav>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="js/scorm.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
