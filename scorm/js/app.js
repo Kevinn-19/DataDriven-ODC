@@ -154,12 +154,6 @@
     var DIM_ICONS = { exactitud: 'crosshair', completitud: 'list-checks', consistencia: 'equal', unicidad: 'fingerprint', validez: 'file-text', oportunidad: 'clock' };
     $$('.classify button').forEach(function (b) { b.insertAdjacentHTML('afterbegin', icon(DIM_ICONS[b.dataset.dim])); });
 
-    // Ficha de caso: ícono por campo
-    var FIELD_ICONS = ['target', 'database', 'chart-line', 'mouse-pointer-click', 'trending-up', 'shield'];
-    $$('.ficha .field label').forEach(function (l, i) {
-      l.insertAdjacentHTML('afterbegin', '<span class="field-ico">' + icon(FIELD_ICONS[i] || 'pen-line') + '</span>');
-    });
-
     // Proceso de decisión: cada descripción repite el ícono y el color de su fase
     var chevs = $$('.chev');
     $$('.steps-desc > div').forEach(function (d, i) {
@@ -190,7 +184,8 @@
   /* ------------------------------------------------------------------ */
   /* Estado persistente (cmi.suspend_data)                               */
   /* ------------------------------------------------------------------ */
-  var state = { v: '', s: {}, t: {}, f: ['', '', '', '', '', ''], p: '', q: [] };
+  // k: actividad 7 (c = caso elegido, r = resultado de cada campo, x = reflexión, d = terminada)
+  var state = { v: '', s: {}, t: {}, k: { c: -1, r: [], x: '', d: false }, p: '', q: [] };
 
   function loadState() {
     var raw = SCORM.get('cmi.suspend_data');
@@ -208,7 +203,7 @@
     var write = function () {
       var json = JSON.stringify(state);
       if (json.length > 4000) { // límite de SCORM 1.2: 4096 caracteres
-        state.f = state.f.map(function (t) { return t.slice(0, 250); });
+        state.k.x = state.k.x.slice(0, 120);
         json = JSON.stringify(state);
       }
       SCORM.set('cmi.suspend_data', json);
@@ -1136,33 +1131,330 @@
     });
   }
 
-  function initFicha() {
+  /* ------------------------------------------------------------------ */
+  /* Actividad 7: ficha de análisis de caso                               */
+  /* ------------------------------------------------------------------ */
+  // La ficha vale 80 puntos (6 campos calificados) y la reflexión sobre la propia organización, 20.
+  var FICHA_FIELDS = [
+    { label: 'Problema de negocio', icon: 'target', q: '¿Cuál era el problema de negocio?' },
+    { label: 'Datos usados', icon: 'database', q: '¿Qué datos usó la empresa? Marca todos los que correspondan.', multi: true },
+    { label: 'Tipo de analítica', icon: 'chart-line', q: '¿Qué tipo de analítica aplicó?' },
+    { label: 'Decisión tomada', icon: 'mouse-pointer-click', q: '¿Qué decisión tomó la empresa?' },
+    { label: 'Resultado y evidencia', icon: 'trending-up', q: '¿Qué resultado obtuvo y con qué evidencia?' },
+    { label: 'Riesgos y ética', icon: 'shield', q: '¿Qué riesgos debe vigilar? Marca todos los que correspondan.', multi: true }
+  ];
+  var FICHA_POINTS = 80, REFLECT_POINTS = 20, REFLECT_MIN = 80, REFLECT_MAX = 255;
+  // Respuestas tomadas de las pantallas de cada caso (Módulo 7); a = índices de las opciones correctas.
+  var CASES = [
+    { id: 'netflix', name: 'Netflix', sub: 'Personalización', icon: 'tv', color: 'red', screen: 'case-netflix', fields: [
+      { o: ['El catálogo tenía muy pocos títulos para elegir.',
+            'Con miles de títulos, el usuario abandona si no encuentra rápido qué ver, y eso termina en cancelaciones.',
+            'Los servidores no soportaban el volumen de reproducciones.'], a: [1],
+        e: 'El reto era retener: si no encuentras qué ver, abandonas y terminas cancelando la suscripción.' },
+      { o: ['Historial de reproducciones', 'Tráfico y mapas de la ciudad', 'Búsquedas dentro de la plataforma',
+            'Valoraciones de los títulos', 'Ventas de tiendas físicas', 'Comportamiento en pantalla (qué ves y cuándo abandonas)'], a: [0, 2, 3, 5],
+        e: 'Netflix analiza lo que ves, lo que buscas, cómo valoras y cuándo abandonas. Tráfico y ventas en tienda no tienen relación con el caso.' },
+      { o: ['Descriptiva: un reporte mensual con los títulos más vistos.',
+            'Prescriptiva: un modelo de optimización de rutas de entrega.',
+            'Predictiva: modelos de aprendizaje automático que estiman qué títulos te van a interesar.'], a: [2],
+        e: 'El sistema de recomendación aprende de tu historial para estimar qué te gustará ver: es analítica predictiva con aprendizaje automático.' },
+      { o: ['Personalizar la página de inicio de cada usuario.',
+            'Mostrar el mismo catálogo destacado a todos los usuarios.',
+            'Bajar el precio de la suscripción para todos.'], a: [0],
+        e: 'Netflix no muestra el mismo catálogo a todos: cada usuario ve una página de inicio armada para él.' },
+      { o: ['No hay evidencia: es una suposición de la empresa.',
+            'Netflix duplicó sus suscriptores en un mes.',
+            'Las recomendaciones influyen en cerca del 80 % de las horas reproducidas, y se estima que ahorran más de US$ 1.000 millones al año por menor cancelación.'], a: [2],
+        e: 'Gomez-Uribe y Hunt (2015) reportan que las recomendaciones influyen en cerca del 80 % de lo que se reproduce y estiman un ahorro de más de US$ 1.000 millones al año.' },
+      { o: ['La IA reemplaza a todos los empleados de Netflix.',
+            'Usar datos personales más allá de lo que el usuario espera (privacidad).',
+            'Recomendar sin que el usuario pueda saber por qué (falta de explicabilidad).',
+            'El sistema deja de funcionar con más de mil títulos.'], a: [1, 2],
+        e: 'Los riesgos están en el uso de los datos personales y en la transparencia: el usuario debería saber qué datos se usan y por qué ve cada recomendación.' }
+    ] },
+    { id: 'ups', name: 'UPS', sub: 'Optimización de rutas (ORION)', icon: 'truck', color: 'orange', screen: 'case-ups', fields: [
+      { o: ['UPS no sabía cuántos clientes tenía.',
+            'Los clientes se quejaban del precio de los envíos.',
+            'Cada conductor entrega a más de 160 clientes al día y el orden de las paradas cambia mucho las millas y el combustible.'], a: [2],
+        e: 'Con más de 160 paradas por conductor al día, el orden de la ruta define cuántas millas y cuánto combustible se gastan.' },
+      { o: ['Direcciones de entrega', 'Publicaciones de los conductores en redes sociales', 'Ventanas de entrega',
+            'Tráfico', 'Encuestas de clima laboral', 'Mapas'], a: [0, 2, 3, 5],
+        e: 'ORION combina direcciones, ventanas de entrega, tráfico y mapas. Las redes sociales y el clima laboral no intervienen en la ruta.' },
+      { o: ['Prescriptiva: optimización (ORION) que recomienda la mejor secuencia de paradas.',
+            'Descriptiva: un tablero con las entregas del mes anterior.',
+            'Predictiva: un modelo que solo pronostica cuántos paquetes habrá mañana.'], a: [0],
+        e: 'ORION no solo predice: recomienda el mejor orden de las paradas. Es analítica prescriptiva.' },
+      { o: ['Contratar más conductores para cubrir las rutas.',
+            'Cada mañana, el sistema entrega a cada conductor una secuencia optimizada de paradas.',
+            'Dejar que cada conductor improvise su ruta sin datos.'], a: [1],
+        e: 'La decisión se toma todos los días: cada conductor recibe en la mañana su secuencia optimizada.' },
+      { o: ['Ahorros de más de US$ 320 millones hasta 2015 y una estimación de 300 a 400 millones al año, con 100 millones de millas y 10 millones de galones de combustible menos.',
+            'Las entregas pasaron a hacerse con drones.',
+            'Los costos subieron, pero mejoró la imagen de la marca.'], a: [0],
+        e: 'UPS reportó más de US$ 320 millones ahorrados hasta 2015 y estimó 300 a 400 millones al año con el despliegue completo; ORION ganó el Premio Franz Edelman 2016.' },
+      { o: ['Que el sistema decida los salarios de los conductores.',
+            'Seguir la ruta del sistema aunque el conductor sepa algo que el modelo no sabe (una calle cerrada, un cliente ausente).',
+            'Datos de tráfico o direcciones desactualizados que llevan a malas rutas.',
+            'Que ORION viole derechos de autor de los mapas.'], a: [1, 2],
+        e: 'El modelo es tan bueno como sus datos, y el conductor conoce cosas que el sistema no ve: hace falta calidad de datos y criterio humano.' }
+    ] },
+    { id: 'walmart', name: 'Walmart', sub: 'Pronosticar con datos históricos', icon: 'store', color: 'blue', screen: 'case-walmart', fields: [
+      { o: ['Walmart quería abrir tiendas nuevas en Florida.',
+            'Antes de un huracán, las tiendas deben tener el inventario de lo que la gente realmente va a comprar.',
+            'Los clientes no encontraban las cajas de pago.'], a: [1],
+        e: 'El reto era abastecer bien las tiendas antes de la tormenta, con los productos que de verdad se iban a vender.' },
+      { o: ['Ventas históricas durante el huracán Charley', 'Encuestas sobre los sabores favoritos de los clientes',
+            'Ventas por producto en cada tienda', 'Historial de navegación en redes sociales', 'Trayectoria prevista del huracán Frances'], a: [0, 2, 4],
+        e: 'Walmart revisó qué se vendió, producto por producto, durante el huracán anterior y lo cruzó con la ruta de Frances para decidir a qué tiendas enviar.' },
+      { o: ['Descriptiva: un informe de ventas que no se usa para anticipar nada.',
+            'Predictiva: patrones de compra de un huracán anterior para anticipar la demanda del siguiente.',
+            'Prescriptiva: un optimizador de precios en tiempo real.'], a: [1],
+        e: 'Usó el pasado para pronosticar la demanda: es analítica predictiva basada en patrones históricos.' },
+      { o: ['Cerrar las tiendas hasta que pasara el huracán.',
+            'Subir los precios de los productos más buscados.',
+            'Enviar los productos con más demanda a las tiendas en la trayectoria de Frances.'], a: [2],
+        e: 'Con el pronóstico en la mano, abasteció las tiendas que estaban en la ruta de la tormenta.' },
+      { o: ['Las Pop-Tarts de fresa se vendían cerca de siete veces su ritmo normal antes de un huracán, y la mayoría de los productos enviados se vendió rápido.',
+            'Las ventas se mantuvieron iguales que cualquier otra semana.',
+            'Walmart redujo sus tiendas a la mitad.'], a: [0],
+        e: 'Según The New York Times (Hays, 2004), las Pop-Tarts de fresa se vendían unas siete veces más y la mayoría de lo enviado se vendió rápido.' },
+      { o: ['Suponer que el patrón del pasado se repetirá igual (otra ruta, otra temporada, otros clientes).',
+            'Que usar datos de ventas sea ilegal.',
+            'Confundir correlación con causalidad.',
+            'Creer que el pronóstico garantiza las ventas futuras.'], a: [0, 2, 3],
+        e: 'El pasado informa, pero no garantiza el futuro: un patrón puede cambiar y una coincidencia no siempre es una causa.' }
+    ] }
+  ];
+
+  function initCaseLab() {
     var root = $('[data-act="a7"]');
     if (!root) return;
-    var fields = $$('textarea', root);
-    var fb = $('[data-fb]', root);
-    fields.forEach(function (t, i) {
-      t.value = state.f[i] || '';
-      t.addEventListener('input', function () { state.f[i] = t.value; saveState(); });
-    });
-    $('[data-save]', root).addEventListener('click', function () {
-      saveState(true);
-      fb.textContent = 'Guardado';
-      toast('Ficha guardada');
-    });
-    $('[data-send]', root).addEventListener('click', function () {
-      var filled = fields.filter(function (t) { return t.value.trim().length >= 10; }).length;
-      var missing = [];
-      fields.forEach(function (t) { if (t.value.trim().length < 10) missing.push(t.labels[0].textContent); });
-      setScore('a7', filled / 6 * 100);
-      fields.forEach(function (t, i) { SCORM.interaction('a7_campo' + (i + 1), 'fill-in', t.value.trim(), 'neutral'); });
-      if (missing.length) {
-        fb.textContent = 'Completaste ' + filled + ' de 6 campos. Falta desarrollar: ' + missing.join(', ') + '.';
-      } else {
-        fb.textContent = 'Ficha enviada: los seis campos están completos. Tu docente podrá revisarla.';
+    var support = $('[data-support]');
+    var LETTERS = 'ABCDEF';
+    var lab = state.k;
+    var idx = 0, tries = 0, phase = 'ask', picked = [];
+
+    function attempts() { return state.t.a7 || 0; }
+    function sameSet(a, b) { return a.length === b.length && a.every(function (x) { return b.indexOf(x) !== -1; }); }
+    function firstPending() {
+      for (var i = 0; i < FICHA_FIELDS.length; i++) if (lab.r[i] == null) return i;
+      return -1;
+    }
+    function dots(cur) {
+      var html = '<div class="qdots">';
+      FICHA_FIELDS.forEach(function (f, i) {
+        var r = lab.r[i];
+        html += '<i class="' + (r == null ? (i === cur ? 'cur' : '') : (r ? 'r' : 'w')) + '"></i>';
+      });
+      return html + '<i class="' + (lab.d ? 'r' : (cur === FICHA_FIELDS.length ? 'cur' : '')) + '"></i></div>';
+    }
+    function side(spotIcon, title, sub) {
+      var c = CASES[lab.c];
+      return '<aside class="quiz-side">' + spot(spotIcon) + '<p class="quiz-count"><b>' + title + '</b>' + sub + '</p>' +
+        (lab.c >= 0 && phase !== 'pick' ? '<p class="lab-tag c-' + c.color + '">' + icon(c.icon) + 'Caso ' + c.name + '</p>' : '') +
+        (lab.c >= 0 ? dots(idx) : '') +
+        '<p class="quiz-note">' + icon('info') + 'La ficha vale ' + FICHA_POINTS + ' puntos y la reflexión, ' + REFLECT_POINTS + '. Tienes 2 intentos por campo.</p></aside>';
+    }
+    function score() {
+      var ok = lab.r.filter(function (r) { return r; }).length;
+      var refl = lab.x.trim().length >= REFLECT_MIN ? REFLECT_POINTS : 0;
+      return { ok: ok, total: Math.round(ok / FICHA_FIELDS.length * FICHA_POINTS + refl) };
+    }
+
+    function renderPick() {
+      phase = 'pick';
+      root.dataset.step = phase;
+      support.hidden = true;
+      var left = MAX_ATTEMPTS - attempts();
+      var html = side('clipboard-list', 'Elige un caso', attempts() ? 'Te quedan ' + left + ' de ' + MAX_ATTEMPTS + ' intentos' : MAX_ATTEMPTS + ' intentos') +
+        '<div class="quiz-main"><div class="qbox"><span class="qnum">' + icon('briefcase') + '</span><span>¿Qué caso vas a analizar como gerente?</span></div>' +
+        '<div class="grid g3 lab-cases">';
+      CASES.forEach(function (c, i) {
+        html += '<button class="card c-' + c.color + '" data-case="' + i + '"><span class="ico">' + icon(c.icon) + icon(c.icon, 'wm') + '</span>' +
+          '<div class="card-body"><h3>' + c.name + '</h3><p class="ex">' + c.sub + '</p></div></button>';
+      });
+      html += '</div>' + (state.s.a7 ? '<p class="small">Tu mejor puntaje hasta ahora: ' + state.s.a7 + ' / 100. Se guarda el mejor de tus intentos.</p>' : '') + '</div>';
+      root.innerHTML = html;
+      $$('[data-case]', root).forEach(function (b) {
+        b.addEventListener('click', function () {
+          lab.c = parseInt(b.dataset.case, 10);
+          lab.r = []; lab.x = ''; lab.d = false;
+          saveState(true);
+          renderField(0);
+        });
+      });
+    }
+
+    function renderField(i) {
+      idx = i; tries = 0; phase = 'ask'; picked = [];
+      root.dataset.step = phase;
+      support.hidden = true;
+      var f = FICHA_FIELDS[i], data = CASES[lab.c].fields[i];
+      var html = side(f.icon, 'Campo ' + (i + 1) + ' de ' + FICHA_FIELDS.length, f.label) +
+        '<div class="quiz-main"><div class="qbox"><span class="qnum">' + (i + 1) + '</span><span>' + escapeHTML(f.q) + '</span></div>' +
+        '<div class="options' + (f.multi ? ' multi' : '') + '">';
+      data.o.forEach(function (o, k) {
+        html += '<button class="opt" data-o="' + k + '" aria-pressed="false"><span class="opt-key">' + LETTERS[k] + '</span><span>' + escapeHTML(o) + '</span></button>';
+      });
+      html += '</div><div class="qfoot"><div class="feedback info" data-fb>' + (f.multi ? 'Puede haber varias respuestas correctas.' : 'Elige una opción y comprueba tu respuesta.') + '</div>' +
+        '<button class="btn" data-act-btn disabled>Comprobar' + icon('arrow-right') + '</button></div></div>';
+      root.innerHTML = html;
+      $$('.opt', root).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (phase !== 'ask') return;
+          var k = parseInt(b.dataset.o, 10);
+          if (!f.multi) {
+            $$('.opt', root).forEach(function (x) { x.classList.remove('chosen'); x.setAttribute('aria-pressed', 'false'); });
+            picked = [];
+          }
+          var at = picked.indexOf(k);
+          if (at === -1) picked.push(k); else picked.splice(at, 1);
+          b.classList.toggle('chosen', picked.indexOf(k) !== -1);
+          b.setAttribute('aria-pressed', String(picked.indexOf(k) !== -1));
+          $('[data-act-btn]', root).disabled = !picked.length;
+        });
+      });
+      $('[data-act-btn]', root).addEventListener('click', onCheck);
+    }
+
+    function onCheck() {
+      var btn = $('[data-act-btn]', root), fb = $('[data-fb]', root);
+      if (phase === 'next') {
+        var nxt = firstPending();
+        if (nxt === -1) renderReflect(); else renderField(nxt);
+        return;
       }
-      SCORM.commit();
-    });
+      if (!picked.length) return;
+      var f = FICHA_FIELDS[idx], data = CASES[lab.c].fields[idx];
+      var ok = sameSet(picked, data.a);
+      tries++;
+      if (!ok && tries < 2) {
+        if (f.multi) {
+          var hits = picked.filter(function (k) { return data.a.indexOf(k) !== -1; }).length;
+          fb.textContent = 'Aún no: marcaste ' + hits + ' de ' + data.a.length + ' correctas' +
+            (picked.length > hits ? ' y ' + (picked.length - hits) + ' que no corresponde(n)' : '') + '. Ajusta tu selección; te queda 1 intento.';
+        } else {
+          var wrong = $('.opt[data-o="' + picked[0] + '"]', root);
+          wrong.classList.remove('chosen');
+          wrong.classList.add('wrong');
+          wrong.disabled = true;
+          picked = [];
+          btn.disabled = true;
+          fb.textContent = 'Aún no. Vuelve a pensar en lo que viste en el caso; te queda 1 intento.';
+        }
+        fb.className = 'feedback bad';
+        return;
+      }
+      $$('.opt', root).forEach(function (b) {
+        var k = parseInt(b.dataset.o, 10);
+        b.classList.remove('chosen');
+        if (data.a.indexOf(k) !== -1) b.classList.add('right');
+        else if (picked.indexOf(k) !== -1) b.classList.add('wrong');
+        b.disabled = true;
+      });
+      lab.r[idx] = ok ? 1 : 0;
+      saveState(true);
+      SCORM.interaction('a7_' + CASES[lab.c].id + '_campo' + (idx + 1), 'choice',
+        picked.slice().sort().map(function (k) { return LETTERS[k]; }).join(','), ok ? 'correct' : 'wrong');
+      fb.className = 'feedback ' + (ok ? 'ok' : 'bad');
+      fb.textContent = (ok ? 'Correcto. ' : 'Aún no. ') + data.e;
+      phase = 'next';
+      btn.disabled = false;
+      btn.innerHTML = (firstPending() === -1 ? 'Último paso' : 'Siguiente campo') + icon('arrow-right');
+      var d = $('.qdots', root);
+      if (d) d.outerHTML = dots(idx);
+    }
+
+    function renderReflect() {
+      idx = FICHA_FIELDS.length; phase = 'reflect';
+      root.dataset.step = phase;
+      var c = CASES[lab.c];
+      var html = side('notebook-pen', 'Último paso', 'Llévalo a tu organización') +
+        '<div class="quiz-main"><div class="qbox"><span class="qnum">' + icon('building-2') + '</span><span>' +
+        '¿Qué problema de tu organización se parece al caso de ' + c.name + ' y qué datos usarías para resolverlo?</span></div>' +
+        '<div class="lab-reflect"><label for="labText" class="sr-only">Tu respuesta</label>' +
+        '<textarea id="labText" maxlength="' + REFLECT_MAX + '" placeholder="Ejemplo: en mi empresa los clientes cancelan el plan sin avisar; usaría el historial de uso y los reclamos para anticipar quién está por irse…"></textarea>' +
+        '<p class="lab-count" data-count></p>' +
+        '<div class="lab-rubric"><p><b>Antes de enviar, revisa que tu respuesta:</b></p>' +
+        ['nombre un problema concreto de tu organización', 'diga qué datos usarías', 'indique qué tipo de analítica aplicarías', 'mencione un riesgo o un cuidado ético']
+          .map(function (t) { return '<label><input type="checkbox"> ' + t + '</label>'; }).join('') +
+        '</div></div>' +
+        '<div class="qfoot"><div class="feedback info" data-fb>Tu respuesta queda registrada para que tu docente la lea.</div>' +
+        '<button class="btn teal" data-send>Enviar ficha' + icon('send') + '</button></div></div>';
+      root.innerHTML = html;
+      support.hidden = false;
+      var ta = $('#labText', root), count = $('[data-count]', root);
+      function updateCount() {
+        var n = ta.value.trim().length;
+        count.textContent = ta.value.length + ' / ' + REFLECT_MAX + ' caracteres' + (n < REFLECT_MIN ? ' · mínimo ' + REFLECT_MIN : '');
+        count.classList.toggle('ok', n >= REFLECT_MIN);
+      }
+      ta.value = lab.x;
+      updateCount();
+      ta.addEventListener('input', function () { lab.x = ta.value; updateCount(); saveState(); });
+      $('[data-send]', root).addEventListener('click', function () {
+        var n = ta.value.trim().length;
+        var fb = $('[data-fb]', root);
+        if (n < REFLECT_MIN) {
+          fb.className = 'feedback bad';
+          fb.textContent = 'Desarrolla un poco más tu idea: escribe al menos ' + REFLECT_MIN + ' caracteres (llevas ' + n + ').';
+          ta.focus();
+          return;
+        }
+        finish();
+      });
+    }
+
+    function finish() {
+      var sc = score();
+      lab.x = lab.x.trim();
+      lab.d = true;
+      state.t.a7 = attempts() + 1;
+      SCORM.interaction('a7_reflexion', 'fill-in', lab.x, 'neutral');
+      SCORM.interaction('a7_intento' + state.t.a7, 'performance', CASES[lab.c].id + ' ' + sc.ok + '/' + FICHA_FIELDS.length, sc.total >= 60 ? 'correct' : 'wrong');
+      setScore('a7', sc.total);
+      renderSummary();
+    }
+
+    function renderSummary() {
+      phase = 'done'; idx = -1;
+      root.dataset.step = phase;
+      support.hidden = true;
+      var c = CASES[lab.c], sc = score();
+      var left = MAX_ATTEMPTS - attempts();
+      var html = side('award', 'Resultado', sc.total + ' / 100') +
+        '<div class="quiz-main"><div class="qbox score-box">Ficha: ' + sc.ok + ' de ' + FICHA_FIELDS.length + ' campos · Puntos: ' + sc.total + ' / 100 ' + stars(sc.total) + '</div>' +
+        '<p class="label">Tu ficha frente a la ficha experta · Caso ' + c.name + '</p><div class="lab-summary">';
+      FICHA_FIELDS.forEach(function (f, i) {
+        var data = c.fields[i];
+        var ok = lab.r[i] === 1;
+        html += '<div class="lab-row"><span class="field-ico">' + icon(f.icon) + '</span><div><b>' + f.label + '</b><p>' +
+          escapeHTML(data.a.map(function (k) { return data.o[k]; }).join(' · ')) + '</p></div>' +
+          '<span class="lab-status ' + (ok ? 'ok' : 'no') + '">' + icon(ok ? 'check' : 'x') + (ok ? 'Acertaste' : 'Revisa') + '</span></div>';
+      });
+      html += '<div class="lab-row"><span class="field-ico">' + icon('building-2') + '</span><div><b>Tu organización</b><p>' + escapeHTML(lab.x) +
+        '</p></div><span class="lab-status ok">' + icon('send') + 'Enviada</span></div></div>' +
+        '<div class="row-end"><button class="btn ghost" data-goto="' + c.screen + '">' + icon('book-open') + 'Repasar el caso</button>' +
+        (left > 0 ? '<button class="btn ghost" data-another>' + icon('rotate-ccw') + 'Analizar otro caso (' + left + ')</button>' : '') +
+        '<button class="btn" data-next>Continuar' + icon('arrow-right') + '</button></div>' +
+        (state.s.a7 > sc.total ? '<p class="small">Se conserva tu mejor puntaje: ' + state.s.a7 + ' / 100.</p>' : '') + '</div>';
+      root.innerHTML = html;
+      var another = $('[data-another]', root);
+      if (another) another.addEventListener('click', function () {
+        lab.c = -1; lab.r = []; lab.x = ''; lab.d = false;
+        saveState(true);
+        renderPick();
+      });
+    }
+
+    // Retoma donde quedó: ficha terminada, campo pendiente, reflexión o elección del caso
+    if (lab.c >= 0 && CASES[lab.c]) {
+      if (lab.d) renderSummary();
+      else if (firstPending() !== -1) renderField(firstPending());
+      else renderReflect();
+    } else {
+      renderPick();
+    }
   }
 
   function initSim1() {
@@ -1486,7 +1778,7 @@
   initReveal();
   initChat();
   initDashboard();
-  initFicha();
+  initCaseLab();
   initSim1();
   initSim2();
   initPlan();

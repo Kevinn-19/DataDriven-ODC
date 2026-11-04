@@ -1742,6 +1742,82 @@ details.support summary .i { color: var(--icon-color); }
 details.support ul { margin: 10px 0 0; padding-left: 20px; }
 details.support li { margin-bottom: 6px; }
 
+/* ---------- Actividad 7: ficha de análisis de caso ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.case-lab .qnum .i { width: 22px; height: 22px; }
+.lab-cases { grid-template-columns: 1fr; }
+/* En el resumen la columna lateral queda arriba y fija mientras se recorre la ficha */
+@media (min-width: 900px) {
+  .case-lab[data-step="done"] .quiz-side { align-self: start; position: sticky; top: 0; }
+}
+/* En el celular la columna lateral es una cuadrícula y aquí tiene un elemento más que en los cuestionarios
+   (la etiqueta del caso): la nota ocupa todo el ancho para no ensanchar la columna del ícono */
+.case-lab .quiz-side > .quiz-note { grid-column: 1 / -1; }
+.case-lab .quiz-side > .lab-tag { justify-self: start; }
+.lab-cases .card { min-height: 0; }
+.lab-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-fg);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+.lab-reflect {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+}
+.lab-reflect textarea { min-height: 110px; }
+.lab-count { margin: 0; font-size: 13px; color: var(--text-muted); text-align: right; }
+.lab-count.ok { color: var(--ok-ink); }
+.lab-rubric p { margin: 4px 0 6px; font-size: 14px; color: var(--heading-color); }
+.lab-rubric label { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 14.5px; cursor: pointer; }
+.lab-rubric input { width: 17px; height: 17px; accent-color: var(--teal); }
+.lab-summary { display: grid; gap: 8px; }
+.lab-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+}
+.lab-row .field-ico { margin: 0; }
+.lab-row b { color: var(--heading-color); font-size: 14.5px; }
+.lab-row p { margin: 2px 0 0; font-size: 14px; color: var(--text-color); overflow-wrap: anywhere; }
+.lab-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.lab-status .i { width: 14px; height: 14px; }
+.lab-status.ok { color: var(--ok-ink); background: var(--ok-bg); }
+.lab-status.no { color: var(--bad-ink); background: var(--bad-bg); }
+@media (min-width: 640px) {
+  .lab-cases { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .lab-row { grid-template-columns: auto minmax(0, 1fr); }
+  .lab-row .lab-status { grid-column: 2; justify-self: start; }
+}
+
 /* ---------- Simuladores ---------- */
 .sim-pick { align-items: center; }
 .sim-pick > .insight-card { align-self: stretch; }
