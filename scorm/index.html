@@ -553,22 +553,23 @@
         <div>
           <p class="lead">La IA generativa permite consultar datos en lenguaje natural, generar consultas SQL o código en Python, y redactar resúmenes de resultados. Es la «analítica aumentada». Los modelos de lenguaje natural también interpretan datos no estructurados, como informes y documentos.</p>
           <div class="chat" data-chat>
-            <div>
-              <p class="label"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg>Asistente de analítica (simulación) · ejemplo de instrucción (prompt)</p>
-              <div class="bubble user" data-q>Con la tabla de ventas adjunta, resume las tres principales causas de la caída en el Norte y dime qué datos faltan</div>
-              <div class="bubble bot" data-a>1) Quiebre de inventario en el canal web.
+            <div class="chat-win">
+              <div class="chat-head"><p class="label chat-title"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg>Asistente de analítica (simulación) · ejemplo de instrucción (prompt)</p><span class="chat-status" aria-hidden="true"></span></div>
+              <div class="feedback warn">Regla de oro: verifica cifras y fuentes; no cargues datos sensibles en herramientas no autorizadas.</div>
+              <div class="chat-log" data-log aria-live="polite">
+                <div class="bubble user" data-q>Con la tabla de ventas adjunta, resume las tres principales causas de la caída en el Norte y dime qué datos faltan</div>
+                <div class="bubble bot" data-a>1) Quiebre de inventario en el canal web.
     2) Caída del tráfico por cambio de campaña.
     3) Pedidos duplicados que inflan la base.
     Faltan: datos de inventario por día y gasto en campaña.</div>
-              <div class="feedback warn">Regla de oro: verifica cifras y fuentes; no cargues datos sensibles en herramientas no autorizadas.</div>
-            </div>
-            <div>
-              <p class="label">Prueba con otra pregunta</p>
-              <div class="prompts">
-                <button data-prompt="0">Resume esta tabla en 3 frases</button>
-                <button data-prompt="1">Escribe una consulta SQL de ventas por región</button>
-                <button data-prompt="2">Explica qué significa MAPE</button>
-                <button class="btn" data-checklist><svg class="i" aria-hidden="true"><use href="#i-list-checks"/></svg>Lista de verificación</button>
+              </div>
+              <div class="chat-compose">
+                <p class="label">Prueba con otra pregunta</p>
+                <div class="prompts">
+                  <button data-prompt="0">Resume esta tabla en 3 frases</button>
+                  <button data-prompt="1">Escribe una consulta SQL de ventas por región</button>
+                  <button data-prompt="2">Explica qué significa MAPE</button>
+                </div>
               </div>
               <ul class="checklist" data-checklist-box hidden>
                 <li>¿Las cifras coinciden con los datos originales?</li>
@@ -577,8 +578,25 @@
                 <li>¿La herramienta está autorizada por tu organización?</li>
                 <li>¿Una persona revisó la conclusión antes de decidir?</li>
               </ul>
-              <p class="small-text"><b>Ventajas:</b> rapidez, acceso para no programadores, borradores de análisis. En un estudio, los modelos de IA procesaron un documento en 1,9 a 3,2 segundos frente a cerca de 6,2 del sistema tradicional (Bandla, 2024).</p>
-              <p class="small-text"><b>Riesgos:</b> errores plausibles («alucinaciones»), fugas de datos confidenciales y falta de trazabilidad. Los modelos más complejos también son costosos y difíciles de interpretar.</p>
+            </div>
+            <div class="chat-side">
+              <div class="chat-card pros">
+                <p><b>Ventajas:</b> rapidez, acceso para no programadores, borradores de análisis. En un estudio, los modelos de IA procesaron un documento en 1,9 a 3,2 segundos frente a cerca de 6,2 del sistema tradicional (Bandla, 2024).</p>
+                <svg class="speed" viewBox="0 0 300 74" role="img" aria-label="Tiempo para procesar un documento: modelos de IA de 1,9 a 3,2 segundos; sistema tradicional, cerca de 6,2 segundos">
+                  <text x="0" y="14">IA</text>
+                  <rect class="track" x="86" y="4" width="200" height="14" rx="7"/>
+                  <rect class="ai" x="86" y="4" width="103" height="14" rx="7"/>
+                  <rect class="ai-min" x="86" y="4" width="61" height="14" rx="7"/>
+                  <text class="val" x="196" y="15">1,9–3,2 s</text>
+                  <text x="0" y="52">Tradicional</text>
+                  <rect class="track" x="86" y="42" width="200" height="14" rx="7"/>
+                  <rect class="trad" x="86" y="42" width="200" height="14" rx="7"/>
+                  <text class="val in" x="280" y="53" text-anchor="end">≈ 6,2 s</text>
+                </svg>
+              </div>
+              <div class="chat-card cons">
+                <p><b>Riesgos:</b> errores plausibles («alucinaciones»), fugas de datos confidenciales y falta de trazabilidad. Los modelos más complejos también son costosos y difíciles de interpretar.</p>
+              </div>
             </div>
           </div>
         </div>
