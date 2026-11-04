@@ -703,6 +703,38 @@ button.insight-media:hover { transform: translateY(-2px); box-shadow: 0 0 0 9px 
 }
 .insight-card > small .i { width: 15px; height: 15px; }
 
+/* Insight compacto en el encabezado (pantallas de tablero, casos y simulador de precio) */
+.screen-head .insight-inline {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-items: start;
+  column-gap: 12px;
+  row-gap: 4px;
+  flex: none;
+  height: auto;
+  margin-left: auto;
+  padding: 8px 18px 8px 8px;
+  text-align: left;
+}
+.screen-head .insight-inline .insight-media {
+  grid-row: 1 / span 2;
+  width: 68px;
+  margin: 0;
+  border-radius: 18px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent), var(--shadow);
+}
+.screen-head .insight-inline button.insight-media::before,
+.screen-head .insight-inline button.insight-media::after { right: 3px; bottom: 3px; width: 24px; height: 24px; }
+.screen-head .insight-inline button.insight-media::after { -webkit-mask-size: 13px; mask-size: 13px; }
+.screen-head .insight-inline > span { align-self: end; font-size: 16px; }
+.screen-head .insight-inline > small { align-self: start; padding: 3px 10px; font-size: 12px; }
+@media (max-width: 639px) {
+  .screen-head .insight-inline { padding: 4px; column-gap: 0; }
+  .screen-head .insight-inline > :is(span, small) { display: none; }
+  .screen-head .insight-inline .insight-media { width: 56px; }
+}
+
 /* ---------- Retículas ---------- */
 .grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
 
@@ -1541,6 +1573,11 @@ button.card:active { transform: translateY(-1px); }
 .vizcard svg { width: 100%; max-width: 220px; height: 120px; padding: 12px; border-radius: 14px; background: var(--card-bg-2); }
 .vizcard b { font-size: 15px; }
 .dash { display: grid; gap: 14px; }
+/* Si la columna del tablero es angosta, los cuatro indicadores pasan a 2 × 2 para no montarse sobre «Pregúntate» */
+.dash > div:first-child { container-type: inline-size; }
+@container (max-width: 640px) {
+  .dash .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
 .kpi {
   position: relative;
@@ -2166,7 +2203,7 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
   .screen.active { display: flex; flex-direction: column; min-height: 100%; }
   .screen.active > :is(.cover, .grid, .with-avatar, .dnd, .detective, .chat, .dash, .case, .sim1, .sim2, .quiz, .ficha, .charts, .steps-desc) { flex: 1 0 auto; }
   .with-avatar > div:first-child:not(.grid) { display: flex; flex-direction: column; }
-  .with-avatar > div:first-child > :is(.grid, .vmap, .pyr, .levels, .sad) { flex: 1 0 auto; }
+  .with-avatar > div:first-child > :is(.grid, .vmap, .pyr, .levels, .sad, .chat) { flex: 1 0 auto; }
   .with-avatar > div:first-child > .sad-flow { flex: 1 0 auto; align-content: center; }
   .grid:not(.sim-pick):not(.close-grid):not(.credits-grid), .vmap, .pyr { grid-auto-rows: 1fr; }
   .sim-pick { grid-auto-rows: minmax(320px, auto); }
