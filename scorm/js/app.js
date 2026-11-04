@@ -68,6 +68,9 @@
     head.style.setProperty('--sh-fg', 'var(--' + c + '-fg)');
     head.innerHTML = '<span class="sh-icon">' + icon(screenIcon(s)) + '</span><div><p class="sh-eyebrow">' +
       escapeHTML(s.dataset.pill || '') + '</p><h2 class="sh-title">' + escapeHTML(s.dataset.title) + '</h2></div>';
+    // En pantallas con mucho contenido Insight va compacto junto al título, sin quitarle ancho al contenido
+    var inline = $('.avatar.insight-inline', s);
+    if (inline) head.appendChild(inline);
     s.insertBefore(head, s.firstChild);
   });
 
