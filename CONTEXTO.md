@@ -101,5 +101,5 @@ Ya no hay hojas rosadas. Las 32 diapositivas de pantalla tienen bloque de audio 
 1. **Hoja 2:** ¿se ajusta la metodología a lo que el curso hace realmente, o se construyen en el SCORM las insignias y el certificado?
 2. **CADI:** nombre exacto, que debe confirmar la docente.
 3. **Voz de Insight:** ¿se queda la voz del navegador (Web Speech API) o se graban locuciones (`scorm/audio/pantalla-NN.mp3`)? Esto define el campo «Sonidos y voces».
-4. **Imágenes:** con qué herramienta se generó el avatar de Insight y bajo qué licencia.
+4. **Imágenes:** ~~con qué herramienta se generó el avatar~~ Resuelto: Pippit, de CapCut (https://www.pippit.ai/avatar-and-voice), ya en los créditos y en las referencias. Falta confirmar con la docente si se acepta, porque la plantilla pide material Creative Commons o Copyleft y Pippit tiene sus propios términos de uso.
 5. **Interfaz (numeral ①):** ¿se mantienen las maquetas dibujadas o se reemplazan por capturas reales del curso?

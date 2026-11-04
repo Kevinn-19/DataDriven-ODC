@@ -102,3 +102,4 @@ Por defecto, Insight lee el guion de cada pantalla con la voz del navegador. Par
 
 - Fuente **Plus Jakarta Sans**: SIL Open Font License 1.1 ([`scorm/fonts/OFL.txt`](scorm/fonts/OFL.txt)).
 - Íconos **Lucide**: licencia ISC ([`scorm/assets/LICENSE-lucide.txt`](scorm/assets/LICENSE-lucide.txt)).
+- Avatar de **Insight** (`scorm/assets/insight.webp`): generado con IA en [Pippit](https://www.pippit.ai/avatar-and-voice), de CapCut. Su uso se rige por los términos de servicio de Pippit, no por una licencia abierta.
