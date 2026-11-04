@@ -1091,16 +1091,93 @@
       "SELECT region, SUM(valor) AS ventas\nFROM ventas\nWHERE fecha >= '2026-09-01'\nGROUP BY region\nORDER BY ventas DESC;",
       'El MAPE (error porcentual absoluto medio) indica cuánto se equivoca, en promedio, un pronóstico en términos porcentuales.\nUn MAPE de 8 % significa que el pronóstico se desvía, en promedio, un 8 % del valor real.'
     ];
-    $$('[data-prompt]', root).forEach(function (b) {
+    var CODE = [false, true, false]; // la respuesta 2 es una consulta SQL: se muestra como código
+    var log = $('[data-log]', root);
+    var checks = $$('[data-checklist-box] li', root).map(function (li) { return li.textContent; });
+    var prompts = $$('[data-prompt]', root);
+    var busy = false;
+
+    function still() { return document.documentElement.classList.contains('no-motion'); }
+    function scrollDown() { log.scrollTop = log.scrollHeight; }
+
+    // Debajo de cada respuesta: lista de verificación para marcar antes de confiar en ella
+    function addVerify(bubble) {
+      var box = document.createElement('div');
+      box.className = 'verify';
+      box.innerHTML = '<button class="verify-btn" aria-expanded="false">' + icon('list-checks') + '<span>Verificar esta respuesta</span></button>' +
+        '<div class="verify-list" hidden><p>Lista de verificación</p>' +
+        checks.map(function (c) { return '<label><input type="checkbox"> ' + escapeHTML(c) + '</label>'; }).join('') + '</div>';
+      bubble.insertAdjacentElement('afterend', box);
+      var btn = $('.verify-btn', box), list = $('.verify-list', box), boxes = $$('input', box);
+      btn.addEventListener('click', function () {
+        list.hidden = !list.hidden;
+        btn.setAttribute('aria-expanded', String(!list.hidden));
+        if (!list.hidden) scrollDown();
+      });
+      boxes.forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var done = boxes.every(function (x) { return x.checked; });
+          bubble.classList.toggle('verified', done);
+          box.classList.toggle('done', done);
+          $('span', btn).textContent = done ? 'Verificada' : 'Verificar esta respuesta';
+          if (done) { list.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+        });
+      });
+    }
+
+    // Respuesta que se escribe palabra por palabra (de una vez si las animaciones están en pausa)
+    function typeAnswer(i, done) {
+      var bubble = document.createElement('div');
+      bubble.className = 'bubble bot';
+      var target = bubble;
+      if (CODE[i]) { bubble.classList.add('code'); target = document.createElement('code'); bubble.appendChild(target); }
+      var words = ANSWERS[i].split(/(\s+)/), k = 0;
+      if (still()) {
+        target.textContent = ANSWERS[i];
+        log.appendChild(bubble);
+        return done(bubble);
+      }
+      log.appendChild(bubble);
+      (function next() {
+        target.textContent += words.slice(k, k + 2).join('');
+        k += 2;
+        scrollDown();
+        if (k < words.length) setTimeout(next, 45); else done(bubble);
+      })();
+    }
+
+    prompts.forEach(function (b) {
       b.addEventListener('click', function () {
-        $('[data-q]', root).textContent = b.textContent;
-        $('[data-a]', root).textContent = ANSWERS[parseInt(b.dataset.prompt, 10)];
+        if (busy) return;
+        busy = true;
+        log.setAttribute('aria-busy', 'true');
+        prompts.forEach(function (p) { p.disabled = true; });
+        var i = parseInt(b.dataset.prompt, 10);
+        var q = document.createElement('div');
+        q.className = 'bubble user';
+        q.textContent = b.textContent;
+        log.appendChild(q);
+        var dots = document.createElement('div');
+        dots.className = 'bubble bot typing';
+        dots.setAttribute('aria-label', 'El asistente está escribiendo');
+        dots.innerHTML = '<i></i><i></i><i></i>';
+        log.appendChild(dots);
+        scrollDown();
+        setTimeout(function () {
+          dots.remove();
+          typeAnswer(i, function (bubble) {
+            addVerify(bubble);
+            b.classList.add('used');
+            if (!$('.used-ico', b)) b.insertAdjacentHTML('beforeend', '<span class="used-ico">' + icon('check') + '</span>');
+            prompts.forEach(function (p) { p.disabled = false; });
+            log.setAttribute('aria-busy', 'false');
+            busy = false;
+            scrollDown();
+          });
+        }, still() ? 0 : 900);
       });
     });
-    $('[data-checklist]', root).addEventListener('click', function () {
-      var box = $('[data-checklist-box]', root);
-      box.hidden = !box.hidden;
-    });
+    addVerify($('[data-a]', root));
   }
 
   function initDashboard() {
