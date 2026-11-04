@@ -451,7 +451,7 @@
 
   function showAvatarImage() {
     videoEl = null;
-    $('#insightMedia').innerHTML = '<img src="assets/insight.png" alt="Insight, guía virtual">';
+    $('#insightMedia').innerHTML = '<img src="assets/insight.webp" alt="Insight, guía virtual">';
   }
   // Si el video no existe o no se puede reproducir: imagen + voz del navegador (una sola vez)
   function videoFallback() {
@@ -473,7 +473,7 @@
     $('#drawerSub').textContent = s.dataset.title;
     $('#drawerScript').innerHTML = audio ? audio.innerHTML : '<p>Esta pantalla no tiene audio.</p>';
     if (USE_AVATAR_VIDEO && !voiceOnly) {
-      $('#insightMedia').innerHTML = '<video src="' + screenFile('mp4', 'video') + '" poster="assets/insight.png" playsinline preload="metadata"></video>';
+      $('#insightMedia').innerHTML = '<video src="' + screenFile('mp4', 'video') + '" poster="assets/insight.webp" playsinline preload="metadata"></video>';
       videoEl = $('#insightMedia video');
       videoEl.addEventListener('error', videoFallback);
       // Solo cuenta el video que sigue en pantalla (uno descartado puede emitir eventos tarde)

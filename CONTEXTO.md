@@ -25,7 +25,7 @@
 | `scorm/js/app.js` | Navegación, voz de Insight, actividades, bancos de preguntas y calificación (`WEIGHTS`, `PASS_SCORE = 70`, `MAX_ATTEMPTS = 3`, `USE_AUDIO_FILES = false`) |
 | `scorm/js/scorm.js` | Conexión con el LMS (API SCORM 1.2) |
 | `scorm/css/styles.css` | Estilos, tema claro/oscuro y fondo animado |
-| `scorm/assets/insight.png` | Avatar de Insight |
+| `scorm/assets/insight.webp` | Avatar de Insight |
 | `scorm/audio/` | **Vacía**: Insight habla con la voz sintética del navegador |
 | `scorm/imsmanifest.xml` | Manifiesto SCORM 1.2 |
 | `probar-lms.html` | LMS de prueba para revisar el curso sin Moodle (`python -m http.server 8765`) |

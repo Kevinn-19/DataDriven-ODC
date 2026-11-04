@@ -29,7 +29,7 @@ scorm/                 Paquete SCORM (todo lo que va dentro del ZIP)
   css/styles.css       Sistema visual: variables de tema, componentes y puntos de quiebre
   js/scorm.js          Conexión con el LMS (API SCORM 1.2)
   js/app.js            Navegación, índice lateral, audio de Insight, actividades y calificación
-  assets/insight.png   Avatar de Insight
+  assets/insight.webp   Avatar de Insight
   assets/LICENSE-lucide.txt  Licencia de los íconos (ISC)
   fonts/               Fuente Plus Jakarta Sans (licencia SIL OFL)
   audio/               (vacía) locuciones opcionales de Insight
