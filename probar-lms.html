@@ -23,7 +23,8 @@
   var cmi;
   try { cmi = JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { cmi = null; }
   if (!cmi) cmi = { 'cmi.core.lesson_status': 'not attempted', 'cmi.interactions._count': '0' };
-  function persist() { try { localStorage.setItem(KEY, JSON.stringify(cmi)); } catch (e) {} refreshBar(); }
+  var resetting = false; // al reiniciar, el curso no debe volver a guardar sus datos al cerrarse
+  function persist() { if (resetting) return; try { localStorage.setItem(KEY, JSON.stringify(cmi)); } catch (e) {} refreshBar(); }
 
   window.API = {
     LMSInitialize: function () { return 'true'; },
@@ -53,6 +54,7 @@
     set('sd', (cmi['cmi.suspend_data'] || '').length + ' / 4096');
   }
   function resetAttempt() {
+    resetting = true;
     try { localStorage.removeItem(KEY); } catch (e) {}
     location.reload();
   }

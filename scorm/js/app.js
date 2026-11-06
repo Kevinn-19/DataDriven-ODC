@@ -819,6 +819,10 @@
       scoreBox.innerHTML = '<span>Puntos: ' + sc + ' / 100</span>' + stars(sc);
     }
     showScore();
+    if ((state.t[key] || 0) >= MAX_ATTEMPTS) { // al volver al curso: avisar desde el inicio
+      fb.className = 'feedback info';
+      fb.textContent = 'Ya usaste tus ' + MAX_ATTEMPTS + ' intentos. Tu mejor puntaje quedó registrado.';
+    }
 
     function clearMarks() { chips.forEach(function (c) { c.classList.remove('right', 'wrong'); }); }
     function select(chip) {
@@ -923,6 +927,10 @@
       status.textContent = 'Errores encontrados: ' + n + ' de 5 · Puntos: ' + (lastScore == null ? (state.s.a2 || 0) : lastScore);
     }
     refresh();
+    if ((state.t.a2 || 0) >= MAX_ATTEMPTS) { // al volver al curso: avisar desde el inicio
+      fb.className = 'feedback info';
+      fb.textContent = 'Ya usaste tus ' + MAX_ATTEMPTS + ' intentos. Tu mejor puntaje quedó registrado.';
+    }
 
     $$('td', root).forEach(function (td) {
       $('button', td).addEventListener('click', function () {
@@ -1202,7 +1210,17 @@
       });
     }
 
+    // Cuestionario sin intentos (al volver al curso): se muestra el mejor puntaje en lugar de otra ronda
+    function locked() {
+      var sc = state.s.a4 || 0;
+      root.innerHTML = '<aside class="quiz-side">' + spot('award') + '<p class="quiz-count"><b>Resultado</b></p></aside>' +
+        '<div class="quiz-main"><p class="label">Resultado del cuestionario</p><div class="qbox score-box">Puntos: ' + sc + ' / 100 ' + stars(sc) + '</div>' +
+        '<div class="feedback info">Ya usaste tus ' + MAX_ATTEMPTS + ' intentos. Tu mejor puntaje quedó registrado.</div>' +
+        '<div class="row-end"><button class="btn" data-next>Continuar' + icon('arrow-right') + '</button></div></div>';
+    }
+
     function restart() {
+      if (!isFinal && (state.t.a4 || 0) >= MAX_ATTEMPTS) return locked();
       var p = firstPending();
       if (p === -1) summary(); else { idx = p; render(); }
     }
@@ -1855,6 +1873,12 @@
         }
       });
     });
+    // Al volver al curso sin intentos: las rutas quedan bloqueadas y se muestra el mejor puntaje
+    if ((state.t.sim2 || 0) >= MAX_ATTEMPTS) {
+      $$('[data-route]', root).forEach(function (b) { b.disabled = true; });
+      fb.className = 'feedback info';
+      fb.textContent = 'Ya usaste tus ' + MAX_ATTEMPTS + ' intentos. Tu mejor puntaje quedó registrado: ' + (state.s.sim2 || 0) + ' / 100.';
+    }
     retry.addEventListener('click', function () {
       $$('.route-row', root).forEach(function (row) {
         $$('.conseq, .pts', row).forEach(function (m) { m.classList.add('masked'); });
