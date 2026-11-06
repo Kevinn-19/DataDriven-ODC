@@ -1815,19 +1815,33 @@
     }
     range.addEventListener('input', update);
     update();
-    $('[data-confirm]', root).addEventListener('click', function () {
+    var confirmBtn = $('[data-confirm]', root);
+    function attempts() { return state.t.sim1 || 0; }
+    function lock() { // sin intentos: el control sigue sirviendo para explorar, pero ya no se confirma
+      confirmBtn.disabled = true;
+      fb.className = 'feedback info';
+      fb.textContent = 'Ya usaste tus ' + MAX_ATTEMPTS + ' intentos. Tu mejor puntaje quedó registrado: ' + (state.s.sim1 || 0) + ' / 100.';
+    }
+    if (attempts() >= MAX_ATTEMPTS) lock();
+    confirmBtn.addEventListener('click', function () {
+      if (attempts() >= MAX_ATTEMPTS) return lock();
       var p = parseInt(range.value, 10);
       var u = profit(p);
       var score = Math.max(0, u) / 16000 * 100;
+      state.t.sim1 = attempts() + 1;
       setScore('sim1', score);
-      SCORM.interaction('sim1_precio', 'numeric', p, p === 60 ? 'correct' : 'wrong');
+      SCORM.interaction('sim1_intento' + state.t.sim1, 'numeric', p, p === 60 ? 'correct' : 'wrong');
       var supuestos = ' Supuestos del modelo: la demanda es lineal, el costo unitario es constante y la competencia no reacciona.';
+      var left = MAX_ATTEMPTS - state.t.sim1;
       if (p === 60) {
         fb.className = 'feedback ok';
         fb.textContent = '¡Precio óptimo! Con 60 usd la demanda es 400 y la utilidad máxima, 16.000.' + supuestos;
+        confirmBtn.disabled = true;
       } else {
         fb.className = 'feedback bad';
-        fb.textContent = 'Tu utilidad: ' + fmt(u) + ' (' + Math.round(score) + ' % del máximo). El óptimo es P* = (100 + 20) / 2 = 60 usd, con utilidad de 16.000.' + supuestos;
+        fb.textContent = 'Tu utilidad: ' + fmt(u) + ' (' + Math.round(score) + ' % del máximo). El óptimo es P* = (100 + 20) / 2 = 60 usd, con utilidad de 16.000.' + supuestos +
+          (left > 0 ? ' Te quedan ' + left + ' intento(s); se guarda tu mejor puntaje.' : ' Ya usaste tus ' + MAX_ATTEMPTS + ' intentos; se guarda tu mejor puntaje: ' + (state.s.sim1 || 0) + ' / 100.');
+        if (left <= 0) confirmBtn.disabled = true;
       }
     });
   }
