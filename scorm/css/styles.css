@@ -1765,6 +1765,44 @@ details.support summary .i { color: var(--icon-color); }
 details.support ul { margin: 10px 0 0; padding-left: 20px; }
 details.support li { margin-bottom: 6px; }
 
+/* Actividad 7: los 4 pasos de la instrucción, en una franja (2 × 2 o 4 en fila según el ancho) */
+.lab-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.lab-steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-color);
+}
+.lab-steps .num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--red);
+}
+.lab-steps b { color: var(--heading-color); }
+@container area (min-width: 640px) { .lab-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container area (min-width: 1180px) { .lab-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
 /* ---------- Actividad 7: ficha de análisis de caso ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .case-lab .qnum .i { width: 22px; height: 22px; }
