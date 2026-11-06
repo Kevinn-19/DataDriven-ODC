@@ -14,7 +14,7 @@
    * (agrégalos también a imsmanifest.xml) y cambia esto a true. La ventana de Insight mostrará el video
    * de la pantalla actual; si un video no existe, vuelve a la imagen y a la voz del navegador.
    */
-  var USE_AVATAR_VIDEO = false;
+  var USE_AVATAR_VIDEO = true;
 
   // Ponderación de la nota (storyboard): actividades 40 %, simuladores 35 %, evaluación final 25 %.
   var WEIGHTS = { act: 0.40, sim: 0.35, fin: 0.25 };
@@ -120,6 +120,65 @@
       }
     });
 
+    // Casos (módulo 7): cada paso de la ruta toma el color de su título para la línea de tiempo
+    $$('.case .flow > div').forEach(function (step) {
+      var h = $('h4', step);
+      if (h && h.style.background) step.style.setProperty('--c', h.style.background);
+    });
+
+    // Casos: cada uno lleva una gráfica pequeña que dibuja su propia cifra (decorativa, sin texto nuevo)
+    var CASE_CHARTS = {
+      // Netflix: ≈ 80 % de las horas reproducidas → anillo al 80 %
+      'case-netflix': '<svg class="stat-chart" viewBox="0 0 42 42" aria-hidden="true">' +
+        '<circle cx="21" cy="21" r="15.9" fill="none" stroke="currentColor" stroke-opacity=".18" stroke-width="5"/>' +
+        '<circle cx="21" cy="21" r="15.9" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" ' +
+        'stroke-dasharray="80 20" stroke-dashoffset="25" pathLength="100"/></svg>',
+      // UPS: ruta original (zigzag) frente a la ruta optimizada (suave)
+      'case-ups': '<svg class="stat-chart route" viewBox="0 0 64 40" aria-hidden="true">' +
+        '<path d="M4 34 L18 8 L30 30 L44 6 L60 30" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-width="2" stroke-dasharray="3 3"/>' +
+        '<path d="M4 34 C20 30 40 14 60 30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>' +
+        '<circle cx="4" cy="34" r="3.5" fill="currentColor"/><circle cx="60" cy="30" r="3.5" fill="currentColor"/></svg>',
+      // Walmart: ritmo normal frente a ≈ 7 veces antes del huracán
+      'case-walmart': '<svg class="stat-chart" viewBox="0 0 56 42" aria-hidden="true">' +
+        '<rect x="8" y="35" width="15" height="5" rx="2" fill="currentColor" fill-opacity=".3"/>' +
+        '<rect x="33" y="5" width="15" height="35" rx="2" fill="currentColor"/></svg>'
+    };
+    Object.keys(CASE_CHARTS).forEach(function (id) {
+      var s = document.getElementById(id);
+      var stat = s && $$('.case .stat', s)[id === 'case-ups' ? 1 : 0];
+      if (stat) stat.insertAdjacentHTML('afterbegin', CASE_CHARTS[id]);
+    });
+
+    // Portada: íconos junto a la institución y los autores, y un collage
+    // decorativo de tablero (gráficas y módulos) en lugar de los puntos
+    var cover = $('.cover');
+    if (cover) {
+      var cps = $$(':scope > div:first-child > p', cover);
+      if (cps[0]) cps[0].insertAdjacentHTML('afterbegin', icon('graduation-cap'));
+      if (cps[1]) cps[1].classList.add('cover-sub');
+      if (cps[2]) { cps[2].classList.add('cover-authors'); cps[2].insertAdjacentHTML('afterbegin', icon('users')); }
+      var art = $('.dots', cover);
+      if (art) {
+        art.className = 'cover-art';
+        var orbit = ['database', 'shield-check', 'chart-pie', 'workflow', 'brain-circuit', 'chart-line', 'briefcase', 'sliders-horizontal'];
+        art.innerHTML =
+          '<div class="ca-card ca-bars"><span class="ca-dots"><i></i><i></i><i></i></span>' +
+            '<svg viewBox="0 0 220 120" preserveAspectRatio="none">' +
+              '<g class="ca-grid"><line x1="0" y1="30" x2="220" y2="30"/><line x1="0" y1="60" x2="220" y2="60"/><line x1="0" y1="90" x2="220" y2="90"/></g>' +
+              '<g class="ca-bar"><rect x="12" y="70" width="22" height="50" rx="4"/><rect x="46" y="54" width="22" height="66" rx="4"/><rect x="80" y="62" width="22" height="58" rx="4"/>' +
+              '<rect x="114" y="38" width="22" height="82" rx="4"/><rect x="148" y="28" width="22" height="92" rx="4"/><rect x="182" y="12" width="22" height="108" rx="4"/></g>' +
+              '<polyline class="ca-line" points="23,60 57,44 91,52 125,28 159,20 193,6" pathLength="100"/>' +
+            '</svg></div>' +
+          '<div class="ca-card ca-donut"><svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.9" class="ca-ring"/>' +
+            '<circle cx="21" cy="21" r="15.9" class="ca-seg s1" pathLength="100" stroke-dasharray="45 55" stroke-dashoffset="25"/>' +
+            '<circle cx="21" cy="21" r="15.9" class="ca-seg s2" pathLength="100" stroke-dasharray="30 70" stroke-dashoffset="-20"/>' +
+            '<circle cx="21" cy="21" r="15.9" class="ca-seg s3" pathLength="100" stroke-dasharray="25 75" stroke-dashoffset="-50"/></svg></div>' +
+          '<div class="ca-card ca-kpi"><span class="ca-kpi-ico">' + icon('trending-up') + '</span>' +
+            '<svg viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="0,26 14,22 28,24 42,15 56,17 70,9 84,11 100,3"/></svg></div>' +
+          '<div class="ca-orbit">' + orbit.map(function (n, k) { return '<span style="--k:' + k + '">' + icon(n) + '</span>'; }).join('') + '</div>';
+      }
+    }
+
     // Big Data: el centro del mapa de las 5 V lleva su ícono
     $$('.vmap .core').forEach(function (c) { c.insertAdjacentHTML('afterbegin', '<span class="core-ico">' + icon('database') + '</span>'); });
 
@@ -175,7 +234,104 @@
       var sm = $('small', a);
       if (sm) sm.insertAdjacentHTML('afterbegin', icon('headphones'));
     });
+
+    // Insight con video: la tarjeta trae el video listo para reproducir y «Ver más» abre la ventana
+    // con la transcripción y el mismo video. (En actividades no hay tarjeta: solo voz.)
+    $$('.screen[data-video]').forEach(function (s) {
+      var old = $('.insight-card .insight-media', s);
+      if (!old || !USE_AVATAR_VIDEO || isActivity(s)) return;
+      // El marco pasa a ser un contenedor (no un botón) para poder llevar dentro la barra de avance
+      var media = document.createElement('div');
+      media.className = 'insight-media is-video';
+      media.innerHTML = '<video playsinline preload="none" data-src="video/' + s.dataset.video + '.mp4"></video>' +
+        '<button class="iv-btn" aria-label="Reproducir el video de Insight">' + icon('play', 'iv-play') + icon('pause', 'iv-pause') + icon('rotate-ccw', 'iv-again') + '</button>' +
+        '<div class="iv-seek" role="slider" tabindex="0" aria-label="Avance del video" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+        '<span class="iv-fill"></span><span class="iv-thumb"></span></div>';
+      old.parentNode.replaceChild(media, old);
+      var v = $('video', media);
+      var seek = $('.iv-seek', media);
+      var btn = $('.iv-btn', media);
+      var state = function (cls) { media.classList.remove('playing', 'ended'); if (cls) media.classList.add(cls); };
+      v.addEventListener('play', function () { state('playing'); btn.setAttribute('aria-label', 'Pausar el video de Insight'); });
+      v.addEventListener('pause', function () { if (!v.ended) state(''); btn.setAttribute('aria-label', 'Reproducir el video de Insight'); });
+      v.addEventListener('ended', function () { state('ended'); btn.setAttribute('aria-label', 'Ver otra vez el video de Insight'); });
+      ['timeupdate', 'loadedmetadata', 'durationchange', 'seeked'].forEach(function (ev) {
+        v.addEventListener(ev, function () { paintSeek(seek, v); });
+      });
+      bindSeek(seek, function () { if (!v.src) loadCardVideo(s); return v; });
+      var toggle = function () {
+        if (!v.src) loadCardVideo(s);
+        if (v.paused || v.ended) { if (v.ended) v.currentTime = 0; v.play().catch(function () { openDrawer(true); }); }
+        else v.pause();
+      };
+      btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+      v.addEventListener('click', toggle);
+      var sm = $('.insight-card > small', s);
+      if (sm) sm.outerHTML = '<button class="iv-more" data-insight>' + icon('file-text') + '<span>Ver más</span></button>';
+    });
   })();
+
+  /* Barra de avance de los videos: se toca o se arrastra para ir a cualquier punto,
+     y con el teclado las flechas mueven 5 segundos */
+  function fmtTime(t) {
+    if (!isFinite(t) || t < 0) return '–:––';
+    t = Math.floor(t);
+    return Math.floor(t / 60) + ':' + (t % 60 < 10 ? '0' : '') + (t % 60);
+  }
+  function paintSeek(bar, v) {
+    var p = v && isFinite(v.duration) && v.duration > 0 ? v.currentTime / v.duration * 100 : 0;
+    $('.iv-fill', bar).style.width = p + '%';
+    $('.iv-thumb', bar).style.left = p + '%';
+    bar.setAttribute('aria-valuenow', String(Math.round(p)));
+    bar.setAttribute('aria-valuetext', v ? fmtTime(v.currentTime) + ' de ' + fmtTime(v.duration) : '');
+  }
+  function bindSeek(bar, getV) {
+    var drag = false;
+    var at = function (e) {
+      var r = bar.getBoundingClientRect();
+      return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    };
+    var go = function (f) {
+      var v = getV();
+      if (!v || !isFinite(v.duration) || !v.duration) return;
+      v.currentTime = f * v.duration;
+      paintSeek(bar, v);
+    };
+    bar.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      drag = true;
+      bar.classList.add('dragging');
+      try { bar.setPointerCapture(e.pointerId); } catch (err) { /* puntero no capturable: se sigue sin captura */ }
+      go(at(e));
+    });
+    bar.addEventListener('pointermove', function (e) { if (drag) go(at(e)); });
+    var end = function () { drag = false; bar.classList.remove('dragging'); };
+    bar.addEventListener('pointerup', end);
+    bar.addEventListener('pointercancel', end);
+    bar.addEventListener('click', function (e) { e.stopPropagation(); });
+    bar.addEventListener('keydown', function (e) {
+      var v = getV();
+      if (!v) return;
+      var step = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[e.key];
+      if (step == null && e.key !== 'Home' && e.key !== 'End') return;
+      e.preventDefault();
+      e.stopPropagation(); // que las flechas no cambien de pantalla
+      if (e.key === 'Home') v.currentTime = 0;
+      else if (e.key === 'End' && isFinite(v.duration)) v.currentTime = v.duration;
+      else v.currentTime = Math.max(0, Math.min(isFinite(v.duration) ? v.duration : Infinity, v.currentTime + step));
+      paintSeek(bar, v);
+    });
+  }
+
+  // Solo se carga el video de la pantalla visible; los demás quedan en pausa
+  function loadCardVideo(s) {
+    var v = cardVideo(s);
+    if (v && !v.src) { v.preload = 'auto'; v.src = v.dataset.src + '#t=0.1'; }
+  }
+  function pauseCardVideos() {
+    $$('.insight-media.is-video video').forEach(function (v) { if (!v.paused) v.pause(); });
+  }
 
 
   /* ------------------------------------------------------------------ */
@@ -303,6 +459,8 @@
     $('#nextBtn').disabled = i === screens.length - 1;
     $('#audioBtn').hidden = !$('.audio', s);
 
+    pauseCardVideos();
+    loadCardVideo(s);
     markVisited(i);
     $$('[data-seen]').forEach(function (el) { el.hidden = !isVisited(indexOfId(el.dataset.seen)); });
     refreshNav();
@@ -443,7 +601,15 @@
 
   function showAvatarImage() {
     videoEl = null;
+    $('#seekRow').hidden = true; // sin video no hay barra de avance
+    $('#insightMedia').classList.remove('is-video');
     $('#insightMedia').innerHTML = '<img src="assets/insight.webp" alt="Insight, guía virtual">';
+  }
+  // Un play() interrumpido por una pausa (o bloqueado por el navegador) no es un error del video:
+  // solo se cambia a la imagen cuando el archivo no se puede reproducir
+  function onPlayFail(e) {
+    if (e && (e.name === 'AbortError' || e.name === 'NotAllowedError')) { setSpeaking(false); return; }
+    videoFallback();
   }
   // Si el video no existe o no se puede reproducir: imagen + voz del navegador (una sola vez)
   function videoFallback() {
@@ -456,33 +622,92 @@
   // En las actividades y la evaluación final Insight no aparece: solo se escucha su voz
   function isActivity(s) { return /^(Actividad|Evaluación final)/.test(s.dataset.title); }
 
+  /* Citas de la transcripción: se muestran debajo de cada párrafo, con el mismo diseño de las
+     páginas. El texto del guion no cambia; también se reconocen citas con un paréntesis de menos. */
+  var AUTH = '[A-ZÁÉÍÓÚÖ][\\wáéíóúñöüčÁÉÍÓÚÑÖ\\-]*(?:\\s+(?:et\\s+al\\.?|&amp;|&|y|[A-ZÁÉÍÓÚÖ][\\wáéíóúñöüčÁÉÍÓÚÑÖ\\-]*))*';
+  var ITEM = AUTH + ',\\s*\\d{4}[a-z]?';
+  var LIST = ITEM + '(?:\\s*;\\s*' + ITEM + ')*';
+  var T_BALANCED = /\s*\(([^()]*?,\s*\d{4}[a-z]?(?:\s*;[^()]*?,\s*\d{4}[a-z]?)*)\)/g;
+  var T_OPEN_END = /\s*\(([^()]*?,\s*\d{4}[a-z]?(?:\s*;[^()]*?,\s*\d{4}[a-z]?)*)\s*$/;
+  var T_NO_OPEN = new RegExp('\\s*(' + LIST + ')\\)', 'g');
+  // Una sola pasada para conservar el orden en que aparecen las citas
+  var T_ANY = new RegExp(T_BALANCED.source + '|' + T_NO_OPEN.source, 'g');
+  function citeTranscript(box) {
+    $$('p', box).forEach(function (p) {
+      var found = [];
+      var take = function (m, a, b) { found.push((a || b).trim()); return ' '; };
+      var t = p.innerHTML.replace(T_ANY, take).replace(T_OPEN_END, take);
+      if (!found.length) return;
+      t = t.replace(/\s{2,}/g, ' ').replace(/\s+([.,;:])/g, '$1').replace(/([.!?])\s*\./g, '$1').trim();
+      p.innerHTML = t + '<span class="cite">' + icon('book-open') + '<span>' + found.join('<br>') + '</span></span>';
+    });
+  }
+  // Texto que lee la voz: el párrafo sin sus citas
+  function spokenText(p) {
+    var c = p.cloneNode(true);
+    $$('.cite', c).forEach(function (x) { x.remove(); });
+    return c.textContent.replace(/\([^)]*\d{4}[^)]*\)/g, '');
+  }
+
+  // Video de Insight de una pantalla (data-video="modulo1-1" → video/modulo1-1.mp4)
+  function videoSrc(s) { return USE_AVATAR_VIDEO && s.dataset.video ? 'video/' + s.dataset.video + '.mp4' : ''; }
+  function cardVideo(s) { return $('.insight-media.is-video video', s); }
+  var voiceSrc = null;
+
   function openDrawer(autoplay) {
     var s = screens[current];
     var audio = $('.audio', s);
     var voiceOnly = isActivity(s);
+    var src = videoSrc(s);
+    // Si el video de la tarjeta ya iba avanzando, la ventana sigue desde ese punto
+    var card = cardVideo(s);
+    var resumeAt = card ? card.currentTime || 0 : 0;
+    var wasPlaying = !!(card && !card.paused && !card.ended);
+    if (card) card.pause();
     lastFocus = document.activeElement;
     $('#drawer').classList.toggle('voice-only', voiceOnly);
     $('#drawerSub').textContent = s.dataset.title;
     $('#drawerScript').innerHTML = audio ? audio.innerHTML : '<p>Esta pantalla no tiene audio.</p>';
-    if (USE_AVATAR_VIDEO && !voiceOnly) {
-      $('#insightMedia').innerHTML = '<video src="' + screenFile('mp4', 'video') + '" poster="assets/insight.webp" playsinline preload="metadata"></video>';
+    citeTranscript($('#drawerScript'));
+    voiceSrc = voiceOnly && src ? src : null; // actividades: se oye el audio del video, sin imagen
+    if (src && !voiceOnly) {
+      // Sin controles nativos: el video se recorta para ocultar la marca de agua (ver styles.css)
+      $('#insightMedia').innerHTML = '<video src="' + src + '" playsinline preload="auto"></video>';
       videoEl = $('#insightMedia video');
+      ['timeupdate', 'loadedmetadata', 'durationchange', 'seeked'].forEach(function (ev) {
+        videoEl.addEventListener(ev, function (e) { if (e.target === videoEl) paintDrawerSeek(); });
+      });
+      $('#seekRow').hidden = false;
+      paintDrawerSeek();
+      videoEl.addEventListener('click', function () { if (videoEl.paused) play(); else stopSpeech(); });
       videoEl.addEventListener('error', videoFallback);
       // Solo cuenta el video que sigue en pantalla (uno descartado puede emitir eventos tarde)
       var onVideo = function (on) { return function (e) { if (e.target === videoEl) setSpeaking(on); }; };
       videoEl.addEventListener('play', onVideo(true));
       videoEl.addEventListener('pause', onVideo(false));
       videoEl.addEventListener('ended', onVideo(false));
+      $('#insightMedia').classList.add('is-video');
     } else {
       showAvatarImage();
+      $('#insightMedia').classList.remove('is-video');
     }
     $('#drawer').hidden = false;
     $('#drawerBackdrop').hidden = false;
     setTimeout(function () { $('#drawerClose').focus(); }, 50);
-    if (autoplay && audio) play();
+    if (audio && (autoplay || wasPlaying)) play(resumeAt);
+    else if (videoEl && resumeAt) seekWhenReady(videoEl, resumeAt);
+  }
+  // Un video recién creado aún no tiene datos: el salto se aplica cuando ya puede buscar
+  function seekWhenReady(v, t) {
+    if (!t) return;
+    if (v.readyState >= 1) { v.currentTime = t; return; }
+    v.addEventListener('loadedmetadata', function () { v.currentTime = t; }, { once: true });
   }
   function closeDrawer() {
     if ($('#drawer').hidden) return;
+    // La tarjeta de la pantalla queda en el mismo punto del video
+    var card = cardVideo(screens[current]);
+    if (card && videoEl && videoEl.currentTime) { try { card.currentTime = videoEl.currentTime; } catch (e) { /* sin datos aún */ } }
     stopSpeech();
     $('#drawer').hidden = true;
     $('#drawerBackdrop').hidden = true;
@@ -504,16 +729,18 @@
     return null;
   }
 
-  function play() {
+  function play(from) {
+    var resume = typeof from === 'number' ? from : null;
     stopSpeech();
     if (videoEl) { // video del avatar: reemplaza la voz del navegador
       speaking = true;
-      videoEl.currentTime = 0;
-      videoEl.play().catch(videoFallback);
+      if (resume != null) seekWhenReady(videoEl, resume);
+      else if (videoEl.ended) videoEl.currentTime = 0; // «Escuchar» continúa donde se pausó
+      videoEl.play().catch(onPlayFail);
       return;
     }
-    if (USE_AUDIO_FILES) {
-      audioEl = new Audio(screenFile('mp3', 'audio'));
+    if (voiceSrc || USE_AUDIO_FILES) {
+      audioEl = new Audio(voiceSrc || screenFile('mp3', 'audio'));
       audioEl.addEventListener('error', speak);
       audioEl.addEventListener('ended', function () { setSpeaking(false); });
       audioEl.play().catch(speak);
@@ -535,7 +762,7 @@
       if (!speaking || i >= paras.length) { stopSpeech(); return; }
       var p = paras[i++];
       p.classList.add('speaking');
-      var u = new SpeechSynthesisUtterance(p.textContent.replace(/\([^)]*\d{4}[^)]*\)/g, ''));
+      var u = new SpeechSynthesisUtterance(spokenText(p));
       u.lang = voice ? voice.lang : 'es-CO';
       if (voice) u.voice = voice;
       u.rate = 1;
@@ -557,7 +784,21 @@
 
   if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = function () {};
   $('#audioBtn').addEventListener('click', function () { openDrawer(true); });
-  $('#playBtn').addEventListener('click', play);
+  $('#playBtn').addEventListener('click', function () { play(); });
+  // Avance del video en la ventana: barra, retroceder y adelantar 10 s, tiempo transcurrido
+  function paintDrawerSeek() {
+    paintSeek($('#drawerSeek'), videoEl);
+    $('#drawerTime').textContent = videoEl ? fmtTime(videoEl.currentTime) + ' / ' + fmtTime(videoEl.duration) : '';
+  }
+  bindSeek($('#drawerSeek'), function () { return videoEl; });
+  var jump = function (sec) {
+    if (!videoEl) return;
+    var d = isFinite(videoEl.duration) ? videoEl.duration : Infinity;
+    videoEl.currentTime = Math.max(0, Math.min(d, videoEl.currentTime + sec));
+    paintDrawerSeek();
+  };
+  $('#backBtn').addEventListener('click', function () { jump(-10); });
+  $('#fwdBtn').addEventListener('click', function () { jump(10); });
   $('#stopBtn').addEventListener('click', stopSpeech);
   $('#drawerClose').addEventListener('click', closeDrawer);
   $('#drawerBackdrop').addEventListener('click', closeDrawer);
@@ -1027,6 +1268,13 @@
   function chartBars(min, max, step, color) {
     var x0 = 44, y0 = 160, w = 240, h = 145;
     var s = '<svg viewBox="0 0 300 190" role="img" aria-label="Ventas del producto A y B">' + axisY(x0, y0, h, min, max, step, w);
+    // Eje truncado: el inicio del eje se resalta para que se lea claramente
+    if (min > 0) {
+      s += '<line x1="' + x0 + '" x2="' + (x0 + w) + '" y1="' + y0 + '" y2="' + y0 + '" style="stroke:' + color + '" stroke-width="2" stroke-dasharray="5 4"/>' +
+        '<rect x="' + (x0 - 32) + '" y="' + (y0 - 9) + '" width="28" height="17" rx="8.5" style="fill:' + color + '"/>' +
+        '<text x="' + (x0 - 18) + '" y="' + (y0 + 3.5) + '" text-anchor="middle" font-size="11" font-weight="800" style="fill:#fff">' + min + '</text>' +
+        '<path d="M' + (x0 + 6) + ' ' + (y0 - 6) + ' l5 -4 l-6 -4 l5 -4" fill="none" style="stroke:' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
     [['Producto A', 98], ['Producto B', 100]].forEach(function (d, i) {
       var bx = x0 + 30 + i * 120, top = y0 - (d[1] - min) / (max - min) * h;
       s += '<rect x="' + bx + '" y="' + top + '" width="70" height="' + (y0 - top) + '" rx="4" style="fill:' + color + '"/>' +
@@ -1580,6 +1828,7 @@
     function reveal(btn) {
       var row = btn.closest('.route-row');
       $$('.masked', row).forEach(function (m) { m.classList.remove('masked'); });
+      row.classList.add('revealed'); // el color de la ruta solo aparece al elegirla
       btn.classList.add('picked');
       $$('button', btn.closest('.routes')).forEach(function (b) { b.disabled = true; });
     }
@@ -1611,6 +1860,7 @@
         var b = $('button', row);
         b.disabled = false;
         b.classList.remove('picked');
+        row.classList.remove('revealed');
       });
       step2.hidden = true;
       retry.hidden = true;
