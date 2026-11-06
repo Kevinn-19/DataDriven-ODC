@@ -41,6 +41,8 @@
 <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" /><path d="M20 2v4" /><path d="M22 4h-4" /><circle cx="4" cy="20" r="2" /></symbol>
 <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /></symbol>
 <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></symbol>
+<symbol id="i-bike" viewBox="0 0 24 24"><circle cx="18.5" cy="17.5" r="3.5" /><circle cx="5.5" cy="17.5" r="3.5" /><circle cx="15" cy="5" r="1" /><path d="M12 17.5V14l-3-3 4-3 2 3h2" /></symbol>
+<symbol id="i-pill" viewBox="0 0 24 24"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" /><path d="m8.5 8.5 7 7" /></symbol>
 <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></symbol>
 <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" /></symbol>
 <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></symbol>
@@ -878,7 +880,7 @@
       <p class="lead"><b>Instrucciones:</b> analiza un caso como gerente. Elige uno de los tres casos y arma su ficha campo por campo: en cada uno elige la opción que mejor lo describe (tienes 2 intentos). Al final, lleva el caso a tu organización en pocas líneas.</p>
       <div class="quiz case-lab" data-act="a7"></div>
       <details class="support" data-support hidden>
-        <summary><svg class="i" aria-hidden="true"><use href="#i-briefcase"/></svg>Otros casos para inspirarte</summary>
+        <summary><svg class="i" aria-hidden="true"><use href="#i-briefcase"/></svg>Otros casos de referencia</summary>
         <ul>
           <li><b>Ámsterdam:</b> analítica prescriptiva para ubicar puntos de carga eléctrica. Una distribución más estratégica podría subir la utilización de la red de 17 % a 20 % sin más inversión (Brandt et al., 2021).</li>
           <li><b>Manufactura:</b> un modelo clasificó las interrupciones de producción con 78 % de precisión y se redujo su duración (Oberdorf et al., 2021).</li>
@@ -1021,7 +1023,8 @@
           <dt>Diseño y desarrollo</dt><dd>Kevin Esteban Chiquillo Díaz</dd>
           <dt>Guía virtual</dt><dd>Insight</dd>
           <dt>Imágenes</dt><dd>Avatar de Insight generado con inteligencia artificial en Pippit, de CapCut (https://www.pippit.ai/avatar-and-voice). Su uso está sujeto a los términos de servicio de Pippit. Íconos: Lucide (licencia ISC).</dd>
-          <dt>Sonidos y voces</dt><dd>Guion de Insight leído con la voz sintética del navegador (Web Speech API).</dd>
+          <dt>Videos</dt><dd>Videos de Insight (32) generados con inteligencia artificial en Pippit, de CapCut (https://www.pippit.ai/). Su uso está sujeto a los términos de servicio de Pippit.</dd>
+          <dt>Sonidos y voces</dt><dd>Voz de Insight generada en Pippit junto con los videos. Si una pantalla no tiene video, el guion se lee con la voz sintética del navegador (Web Speech API).</dd>
           <dt>Institución</dt><dd>Universidad de Cundinamarca · Oficina de Educación Virtual y a Distancia</dd>
           <dt>Fecha de creación</dt><dd>12/10/2026</dd>
           <dt>Nivel educativo</dt><dd>Básico – Intermedio</dd>
@@ -1034,7 +1037,8 @@
             <p>Bandla, S. (2024). Integrating AI based natural language processing for automated data interpretation in management information systems.</p>
             <p>Brandt, T., Wagner, S., y Neumann, D. (2021). Prescriptive analytics for public value creation: The case of electric vehicle charging infrastructure. <i>European Journal of Operational Research, 291</i>(1), 379–393. https://doi.org/10.1016/j.ejor.2020.09.034</p>
             <p>Cao, G., y Duan, Y. (2024). Exploring the impact of business analytics on strategic decision-making in uncertain environments. <i>Journal of Management Analytics, 11</i>(4), 577–600. https://doi.org/10.1080/23270012.2024.2420365</p>
-            <p>CapCut. (2026). <i>Pippit: AI avatar and voice</i> [Herramienta de inteligencia artificial generativa]. https://www.pippit.ai/avatar-and-voice</p>
+            <p>CapCut. (2026a). <i>Pippit</i> [Herramienta de inteligencia artificial generativa]. https://www.pippit.ai/</p>
+            <p>CapCut. (2026b). <i>Pippit: AI avatar and voice</i> [Herramienta de inteligencia artificial generativa]. https://www.pippit.ai/avatar-and-voice</p>
             <p>Congreso de Colombia. (2012). Ley 1581 de 2012, por la cual se dictan disposiciones generales para la protección de datos personales.</p>
             <p>DAMA International. (2017). <i>DAMA-DMBOK: Data management body of knowledge</i> (2.ª ed.). Technics Publications.</p>
             <p>Davenport, T. H., y Harris, J. G. (2007). <i>Competing on analytics: The new science of winning</i>. Harvard Business School Press.</p>

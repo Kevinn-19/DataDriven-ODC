@@ -1790,22 +1790,24 @@ details.support li { margin-bottom: 6px; }
   color: var(--c-fg);
   background: color-mix(in srgb, var(--c) 14%, transparent);
 }
-.lab-reflect {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px 18px;
+/* Caso nuevo (paso final): el escenario del negocio va arriba de la pregunta */
+.lab-scenario {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 14px 16px;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--card-border);
-  background: var(--card-bg);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid color-mix(in srgb, var(--c, var(--teal)) 35%, var(--card-border));
+  border-left: 4px solid var(--c, var(--teal));
+  background: color-mix(in srgb, var(--c, var(--teal)) 7%, var(--card-bg));
 }
-.lab-reflect textarea { min-height: 110px; }
-.lab-count { margin: 0; font-size: 13px; color: var(--text-muted); text-align: right; }
-.lab-count.ok { color: var(--ok-ink); }
-.lab-rubric p { margin: 4px 0 6px; font-size: 14px; color: var(--heading-color); }
-.lab-rubric label { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 14.5px; cursor: pointer; }
-.lab-rubric input { width: 17px; height: 17px; accent-color: var(--teal); }
+.lab-scenario .field-ico { margin: 0; }
+.lab-scenario b { color: var(--heading-color); font-size: 15px; }
+.lab-scenario p { margin: 3px 0 0; font-size: 15px; line-height: 1.5; color: var(--text-color); }
+.case-lab .quiz-main > .label { margin: 6px 0 0; }
+/* Separación entre los puntos de la ficha y los del caso nuevo */
+.qdots i.gap { margin-left: 8px; }
 .lab-summary { display: grid; gap: 8px; }
 .lab-row {
   display: grid;
