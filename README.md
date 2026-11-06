@@ -33,8 +33,9 @@ scorm/                 Paquete SCORM (todo lo que va dentro del ZIP)
   assets/LICENSE-lucide.txt  Licencia de los íconos (ISC)
   fonts/               Fuente Plus Jakarta Sans (licencia SIL OFL)
   audio/               (vacía) locuciones opcionales de Insight
-  video/               (vacía) videos opcionales del avatar de Insight
+  video/               Videos del avatar de Insight (32 MP4 verticales)
 probar-lms.html        LMS de prueba para revisar el paquete sin Moodle
+tools/servidor.py      Servidor local para las pruebas (permite adelantar los videos)
 tools/empaquetar.py    Genera el ZIP para Moodle
 ```
 
@@ -43,8 +44,10 @@ tools/empaquetar.py    Genera el ZIP para Moodle
 El curso necesita un servidor local (si se abre con doble clic, el navegador bloquea la conexión con el LMS de prueba):
 
 ```bash
-python -m http.server 8765
+python tools/servidor.py
 ```
+
+Se usa este servidor y no `python -m http.server` porque responde a las peticiones por rangos: sin ellas el navegador no puede adelantar un video ni continuarlo desde un punto. Moodle ya lo hace.
 
 Luego abre <http://127.0.0.1:8765/probar-lms.html>. La barra superior muestra en vivo el estado, la nota, la ubicación y las interacciones que el curso envía al LMS. **Reiniciar intento** borra el progreso.
 
@@ -84,15 +87,27 @@ La versión anterior al rediseño está en `respaldo/scorm-antes-del-rediseno/` 
 
 ## Video del avatar de Insight
 
-Insight se abre en una ventana centrada con un escenario grande para el avatar y la transcripción al lado. Las pantallas que tienen a Insight lo muestran en una tarjeta con un marco grande. Para usar videos del avatar:
+Cada pantalla indica su video con el atributo `data-video` de su `<section>` en `index.html` (por ejemplo `data-video="modulo1-1"` usa `scorm/video/modulo1-1.mp4`). Para cambiar o agregar un video: copia el MP4 en `scorm/video/`, ponle el nombre en `data-video` y agrega una línea `<file href="video/nombre.mp4"/>` en `imsmanifest.xml`. `USE_AVATAR_VIDEO` en `app.js` activa o desactiva todos los videos.
 
-1. Guárdalos como `scorm/video/pantalla-01.mp4`, `pantalla-02.mp4`, … (número de pantalla con dos dígitos, igual que los audios).
-2. Agrégalos a `imsmanifest.xml` (una línea `<file href="video/pantalla-01.mp4"/>` por video).
-3. Cambia `USE_AVATAR_VIDEO` a `true` en [`scorm/js/app.js`](scorm/js/app.js).
+| Videos | Pantallas |
+|---|---|
+| `modulo0-1`, `modulo0-2` | Portada, Ruta de aprendizaje |
+| `modulo1-1`, `modulo1-2` | Big Data, Business Analytics |
+| `modulo2-1`, `modulo2-2` | Calidad de los datos, Normativa y gobernanza |
+| `modulo3-1` | Los tres niveles de la analítica |
+| `modulo4-1`, `modulo4-2` | Sistemas de apoyo a la decisión, El proceso de decisión |
+| `modulo5-1`, `modulo5-2`, `modulo5-3` | IA aplicada a la gestión, IA generativa, IA responsable |
+| `act1` … `act7` | Actividades 1 a 7 (solo voz) |
+| `evaluacionFinal1`, `evaluacionFinal2` | Evaluación final, partes 1 y 2 (solo voz) |
+| `conclusion` | Conclusiones y siguientes pasos |
+| `modulo6-1`, `modulo6-2`, `modulo6-3` | Principios de visualización, Cómo leer un dashboard, Gráficos engañosos |
+| `modulo7-1` … `modulo7-4` | Casos empresariales reales, Netflix, UPS, Walmart |
+| `modulo8-1`, `modulo8-2`, `modulo8-3` | Simuladores de decisión, Simulador 1, Simulador 2 |
 
-En las actividades (Actividad 1 a 7) y en la evaluación final Insight no aparece: la ventana muestra una onda de voz y la transcripción, y nunca usa video (se oye el audio de `scorm/audio/` o la voz del navegador). La regla está en la función `isActivity` de `app.js`.
-
-Si una pantalla no tiene video, Insight muestra su imagen y lee el guion con la voz del navegador. Formato recomendado: MP4 (H.264), 16:10 o 16:9. El marco recorta los bordes para llenar el espacio.
+- **Adelantar y retroceder:** la barra de avance se toca o se arrastra para ir a cualquier punto, y con el teclado las flechas mueven 5 segundos. En la ventana hay además botones de −10 s y +10 s y el tiempo transcurrido.
+- **En la pantalla:** la tarjeta de Insight trae el video listo para reproducir (botón de reproducir y barra de avance). **Ver más** abre la ventana con la transcripción y el mismo video, que sigue desde donde iba; al cerrarla, la tarjeta queda en ese punto.
+- **En las actividades y la evaluación final** Insight no aparece: la ventana muestra una onda de voz y la transcripción, y se oye solo el audio del video. La regla está en la función `isActivity` de `app.js`.
+- **Sin video** (créditos): no hay tarjeta de Insight; si alguna pantalla no tiene video, Insight muestra su imagen y lee el guion con la voz del navegador.
 
 ## Audio de Insight
 
