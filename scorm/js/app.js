@@ -1586,6 +1586,7 @@
     var LETTERS = 'ABCDEF';
     var NF = FICHA_FIELDS.length;
     var lab = state.k;
+    var support = $('[data-support]');
     var idx = 0, tries = 0, phase = 'ask', picked = [];
 
     function attempts() { return state.t.a7 || 0; }
@@ -1620,6 +1621,7 @@
     function renderPick() {
       phase = 'pick';
       root.dataset.step = phase;
+      support.hidden = true;
       var left = MAX_ATTEMPTS - attempts();
       var html = side('clipboard-list', 'Elige un caso', attempts() ? 'Te quedan ' + left + ' de ' + MAX_ATTEMPTS + ' intentos' : MAX_ATTEMPTS + ' intentos') +
         '<div class="quiz-main"><div class="qbox"><span class="qnum">' + icon('briefcase') + '</span><span>¿Qué caso vas a analizar como gerente?</span></div>' +
@@ -1643,6 +1645,7 @@
     function renderField(i) {
       idx = i; tries = 0; phase = 'ask'; picked = [];
       root.dataset.step = i < NF ? phase : 'transfer';
+      support.hidden = true;
       var f = STEPS[i], data = stepData(i), t = CASES[lab.c].transfer;
       var html = (i < NF ? side(f.icon, 'Campo ' + (i + 1) + ' de ' + NF, f.label)
                          : side(t.icon, 'Caso nuevo · ' + (i - NF + 1) + ' de ' + TRANSFER_FIELDS.length, 'Aplícalo a otro negocio')) +
@@ -1737,6 +1740,7 @@
     function renderSummary() {
       phase = 'done'; idx = -1;
       root.dataset.step = phase;
+      support.hidden = false; // otros casos de referencia: solo en la retroalimentación final
       var c = CASES[lab.c], sc = score();
       var left = MAX_ATTEMPTS - attempts();
       var row = function (ico, label, data, ok) {
