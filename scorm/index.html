@@ -136,6 +136,8 @@
 <symbol id="i-clipboard-check" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="m9 14 2 2 4-4" /></symbol>
 <symbol id="i-goal" viewBox="0 0 24 24"><path d="M12 13V2l8 4-8 4" /><path d="M20.561 10.222a9 9 0 1 1-12.55-5.29" /><path d="M8.002 9.997a5 5 0 1 0 8.9 2.02" /></symbol>
 <symbol id="i-messages-square" viewBox="0 0 24 24"><path d="M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /><path d="M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1" /></symbol>
+<symbol id="i-rewind" viewBox="0 0 24 24"><path d="M12 6a2 2 0 0 0-3.414-1.414l-6 6a2 2 0 0 0 0 2.828l6 6A2 2 0 0 0 12 18z" /><path d="M22 6a2 2 0 0 0-3.414-1.414l-6 6a2 2 0 0 0 0 2.828l6 6A2 2 0 0 0 22 18z" /></symbol>
+<symbol id="i-fast-forward" viewBox="0 0 24 24"><path d="M12 6a2 2 0 0 1 3.414-1.414l6 6a2 2 0 0 1 0 2.828l-6 6A2 2 0 0 1 12 18z" /><path d="M2 6a2 2 0 0 1 3.414-1.414l6 6a2 2 0 0 1 0 2.828l-6 6A2 2 0 0 1 2 18z" /></symbol>
 </defs>
 </svg>
 <a class="skip-link" href="#stage">Saltar al contenido</a>
@@ -181,7 +183,7 @@
   <main class="stage" id="stage" tabindex="-1">
 
     <!-- ===================== INTRODUCCIÓN ===================== -->
-    <section class="screen" data-title="Portada" data-pill="INTRODUCCIÓN" data-mod="Introducción" data-cover>
+    <section class="screen" data-video="modulo0-1" data-title="Portada" data-pill="INTRODUCCIÓN" data-mod="Introducción" data-cover>
       <div class="cover">
         <div>
           <p class="kicker">UNIVERSIDAD DE CUNDINAMARCA · ESPECIALIZACIÓN EN INTELIGENCIA ARTIFICIAL</p>
@@ -208,7 +210,9 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Ruta de aprendizaje" data-pill="INTRODUCCIÓN" data-mod="Introducción">
+    <section class="screen" data-video="modulo0-2" data-title="Ruta de aprendizaje" data-pill="INTRODUCCIÓN" data-mod="Introducción">
+      <div class="with-avatar">
+        <div>
       <p class="label">Ocho módulos de aprendizaje:</p>
       <div class="grid g4 route">
         <button class="card c-teal" data-goto="m1"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></span><span class="num">1</span><h3>Fundamentos de Big Data y Business Analytics</h3><p class="ex">Qué es Big Data, las 5 V, qué es Business Analytics</p></button>
@@ -220,6 +224,9 @@
         <button class="card c-red" data-goto="m7"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-briefcase"/></svg></span><span class="num">7</span><h3>Casos reales</h3><p class="ex">Netflix · UPS · Walmart</p></button>
         <button class="card c-teal" data-goto="m8"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg></span><span class="num">8</span><h3>Simuladores</h3><p class="ex">Decide con datos</p></button>
       </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
+      </div>
       <div class="audio" hidden>
         <p>Este es el mapa de tu ruta de aprendizaje, compuesto por ocho módulos. La idea es empezar desde lo más básico y avanzar poco a poco hasta los últimos módulos. Siempre podrás volver a cualquiera de los módulos para repasar los temas que necesites.</p>
         <p>En cada módulo encontrarás contenido sobre el tema con un audio o video de Insight, además de una actividad con su retroalimentación.</p>
@@ -228,17 +235,17 @@
     </section>
 
     <!-- ===================== MÓDULO 1 ===================== -->
-    <section class="screen" id="m1" data-title="Big Data" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
+    <section class="screen" id="m1" data-video="modulo1-1" data-title="Big Data" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
       <div class="with-avatar">
         <div>
           <p class="lead">Big Data son conjuntos de datos tan grandes o variados que no pueden gestionarse con herramientas tradicionales (Fakhfakh &amp; Mezghani, 2025; Yu et al., 2022).</p>
           <div class="vmap">
-            <div class="card c-teal" style="grid-area:vol"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-hard-drive"/></svg></span><h3>Volumen</h3><p class="ex">la cantidad de datos que se generan y almacenan.</p></div>
+            <div class="card c-teal" style="grid-area:vol"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-hard-drive"/></svg></span><h3>Volumen</h3><p class="ex">La cantidad de datos que se generan y almacenan.</p></div>
             <div class="card c-blue" style="grid-area:vel"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span><h3>Velocidad</h3><p class="ex">Procesamiento en tiempo real de la información</p></div>
             <div class="core">BIG DATA</div>
-            <div class="card c-orange" style="grid-area:var"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-shapes"/></svg></span><h3>Variedad</h3><p class="ex">formatos y estructuras distintos de la información (tablas, texto, imágenes, audio, sensores).</p></div>
+            <div class="card c-orange" style="grid-area:var"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-shapes"/></svg></span><h3>Variedad</h3><p class="ex">Formatos y estructuras distintos de la información (tablas, texto, imágenes, audio, sensores).</p></div>
             <div class="card c-purple" style="grid-area:ver"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-badge-check"/></svg></span><h3>Veracidad</h3><p class="ex">Confiabilidad de los datos.</p></div>
-            <div class="card c-green" style="grid-area:val"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-gem"/></svg></span><h3>Valor</h3><p class="ex">qué tanto sirven para decidir mejor.</p></div>
+            <div class="card c-green" style="grid-area:val"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-gem"/></svg></span><h3>Valor</h3><p class="ex">Qué tanto sirven para decidir mejor.</p></div>
           </div>
         </div>
         <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
@@ -253,15 +260,15 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Business Analytics" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
+    <section class="screen" data-video="modulo1-2" data-title="Business Analytics" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
       <div class="with-avatar">
         <div>
           <p class="lead">Business Analytics o la analítica de negocios consiste en utilizar datos, estadísticas y modelos analíticos para tomar decisiones más fundamentadas dentro de una organización (Davenport &amp; Harris, 2007).<br>Un dato no decide nada, pero al darle contexto se vuelve información, al interpretarlo se convierte en conocimiento y cuando se toma una acción, pasa a decisión.</p>
           <div class="pyr">
-            <div class="pyr-row"><div class="pyr-bar" style="background:var(--navy);width:40%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</span><small>acción con responsable y plazo</small></div><div class="pyr-ex">Reabastecer esta semana</div></div>
-            <div class="pyr-row"><div class="pyr-bar" style="background:var(--purple);width:60%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg>Conocimiento</span><small>explicación</small></div><div class="pyr-ex">La baja es por un quiebre de inventario en el canal web</div></div>
-            <div class="pyr-row"><div class="pyr-bar" style="background:var(--blue);width:80%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg>Información</span><small>dato organizado</small></div><div class="pyr-ex">Las compras disminuyeron un 12 %</div></div>
-            <div class="pyr-row"><div class="pyr-bar" style="background:var(--teal);width:100%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-binary"/></svg>Dato</span><small>hecho sin contexto</small></div><div class="pyr-ex">12 unidades vendidas</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--navy);width:40%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</span><small>Acción con responsable y plazo</small></div><div class="pyr-ex">Reabastecer esta semana</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--purple);width:60%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg>Conocimiento</span><small>Explicación</small></div><div class="pyr-ex">La baja es por un quiebre de inventario en el canal web</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--blue);width:80%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg>Información</span><small>Dato organizado</small></div><div class="pyr-ex">Las compras disminuyeron un 12 %</div></div>
+            <div class="pyr-row"><div class="pyr-bar" style="background:var(--teal);width:100%"><span class="bar-title"><svg class="i" aria-hidden="true"><use href="#i-binary"/></svg>Dato</span><small>Hecho sin contexto</small></div><div class="pyr-ex">12 unidades vendidas</div></div>
           </div>
         </div>
         <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
@@ -274,7 +281,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 1 · Une cada V con su significado" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
+    <section class="screen" data-video="act1" data-title="Actividad 1 · Une cada V con su significado" data-pill="MÓDULO 1 · FUNDAMENTOS" data-color="teal" data-mod="Módulo 1 · Fundamentos">
       <p class="lead"><b>Instrucciones:</b> arrastra cada situación a la V que mejor la describe.</p>
       <div class="dnd" data-act="a1"
            data-ok="¡Muy bien! Identificaste las V correctamente."
@@ -306,7 +313,7 @@
     </section>
 
     <!-- ===================== MÓDULO 2 ===================== -->
-    <section class="screen" id="m2" data-title="Calidad de los datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
+    <section class="screen" id="m2" data-video="modulo2-1" data-title="Calidad de los datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
       <div class="with-avatar">
         <div>
           <p class="lead">Si los datos no son correctos, los análisis también lo serán. La calidad en la información se evalúa con estas características:</p>
@@ -333,7 +340,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Normativa y gobernanza de datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
+    <section class="screen" data-video="modulo2-2" data-title="Normativa y gobernanza de datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
       <div class="with-avatar">
         <div class="grid g3">
           <div class="card c-teal"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg></span><span class="num">1</span><h3>Ley 1581 de 2012</h3><p>Garantizar que los ciudadanos puedan conocer, actualizar y validar la información que las entidades tienen sobre ellos en bases de datos o archivos</p><p class="ex"><a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981" target="_blank" rel="noopener">Ver norma<svg class="i" aria-hidden="true"><use href="#i-external-link"/></svg></a></p></div>
@@ -349,7 +356,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 2 · Detective de datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
+    <section class="screen" data-video="act2" data-title="Actividad 2 · Detective de datos" data-pill="MÓDULO 2 · CALIDAD Y GOBERNANZA" data-color="blue" data-mod="Módulo 2 · Calidad y gobernanza">
       <div class="detective" data-act="a2">
         <div>
           <p class="label">Instrucciones: la tabla de clientes tiene cinco problemas. Pulsa cada celda sospechosa y clasifica el error en su dimensión de calidad.</p>
@@ -388,15 +395,15 @@
     </section>
 
     <!-- ===================== MÓDULO 3 ===================== -->
-    <section class="screen" id="m3" data-title="Los tres niveles de la analítica" data-pill="MÓDULO 3 · TIPOS DE ANALÍTICA" data-color="orange" data-mod="Módulo 3 · Tipos de analítica">
+    <section class="screen" id="m3" data-video="modulo3-1" data-title="Los tres niveles de la analítica" data-pill="MÓDULO 3 · TIPOS DE ANALÍTICA" data-color="orange" data-mod="Módulo 3 · Tipos de analítica">
       <div class="with-avatar">
         <div>
           <p class="lead">La analítica tiene tres niveles, cada uno con más relevancia y responsabilidad.</p>
           <div class="axis"><span>Mayor valor y mayor dificultad</span><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg></div>
           <div class="levels">
-            <div class="level" style="background:var(--teal);height:170px"><span class="level-ico"><svg class="i" aria-hidden="true"><use href="#i-history"/></svg></span><h3>Descriptiva</h3><p>¿qué sucedió? y ¿qué está ocurriendo ahora?</p><p class="tools">Reportes, indicadores, tableros.</p></div>
-            <div class="level" style="background:var(--purple);height:220px"><span class="level-ico"><svg class="i" aria-hidden="true"><use href="#i-trending-up"/></svg></span><h3>Predictiva</h3><p>¿qué sucederá y por qué?</p><p class="tools">Pronósticos y modelos de aprendizaje automático.</p></div>
-            <div class="level" style="background:var(--orange);height:275px"><span class="level-ico"><svg class="i" aria-hidden="true"><use href="#i-route"/></svg></span><h3>Prescriptiva</h3><p>¿qué se debe hacer y cuál es la mejor opción?</p><p class="tools">Optimización, simulación y recomendaciones.</p></div>
+            <div class="level" style="background:var(--teal);height:170px"><span class="level-ico"><svg class="i" aria-hidden="true"><use href="#i-history"/></svg></span><h3>Descriptiva</h3><p>¿Qué sucedió? y ¿qué está ocurriendo ahora?</p><p class="tools">Reportes, indicadores, tableros.</p></div>
+            <div class="level" style="background:var(--purple);height:220px"><span class="level-ico"><svg class="i" aria-hidden="true"><use href="#i-trending-up"/></svg></span><h3>Predictiva</h3><p>¿Qué sucederá y por qué?</p><p class="tools">Pronósticos y modelos de aprendizaje automático.</p></div>
+            <div class="level" style="background:var(--orange);height:275px"><span class="level-ico"><svg class="i" aria-hidden="true"><use href="#i-route"/></svg></span><h3>Prescriptiva</h3><p>¿Qué se debe hacer y cuál es la mejor opción?</p><p class="tools">Optimización, simulación y recomendaciones.</p></div>
           </div>
           <p class="lead after">Un buen modelo predictivo necesita los tres niveles de analítica, no solo uno.</p>
         </div>
@@ -408,7 +415,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 3 · ¿Qué tipo de analítica necesito?" data-pill="MÓDULO 3 · TIPOS DE ANALÍTICA" data-color="orange" data-mod="Módulo 3 · Tipos de analítica">
+    <section class="screen" data-video="act3" data-title="Actividad 3 · ¿Qué tipo de analítica necesito?" data-pill="MÓDULO 3 · TIPOS DE ANALÍTICA" data-color="orange" data-mod="Módulo 3 · Tipos de analítica">
       <p class="lead"><b>Instrucciones:</b> arrastra cada pregunta al nivel de analítica que la responde.</p>
       <div class="dnd" data-act="a3"
            data-ok="Excelente: la clave está en el verbo de la pregunta."
@@ -435,7 +442,7 @@
     </section>
 
     <!-- ===================== MÓDULO 4 ===================== -->
-    <section class="screen" id="m4" data-title="Sistemas de apoyo a la decisión" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
+    <section class="screen" id="m4" data-video="modulo4-1" data-title="Sistemas de apoyo a la decisión" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
       <div class="with-avatar">
         <div>
           <p class="lead">Un sistema de apoyo a la decisión (SAD) es un sistema interactivo que ayuda a gerentes o analistas a usar datos y modelos para mejorar la toma de decisiones (Seguer, 2022; Simonovič et al., 2026).</p>
@@ -470,7 +477,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="El proceso de decisión" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
+    <section class="screen" data-video="modulo4-2" data-title="El proceso de decisión" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
       <div class="with-avatar">
         <div>
           <p class="lead">La toma de decisiones tiene cinco fases (Orjatsalo &amp; Orjatsalo, 2025; Seguer, 2022).</p>
@@ -517,7 +524,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 4 · Cuestionario" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
+    <section class="screen" data-video="act4" data-title="Actividad 4 · Cuestionario" data-pill="MÓDULO 4 · APOYO A LA DECISIÓN" data-color="purple" data-mod="Módulo 4 · Apoyo a la decisión">
       <div class="quiz" data-quiz="a4"></div>
       <div class="audio" hidden>
         <p>Hola, para esta actividad se hará un cuestionario. Son cinco preguntas con realimentación. Lee la pregunta, elige una opción y comprueba tu respuesta. Si fallas, te explicaré por qué. ¡Mucho éxito!</p>
@@ -525,18 +532,18 @@
     </section>
 
     <!-- ===================== MÓDULO 5 ===================== -->
-    <section class="screen" id="m5" data-title="Inteligencia artificial aplicada a la gestión" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+    <section class="screen" id="m5" data-video="modulo5-1" data-title="Inteligencia artificial aplicada a la gestión" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
       <div class="with-avatar">
         <div>
           <p class="lead">La IA permite automatizar tareas, descubrir patrones y apoyar decisiones (Attia et al., 2026). Sus familias principales: aprendizaje automático, procesamiento de lenguaje natural, visión por computador e IA generativa. Entre sus técnicas predictivas están las regresiones, los árboles de decisión y las redes neuronales.</p>
           <p class="label">Pulsa cada área para ver un ejemplo y la pregunta clave antes de usar IA</p>
           <div class="grid g3" data-reveal>
-            <button class="card c-teal" data-detail="Un banco marca en milisegundos las transacciones atípicas para revisión y ajusta el puntaje de crédito con el historial de pagos.|¿Cuánto cuesta un falso positivo para un cliente honesto?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-landmark"/></svg></span><span class="num">1</span><h3>Finanzas</h3><p class="ex">detección de fraude y puntaje de riesgo crediticio.</p></button>
-            <button class="card c-blue" data-detail="Una tienda en línea agrupa clientes por comportamiento, recomienda productos y detecta quién está a punto de cancelar.|¿Qué datos del cliente es legítimo usar y cuáles no?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg></span><span class="num">2</span><h3>Marketing</h3><p class="ex">segmentación, recomendación y predicción de cancelación.</p></button>
-            <button class="card c-orange" data-detail="Una flota anticipa fallas de motor con datos de sensores y recalcula rutas según el tráfico.|¿Los datos de sensores son confiables y están actualizados?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-truck"/></svg></span><span class="num">3</span><h3>Operaciones</h3><p class="ex">mantenimiento predictivo y optimización de rutas.</p></button>
-            <button class="card c-purple" data-detail="Un área de talento humano estima el riesgo de rotación para diseñar planes de retención, no para sancionar.|¿Puedo explicar el resultado a la persona afectada?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg></span><span class="num">4</span><h3>Talento humano</h3><p class="ex">análisis de rotación (con alto cuidado ético).</p></button>
-            <button class="card c-green" data-detail="Un asistente conversacional resuelve preguntas frecuentes y pasa los casos complejos a una persona.|¿Cuándo debe intervenir un humano?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-message-circle"/></svg></span><span class="num">5</span><h3>Servicio al cliente</h3><p class="ex">asistentes conversacionales.</p></button>
-            <button class="card c-navy" data-detail="La gerencia usa copilotos para resumir informes y comparar escenarios antes del comité.|¿Verifiqué las cifras y las fuentes del resumen?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-building-2"/></svg></span><span class="num">6</span><h3>Alta dirección</h3><p class="ex">resúmenes, escenarios y copilotos de análisis.</p></button>
+        <button class="card c-teal" data-detail="Un banco marca en milisegundos las transacciones atípicas para revisión y ajusta el puntaje de crédito con el historial de pagos.|¿Cuánto cuesta un falso positivo para un cliente honesto?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-landmark"/></svg></span><span class="num">1</span><h3>Finanzas</h3><p class="ex">Detección de fraude y puntaje de riesgo crediticio.</p></button>
+        <button class="card c-blue" data-detail="Una tienda en línea agrupa clientes por comportamiento, recomienda productos y detecta quién está a punto de cancelar.|¿Qué datos del cliente es legítimo usar y cuáles no?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg></span><span class="num">2</span><h3>Marketing</h3><p class="ex">Segmentación, recomendación y predicción de cancelación.</p></button>
+        <button class="card c-orange" data-detail="Una flota anticipa fallas de motor con datos de sensores y recalcula rutas según el tráfico.|¿Los datos de sensores son confiables y están actualizados?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-truck"/></svg></span><span class="num">3</span><h3>Operaciones</h3><p class="ex">Mantenimiento predictivo y optimización de rutas.</p></button>
+        <button class="card c-purple" data-detail="Un área de talento humano estima el riesgo de rotación para diseñar planes de retención, no para sancionar.|¿Puedo explicar el resultado a la persona afectada?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg></span><span class="num">4</span><h3>Talento humano</h3><p class="ex">Análisis de rotación (con alto cuidado ético).</p></button>
+        <button class="card c-green" data-detail="Un asistente conversacional resuelve preguntas frecuentes y pasa los casos complejos a una persona.|¿Cuándo debe intervenir un humano?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-message-circle"/></svg></span><span class="num">5</span><h3>Servicio al cliente</h3><p class="ex">Asistentes conversacionales.</p></button>
+        <button class="card c-navy" data-detail="La gerencia usa copilotos para resumir informes y comparar escenarios antes del comité.|¿Verifiqué las cifras y las fuentes del resumen?"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-building-2"/></svg></span><span class="num">6</span><h3>Alta dirección</h3><p class="ex">Resúmenes, escenarios y copilotos de análisis.</p></button>
           </div>
           <div class="detail" data-detail-box hidden></div>
           <p class="lead after">Una revisión de estudios del 2014 al 2024 reporta mejoras de 20 % a 30 % en eficiencia y reducción de riesgos, 15 % menos rotación de personal y 25 % más ventas en comercio electrónico (JianGang &amp; Yusof Ali, 2025).</p>
@@ -548,7 +555,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="IA generativa y analítica aumentada" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+    <section class="screen" data-video="modulo5-2" data-title="IA generativa y analítica aumentada" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
       <div class="with-avatar">
         <div>
           <p class="lead">La IA generativa permite consultar datos en lenguaje natural, generar consultas SQL o código en Python, y redactar resúmenes de resultados. Es la «analítica aumentada». Los modelos de lenguaje natural también interpretan datos no estructurados, como informes y documentos.</p>
@@ -607,16 +614,16 @@
       </div>
     </section>
 
-    <section class="screen" data-title="IA responsable" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+    <section class="screen" data-video="modulo5-3" data-title="IA responsable" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
       <div class="with-avatar">
         <div>
           <p class="lead">Un directivo debe poder explicar y responder por las decisiones apoyadas en IA.</p>
           <div class="grid g3">
-            <div class="card c-teal"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg></span><span class="num">1</span><h3>Equidad</h3><p class="ex">evitar sesgos que perjudiquen a personas o grupos. En un estudio con datos simulados, la IA explicable redujo la diferencia de resultados entre grupos de clientes de 12,9 % a 5,9 % (Yeruva, 2025).</p></div>
-            <div class="card c-blue"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="num">2</span><h3>Explicabilidad</h3><p class="ex">poder justificar por qué el modelo recomienda algo. Herramientas como SHAP y LIME muestran qué variables pesan en cada predicción.</p></div>
-            <div class="card c-orange"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="num">3</span><h3>Privacidad y seguridad</h3><p class="ex">cumplir la normativa de datos personales (Ley 1581 de 2012).</p></div>
-            <div class="card c-purple"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-user-check"/></svg></span><span class="num">4</span><h3>Supervisión humana</h3><p class="ex">una persona revisa las decisiones de alto impacto. La IA se usa como apoyo y no como reemplazo de la decisión humana (Ansari et al., 2026).</p></div>
-            <div class="card c-green"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-clipboard-list"/></svg></span><span class="num">5</span><h3>Rendición de cuentas</h3><p class="ex">roles claros y registro de decisiones.</p></div>
+            <div class="card c-teal"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg></span><span class="num">1</span><h3>Equidad</h3><p class="ex">Evitar sesgos que perjudiquen a personas o grupos. En un estudio con datos simulados, la IA explicable redujo la diferencia de resultados entre grupos de clientes de 12,9 % a 5,9 % (Yeruva, 2025).</p></div>
+            <div class="card c-blue"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="num">2</span><h3>Explicabilidad</h3><p class="ex">Poder justificar por qué el modelo recomienda algo. Herramientas como SHAP y LIME muestran qué variables pesan en cada predicción.</p></div>
+            <div class="card c-orange"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="num">3</span><h3>Privacidad y seguridad</h3><p class="ex">Cumplir la normativa de datos personales (Ley 1581 de 2012).</p></div>
+            <div class="card c-purple"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-user-check"/></svg></span><span class="num">4</span><h3>Supervisión humana</h3><p class="ex">Una persona revisa las decisiones de alto impacto. La IA se usa como apoyo y no como reemplazo de la decisión humana (Ansari et al., 2026).</p></div>
+            <div class="card c-green"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-clipboard-list"/></svg></span><span class="num">5</span><h3>Rendición de cuentas</h3><p class="ex">Roles claros y registro de decisiones.</p></div>
           </div>
           <p class="source">Referencias para gobernar la IA: NIST AI Risk Management Framework (2023) y Reglamento de IA de la Unión Europea (2024).</p>
         </div>
@@ -627,17 +634,17 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 5 · Semáforo de riesgo" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
+    <section class="screen" data-video="act5" data-title="Actividad 5 · Semáforo de riesgo" data-pill="MÓDULO 5 · IA EN LA GESTIÓN" data-color="green" data-mod="Módulo 5 · IA en la gestión">
       <p class="lead"><b>Instrucciones:</b> arrastra cada uso de IA al semáforo según el nivel de riesgo y supervisión requerida.</p>
       <div class="dnd" data-act="a5"
            data-ok="Correcto: cuanto mayor es el impacto sobre las personas, mayor debe ser la supervisión."
            data-bad="Piensa en el daño potencial si el modelo se equivoca.">
         <div><p class="label">Arrastra</p><div class="dnd-items">
-          <div class="chip" data-id="reco" data-ans="verde">recomendar productos en una tienda en línea.</div>
-          <div class="chip" data-id="contr" data-ans="amarillo">resumir contratos con IA y revisar con un abogado.</div>
-          <div class="chip" data-id="rot" data-ans="amarillo">predecir la rotación de empleados con un modelo explicable, y que Recursos Humanos tome la decisión final.</div>
-          <div class="chip" data-id="cred" data-ans="rojo">rechazar solicitudes de crédito automáticamente, sin explicación ni revisión humana.</div>
-          <div class="chip" data-id="cv" data-ans="rojo">filtrar hojas de vida con un modelo no auditado.</div>
+          <div class="chip" data-id="reco" data-ans="verde">Recomendar productos en una tienda en línea.</div>
+          <div class="chip" data-id="contr" data-ans="amarillo">Resumir contratos con IA y revisar con un abogado.</div>
+          <div class="chip" data-id="rot" data-ans="amarillo">Predecir la rotación de empleados con un modelo explicable, y que Recursos Humanos tome la decisión final.</div>
+          <div class="chip" data-id="cred" data-ans="rojo">Rechazar solicitudes de crédito automáticamente, sin explicación ni revisión humana.</div>
+          <div class="chip" data-id="cv" data-ans="rojo">Filtrar hojas de vida con un modelo no auditado.</div>
         </div></div>
         <div><p class="label">Suelta aquí</p><div class="dnd-zones">
           <div class="zone" data-id="verde" style="--c:var(--green)"><strong>Verde · riesgo bajo</strong></div>
@@ -656,26 +663,26 @@
     </section>
 
     <!-- ===================== MÓDULO 6 ===================== -->
-    <section class="screen" id="m6" data-title="Principios de visualización" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+    <section class="screen" id="m6" data-video="modulo6-1" data-title="Principios de visualización" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
       <div class="with-avatar">
         <div>
           <p class="lead">Visualizar es traducir datos en respuestas visuales. Primero define la pregunta; después elige el gráfico.</p>
           <div class="grid g5">
             <div class="vizcard"><h4>Comparar categorías</h4>
               <svg viewBox="0 0 120 70" aria-hidden="true"><g style="fill:var(--teal-fg)"><rect x="10" y="34" width="20" height="36"/><rect x="36" y="5" width="20" height="65"/><rect x="62" y="23" width="20" height="47"/><rect x="88" y="45" width="20" height="25"/></g></svg>
-              <b style="color:var(--teal-fg)">barras</b></div>
+          <b style="color:var(--teal-fg)">Barras</b></div>
             <div class="vizcard"><h4>Evolución en el tiempo</h4>
               <svg viewBox="0 0 120 70" aria-hidden="true"><polyline points="10,58 40,40 70,47 105,12" fill="none" style="stroke:var(--blue-fg)" stroke-width="3"/></svg>
-              <b style="color:var(--blue-fg)">líneas</b></div>
+          <b style="color:var(--blue-fg)">Líneas</b></div>
             <div class="vizcard"><h4>Relación entre dos variables</h4>
               <svg viewBox="0 0 120 70" aria-hidden="true"><g style="fill:var(--purple-fg)"><circle cx="15" cy="58" r="4"/><circle cx="33" cy="44" r="4"/><circle cx="46" cy="47" r="4"/><circle cx="64" cy="29" r="4"/><circle cx="70" cy="40" r="4"/><circle cx="82" cy="22" r="4"/><circle cx="101" cy="11" r="4"/></g></svg>
-              <b style="color:var(--purple-fg)">dispersión</b></div>
+          <b style="color:var(--purple-fg)">Dispersión</b></div>
             <div class="vizcard"><h4>Distribución</h4>
               <svg viewBox="0 0 120 70" aria-hidden="true"><g style="fill:var(--orange-fg)"><rect x="6" y="56" width="18" height="14"/><rect x="25" y="34" width="18" height="36"/><rect x="44" y="5" width="18" height="65"/><rect x="63" y="20" width="18" height="50"/><rect x="82" y="45" width="18" height="25"/><rect x="101" y="59" width="18" height="11"/></g></svg>
-              <b style="color:var(--orange-fg)">histograma</b></div>
+          <b style="color:var(--orange-fg)">Histograma</b></div>
             <div class="vizcard"><h4>Composición del total</h4>
               <svg viewBox="0 0 120 70" aria-hidden="true"><rect x="14" y="50" width="24" height="20" style="fill:var(--green-fg)"/><rect x="14" y="34" width="24" height="16" style="fill:var(--orange-fg)"/><rect x="48" y="44" width="24" height="26" style="fill:var(--green-fg)"/><rect x="48" y="23" width="24" height="21" style="fill:var(--orange-fg)"/><rect x="82" y="38" width="24" height="32" style="fill:var(--green-fg)"/><rect x="82" y="12" width="24" height="26" style="fill:var(--orange-fg)"/></svg>
-              <b style="color:var(--green-fg)">barras apiladas</b></div>
+          <b style="color:var(--green-fg)">Barras apiladas</b></div>
           </div>
           <p class="lead after"><b>Buenas prácticas:</b> un mensaje por gráfico, títulos que dicen la conclusión, color con propósito, sin efectos 3D y sin pasteles con muchas categorías (Tufte, 2001).</p>
         </div>
@@ -686,7 +693,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Cómo leer un dashboard" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+    <section class="screen" data-video="modulo6-2" data-title="Cómo leer un dashboard" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
       <div class="with-avatar">
         <div>
           <p class="lead">Un tablero combina indicadores, tendencias y comparaciones. Sirve para seguir los indicadores del negocio y reaccionar más rápido a los cambios, siempre que los datos estén organizados, actualizados y estructurados (Huu, 2025). Para interpretarlo, hazle tres preguntas:</p>
@@ -720,7 +727,9 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Gráficos engañosos" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+    <section class="screen" data-video="modulo6-3" data-title="Gráficos engañosos" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+      <div class="with-avatar">
+        <div>
       <p class="lead">Un mismo dato puede parecer insignificante o dramático según cómo se grafique.</p>
       <div class="charts mislead">
         <div class="chartbox"><p class="tag bad"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg>Parece que B vende el doble</p><h4>Engañoso: eje desde 96</h4><div data-chart="bad"></div></div>
@@ -730,12 +739,15 @@
         <ul class="traps"><li><b>Eje truncado:</b> empezar el eje en 96 hace que 98 vs. 100 parezca el doble.</li><li>Escalas distintas entre gráficos comparables.</li><li>Mostrar solo el periodo que conviene (selección de datos).</li><li>Confundir correlación con causalidad.</li></ul>
         <b>Pregunta de control:</b> «¿Qué verías si el eje comenzara en cero y se mostrara todo el periodo?»
       </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
+      </div>
       <div class="audio" hidden>
         <p>Los mismos datos, dos historias. A la izquierda, el eje empieza en noventa y seis y parece que el producto B vende el doble. A la derecha, con el eje en cero, la diferencia real es de solo dos por ciento. Antes de creer un gráfico, mira los ejes.</p>
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 6 · Elige el gráfico" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
+    <section class="screen" data-video="act6" data-title="Actividad 6 · Elige el gráfico" data-pill="MÓDULO 6 · VISUALIZACIÓN" data-color="navy" data-mod="Módulo 6 · Visualización">
       <p class="lead"><b>Instrucciones:</b> une cada pregunta con el gráfico más adecuado.</p>
       <div class="dnd" data-act="a6"
            data-ok="¡Bien! La pregunta define el gráfico."
@@ -764,14 +776,14 @@
     </section>
 
     <!-- ===================== MÓDULO 7 ===================== -->
-    <section class="screen" id="m7" data-title="Casos empresariales reales" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+    <section class="screen" id="m7" data-video="modulo7-1" data-title="Casos empresariales reales" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
       <div class="with-avatar">
         <div>
           <p class="lead">Cada caso sigue la misma ruta: Contexto - Datos - Análisis - Decisión - Resultado, y termina con una pregunta de reflexión.</p>
           <div class="grid g3">
-            <button class="card c-red" data-goto="case-netflix"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-tv"/></svg></span><span class="num">1</span><h3>Netflix</h3><p class="ex">personalización con analítica y aprendizaje automático.</p><span class="seen" data-seen="case-netflix" hidden><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visto</span></button>
-            <button class="card c-orange" data-goto="case-ups"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-truck"/></svg></span><span class="num">2</span><h3>UPS</h3><p class="ex">optimización de rutas de reparto con ORION.</p><span class="seen" data-seen="case-ups" hidden><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visto</span></button>
-            <button class="card c-blue" data-goto="case-walmart"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-store"/></svg></span><span class="num">3</span><h3>Walmart</h3><p class="ex">pronóstico de demanda ante huracanes.</p><span class="seen" data-seen="case-walmart" hidden><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visto</span></button>
+            <button class="card c-red" data-goto="case-netflix"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-tv"/></svg></span><span class="num">1</span><h3>Netflix</h3><p class="ex">Personalización con analítica y aprendizaje automático.</p><span class="seen" data-seen="case-netflix" hidden><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visto</span></button>
+            <button class="card c-orange" data-goto="case-ups"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-truck"/></svg></span><span class="num">2</span><h3>UPS</h3><p class="ex">Optimización de rutas de reparto con ORION.</p><span class="seen" data-seen="case-ups" hidden><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visto</span></button>
+            <button class="card c-blue" data-goto="case-walmart"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-store"/></svg></span><span class="num">3</span><h3>Walmart</h3><p class="ex">Pronóstico de demanda ante huracanes.</p><span class="seen" data-seen="case-walmart" hidden><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visto</span></button>
           </div>
         </div>
         <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
@@ -781,7 +793,7 @@
       </div>
     </section>
 
-    <section class="screen" id="case-netflix" data-title="Caso Netflix · Personalización" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+    <section class="screen" id="case-netflix" data-video="modulo7-2" data-title="Caso Netflix · Personalización" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
       <div class="with-avatar">
         <div>
           <div class="case">
@@ -792,10 +804,10 @@
             </div>
             <div>
               <div class="flow">
-                <div><h4 style="background:var(--teal)"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg>Contexto</h4><p>con miles de títulos, el usuario abandona si no encuentra qué ver.</p></div>
-                <div><h4 style="background:var(--blue)"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg>Datos</h4><p>historial de reproducciones, búsquedas, valoraciones y comportamiento en pantalla.</p></div>
-                <div><h4 style="background:var(--purple)"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg>Análisis</h4><p>sistemas de recomendación con aprendizaje automático.</p></div>
-                <div><h4 style="background:var(--orange)"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</h4><p>personalizar la página de inicio de cada usuario.</p></div>
+            <div><h4 style="background:var(--teal)"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg>Contexto</h4><p>Con miles de títulos, el usuario abandona si no encuentra qué ver.</p></div>
+            <div><h4 style="background:var(--blue)"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg>Datos</h4><p>Historial de reproducciones, búsquedas, valoraciones y comportamiento en pantalla.</p></div>
+            <div><h4 style="background:var(--purple)"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg>Análisis</h4><p>Sistemas de recomendación con aprendizaje automático.</p></div>
+            <div><h4 style="background:var(--orange)"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</h4><p>Personalizar la página de inicio de cada usuario.</p></div>
               </div>
               <div class="reflect">Reflexión: ¿qué datos personales usarías y cuáles no, para respetar la privacidad del usuario?</div>
             </div>
@@ -808,7 +820,7 @@
       </div>
     </section>
 
-    <section class="screen" id="case-ups" data-title="Caso UPS · Optimización de rutas (ORION)" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+    <section class="screen" id="case-ups" data-video="modulo7-3" data-title="Caso UPS · Optimización de rutas (ORION)" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
       <div class="with-avatar">
         <div>
           <div class="case">
@@ -819,10 +831,10 @@
             </div>
             <div>
               <div class="flow">
-                <div><h4 style="background:var(--teal)"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg>Contexto</h4><p>cada conductor entrega a más de 160 clientes al día y el orden de las paradas importa.</p></div>
-                <div><h4 style="background:var(--blue)"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg>Datos</h4><p>direcciones, ventanas de entrega, tráfico y mapas.</p></div>
-                <div><h4 style="background:var(--purple)"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg>Análisis</h4><p>optimización prescriptiva (ORION).</p></div>
-                <div><h4 style="background:var(--orange)"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</h4><p>cada mañana el sistema entrega al conductor una secuencia optimizada.</p></div>
+            <div><h4 style="background:var(--teal)"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg>Contexto</h4><p>Cada conductor entrega a más de 160 clientes al día y el orden de las paradas importa.</p></div>
+            <div><h4 style="background:var(--blue)"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg>Datos</h4><p>Direcciones, ventanas de entrega, tráfico y mapas.</p></div>
+            <div><h4 style="background:var(--purple)"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg>Análisis</h4><p>Optimización prescriptiva (ORION).</p></div>
+            <div><h4 style="background:var(--orange)"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</h4><p>Cada mañana el sistema entrega al conductor una secuencia optimizada.</p></div>
               </div>
               <div class="reflect">Reflexión: ¿qué decisiones deben seguir en manos del conductor aunque el sistema recomiende otra cosa?</div>
             </div>
@@ -835,7 +847,7 @@
       </div>
     </section>
 
-    <section class="screen" id="case-walmart" data-title="Caso Walmart · Pronosticar con datos históricos" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+    <section class="screen" id="case-walmart" data-video="modulo7-4" data-title="Caso Walmart · Pronosticar con datos históricos" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
       <div class="with-avatar">
         <div>
           <div class="case">
@@ -846,10 +858,10 @@
             </div>
             <div>
               <div class="flow">
-                <div><h4 style="background:var(--teal)"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg>Contexto</h4><p>antes de la llegada de un huracán, las tiendas deben tener el inventario correcto.</p></div>
-                <div><h4 style="background:var(--blue)"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg>Datos</h4><p>ventas históricas durante el huracán Charley.</p></div>
-                <div><h4 style="background:var(--purple)"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg>Análisis</h4><p>patrones de compra previos a la tormenta.</p></div>
-                <div><h4 style="background:var(--orange)"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</h4><p>enviar productos a las tiendas en la trayectoria de Frances.</p></div>
+            <div><h4 style="background:var(--teal)"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg>Contexto</h4><p>Antes de la llegada de un huracán, las tiendas deben tener el inventario correcto.</p></div>
+            <div><h4 style="background:var(--blue)"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg>Datos</h4><p>Ventas históricas durante el huracán Charley.</p></div>
+            <div><h4 style="background:var(--purple)"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg>Análisis</h4><p>Patrones de compra previos a la tormenta.</p></div>
+            <div><h4 style="background:var(--orange)"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg>Decisión</h4><p>Enviar productos a las tiendas en la trayectoria de Frances.</p></div>
               </div>
               <div class="reflect">Reflexión: ¿un patrón del pasado siempre se repetirá? ¿Qué podría hacer fallar el pronóstico?</div>
             </div>
@@ -862,7 +874,7 @@
       </div>
     </section>
 
-    <section class="screen" data-title="Actividad 7 · Ficha de análisis de caso" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
+    <section class="screen" data-video="act7" data-title="Actividad 7 · Ficha de análisis de caso" data-pill="MÓDULO 7 · CASOS REALES" data-color="red" data-mod="Módulo 7 · Casos reales">
       <p class="lead"><b>Instrucciones:</b> analiza un caso como gerente. Elige uno de los tres casos y arma su ficha campo por campo: en cada uno elige la opción que mejor lo describe (tienes 2 intentos). Al final, lleva el caso a tu organización en pocas líneas.</p>
       <div class="quiz case-lab" data-act="a7"></div>
       <details class="support" data-support hidden>
@@ -880,19 +892,23 @@
     </section>
 
     <!-- ===================== MÓDULO 8 ===================== -->
-    <section class="screen" id="m8" data-title="Simuladores de decisión" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
-      <p class="lead">Dos simuladores con datos ficticios para decidir sin riesgo. En cada uno recibes un escenario, tomas una decisión y obtienes realimentación comparando tu resultado con el óptimo.<br><b>Puntaje por simulador:</b> calidad de la decisión (60 %), comparación con el resultado óptimo (40 %)</p>
-      <div class="grid sim-pick">
-        <button class="card c-teal" data-goto="sim1"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg></span><span class="num">1</span><h3>Simulador 1 · Precio óptimo</h3><p class="ex">analítica predictiva y prescriptiva</p></button>
+    <section class="screen" id="m8" data-video="modulo8-1" data-title="Simuladores de decisión" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
+      <div class="with-avatar">
+        <div>
+          <p class="lead">Dos simuladores con datos ficticios para decidir sin riesgo. En cada uno recibes un escenario, tomas una decisión y obtienes realimentación comparando tu resultado con el óptimo.<br><b>Puntaje por simulador:</b> calidad de la decisión (60 %), comparación con el resultado óptimo (40 %)</p>
+          <div class="grid g2 sim-cards">
+            <button class="card c-teal" data-goto="sim1"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg></span><span class="num">1</span><h3>Simulador 1 · Precio óptimo</h3><p class="ex">analítica predictiva y prescriptiva</p></button>
+            <button class="card c-orange" data-goto="sim2"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-briefcase"/></svg></span><span class="num">2</span><h3>Simulador 2 · Gerente por un día</h3><p class="ex">decisión con incertidumbre y calidad de datos</p></button>
+          </div>
+        </div>
         <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
-        <button class="card c-orange" data-goto="sim2"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-briefcase"/></svg></span><span class="num">2</span><h3>Simulador 2 · Gerente por un día</h3><p class="ex">decisión con incertidumbre y calidad de datos</p></button>
       </div>
       <div class="audio" hidden>
         <p>Llegó la hora de practicar. Tienes dos simuladores: fijar un precio, y, para cerrar, ser gerente por un día. No hay riesgo real: equivocarte aquí es la mejor forma de aprender. Al final compararemos tu decisión con la óptima.</p>
       </div>
     </section>
 
-    <section class="screen" id="sim1" data-title="Simulador 1 · Precio óptimo" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
+    <section class="screen" id="sim1" data-video="modulo8-2" data-title="Simulador 1 · Precio óptimo" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
       <div class="with-avatar">
         <div>
           <div class="sim1" data-sim1>
@@ -919,21 +935,21 @@
       </div>
     </section>
 
-    <section class="screen" id="sim2" data-title="Simulador 2 · Gerente por un día" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
+    <section class="screen" id="sim2" data-video="modulo8-3" data-title="Simulador 2 · Gerente por un día" data-pill="MÓDULO 8 · SIMULADORES" data-color="teal" data-mod="Módulo 8 · Simuladores">
       <div class="with-avatar">
         <div>
           <div class="sim2" data-sim2>
             <div class="start"><span class="start-ico"><svg class="i" aria-hidden="true"><use href="#i-trending-down"/></svg></span>Ventas del Norte caen 12 %<br><span style="font-weight:400;font-size:13px">Escenario: las ventas del Norte caen 12 % y el comité te pide una decisión hoy. Recibes tablero, historial y un correo con presión por actuar rápido.</span><br>¿Qué haces primero?</div>
             <div>
               <div class="routes" data-step="1">
-                <div class="route-row" style="--c:var(--red)"><button data-route="A">Ruta A · Bajar precios 10 % de inmediato</button><div class="conseq masked">no corrige la causa y reduce el margen</div><div class="pts masked">20 puntos</div></div>
-                <div class="route-row" style="--c:var(--green)"><button data-route="B">Ruta B · Pedir desglose y revisar la calidad de los datos</button><div class="conseq masked">descubres quiebres de inventario en el canal web y duplicados en pedidos</div><div class="pts masked">90 puntos</div></div>
-                <div class="route-row" style="--c:var(--orange)"><button data-route="C">Ruta C · Lanzar campaña masiva</button><div class="conseq masked">gasto alto con inventario insuficiente</div><div class="pts masked">40 puntos</div></div>
+            <div class="route-row" style="--c:var(--red)"><button data-route="A">Ruta A · Bajar precios 10 % de inmediato</button><div class="conseq masked">No corrige la causa y reduce el margen</div><div class="pts masked">20 puntos</div></div>
+            <div class="route-row" style="--c:var(--green)"><button data-route="B">Ruta B · Pedir desglose y revisar la calidad de los datos</button><div class="conseq masked">Descubres quiebres de inventario en el canal web y duplicados en pedidos</div><div class="pts masked">90 puntos</div></div>
+            <div class="route-row" style="--c:var(--orange)"><button data-route="C">Ruta C · Lanzar campaña masiva</button><div class="conseq masked">Gasto alto con inventario insuficiente</div><div class="pts masked">40 puntos</div></div>
               </div>
               <div class="routes" data-step="2" hidden style="margin-top:14px">
                 <p class="label" style="margin:0">Segunda decisión en la ruta B</p>
-                <div class="route-row" style="--c:var(--green)"><button data-route="B1">reabastecer y reasignar presupuesto con el modelo prescriptivo</button><div class="conseq masked">suma 10 puntos, total 100</div><div class="pts masked">+10 puntos</div></div>
-                <div class="route-row" style="--c:var(--orange)"><button data-route="B2">esperar al cierre de mes para confirmar</button><div class="conseq masked">resta 30 puntos, total 60</div><div class="pts masked">−30 puntos</div></div>
+            <div class="route-row" style="--c:var(--green)"><button data-route="B1">Reabastecer y reasignar presupuesto con el modelo prescriptivo</button><div class="conseq masked">Suma 10 puntos, total 100</div><div class="pts masked">+10 puntos</div></div>
+            <div class="route-row" style="--c:var(--orange)"><button data-route="B2">Esperar al cierre de mes para confirmar</button><div class="conseq masked">Resta 30 puntos, total 60</div><div class="pts masked">−30 puntos</div></div>
               </div>
               <div class="feedback info" data-fb style="margin-top:14px">Cada decisión te mostrará sus consecuencias.</div>
               <div class="row-end"><button class="btn ghost" data-retry hidden>Intentar de nuevo</button></div>
@@ -948,21 +964,23 @@
     </section>
 
     <!-- ===================== CIERRE ===================== -->
-    <section class="screen" id="final1" data-title="Evaluación final · Preguntas 1 a 5" data-pill="CIERRE" data-mod="Cierre">
+    <section class="screen" id="final1" data-video="evaluacionFinal1" data-title="Evaluación final · Preguntas 1 a 5" data-pill="CIERRE" data-mod="Cierre">
       <div class="quiz" data-quiz="final1"></div>
       <div class="audio" hidden>
         <p>Evaluación final, primera parte. Son cinco preguntas con realimentación inmediata. Lee con calma, elige una opción y comprueba tu respuesta. Si fallas, te explicaré por qué. ¡Mucho éxito!</p>
       </div>
     </section>
 
-    <section class="screen" id="final2" data-title="Evaluación final · Preguntas 6 a 10" data-pill="CIERRE" data-mod="Cierre">
+    <section class="screen" id="final2" data-video="evaluacionFinal2" data-title="Evaluación final · Preguntas 6 a 10" data-pill="CIERRE" data-mod="Cierre">
       <div class="quiz" data-quiz="final2"></div>
       <div class="audio" hidden>
         <p>Segunda parte de la evaluación final. Esta vez hay preguntas de analítica prescriptiva, inteligencia artificial, visualización y un cálculo del simulador de precio. Recuerda lo que practicaste. ¡Tú puedes!</p>
       </div>
     </section>
 
-    <section class="screen" data-title="Conclusiones y siguientes pasos" data-pill="CIERRE" data-mod="Cierre">
+    <section class="screen" data-video="conclusion" data-title="Conclusiones y siguientes pasos" data-pill="CIERRE" data-mod="Cierre">
+      <div class="with-avatar">
+        <div>
       <div class="grid close-grid" data-close>
         <div class="ideas">
           <div class="card c-teal"><span class="ico"><svg class="i" aria-hidden="true"><use href="#i-circle-help"/></svg></span><span class="num">1</span><h3>Pregunta primero, analiza después.</h3></div>
@@ -984,6 +1002,9 @@
           </div>
           <div class="plan results" data-results style="margin-top:12px"></div>
         </div>
+      </div>
+        </div>
+        <div class="avatar"><button data-insight aria-label="Escuchar a Insight"><img src="assets/insight.webp" alt=""></button><span>Insight</span><small>Toca para escuchar</small></div>
       </div>
       <div class="audio" hidden>
         <p>Felicitaciones, completaste el recorrido. Recuerda estas cinco ideas: pregunta primero; cuida la calidad de los datos; elige el tipo de analítica adecuado; visualiza con honestidad; y usa la inteligencia artificial con responsabilidad. Ahora te propongo un plan de treinta días para llevarlo a tu organización.</p>
@@ -1068,6 +1089,13 @@
     <div class="drawer-grid">
       <div class="insight-stage">
         <div class="insight-media" id="insightMedia"><img src="assets/insight.webp" alt="Insight, guía virtual"></div>
+        <!-- Avance del video: retroceder, barra para tocar o arrastrar, adelantar y tiempo -->
+        <div class="seek-row" id="seekRow" hidden>
+          <button class="icon-btn" id="backBtn" aria-label="Retroceder 10 segundos" title="Retroceder 10 s"><svg class="i" aria-hidden="true"><use href="#i-rewind"/></svg></button>
+          <div class="iv-seek" id="drawerSeek" role="slider" tabindex="0" aria-label="Avance del video" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="iv-fill"></span><span class="iv-thumb"></span></div>
+          <button class="icon-btn" id="fwdBtn" aria-label="Adelantar 10 segundos" title="Adelantar 10 s"><svg class="i" aria-hidden="true"><use href="#i-fast-forward"/></svg></button>
+          <span class="iv-time" id="drawerTime">0:00 / 0:00</span>
+        </div>
         <!-- En las actividades Insight solo habla: onda de voz en lugar del avatar -->
         <div class="voice-wave" aria-hidden="true">
           <span class="voice-core"><svg class="i" aria-hidden="true"><use href="#i-headphones"/></svg></span>

@@ -28,7 +28,7 @@
 | `scorm/assets/insight.webp` | Avatar de Insight |
 | `scorm/audio/` | **Vacía**: Insight habla con la voz sintética del navegador |
 | `scorm/imsmanifest.xml` | Manifiesto SCORM 1.2 |
-| `probar-lms.html` | LMS de prueba para revisar el curso sin Moodle (`python -m http.server 8765`) |
+| `probar-lms.html` | LMS de prueba para revisar el curso sin Moodle (`python tools/servidor.py`, que permite adelantar los videos) |
 | `tools/empaquetar.py` | Genera `dist/ODC_DataDrivenManager_SCORM12.zip` |
 
 La carpeta **no es un repositorio git**: es la descarga `DataDriven-ODC-main.zip` descomprimida.
