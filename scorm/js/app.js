@@ -2132,9 +2132,6 @@
   /* ------------------------------------------------------------------ */
   renderPrefs();
   SCORM.init();
-  // Descarga del paquete SCORM: solo en la versión web (dentro de Moodle no tiene sentido)
-  var getScorm = $('[data-get-scorm]');
-  if (getScorm) getScorm.hidden = SCORM.connected;
   loadState();
   buildMenu();
   renderCharts();

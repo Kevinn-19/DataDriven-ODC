@@ -1993,7 +1993,7 @@ details.support li { margin-bottom: 6px; }
 .credits-grid, .close-grid { align-items: start; }
 .credits-grid > .plan { margin: 0; } /* la lista de créditos (<dl>) trae margen propio y quedaba más abajo */
 
-/* Créditos: descarga del paquete SCORM (solo en la versión web) */
+/* Créditos: descarga del paquete SCORM */
 .get-scorm {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
