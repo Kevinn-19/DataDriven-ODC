@@ -1,0 +1,69 @@
+# Arma el paquete SCORM con la carpeta scorm/ y lo actualiza en la Release «1.0»,
+# que es la que descarga el botón «Descargar paquete SCORM» del curso.
+# Corre en cada push a main que cambie scorm/ (o este archivo) y se puede lanzar
+# a mano desde la pestaña Actions.
+name: Paquete SCORM
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scorm/**'
+      - '.github/workflows/paquete-scorm.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Si llegan dos push seguidos, solo termina el último
+concurrency:
+  group: paquete-scorm
+  cancel-in-progress: true
+
+env:
+  TAG: '1.0'
+  ZIP: ODC_DataDrivenManager_SCORM12.zip
+
+jobs:
+  paquete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Revisar el manifiesto
+        run: |
+          python3 - <<'EOF'
+          import os, re, sys
+          files = set()
+          for folder, _, names in os.walk('scorm'):
+              for n in names:
+                  if not n.startswith('.'):
+                      files.add(os.path.relpath(os.path.join(folder, n), 'scorm').replace(os.sep, '/'))
+          listed = set(re.findall(r'<file\s+href="([^"]+)"', open('scorm/imsmanifest.xml', encoding='utf-8').read()))
+          missing = sorted(listed - files)
+          unlisted = sorted(files - listed - {'imsmanifest.xml'})
+          for f in unlisted:
+              print('::warning::El manifiesto no lista este archivo: ' + f)
+          for f in missing:
+              print('::error::El manifiesto lista un archivo que no existe: ' + f)
+          print(len(files), 'archivos en scorm/')
+          sys.exit(1 if missing else 0)
+          EOF
+
+      - name: Armar el ZIP (imsmanifest.xml en la raíz)
+        run: |
+          cd scorm
+          zip -r -X -D -q "../$ZIP" . -x '.*' '*/.*'
+          cd ..
+          unzip -l "$ZIP" | grep -q ' imsmanifest.xml$'
+          ls -lh "$ZIP"
+
+      - name: Actualizar la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" "$ZIP" --clobber
+          gh release edit "$TAG" --notes "Paquete SCORM ODC Data Driven Manager.
+
+          Actualizado automáticamente el $(date -u +'%d/%m/%Y %H:%M') UTC con el commit ${GITHUB_SHA::7}."
