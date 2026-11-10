@@ -29,41 +29,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar el repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Revisar el manifiesto
+      - name: Revisar el manifiesto y armar el ZIP
         run: |
           python3 - <<'EOF'
-          import os, re, sys
-          files = set()
-          for folder, _, names in os.walk('scorm'):
+          import os, re, sys, zipfile
+          src, out = 'scorm', os.environ['ZIP']
+          # Archivos del curso (sin los ocultos, como .gitkeep)
+          files = []
+          for folder, _, names in os.walk(src):
               for n in names:
                   if not n.startswith('.'):
-                      files.add(os.path.relpath(os.path.join(folder, n), 'scorm').replace(os.sep, '/'))
-          listed = set(re.findall(r'<file\s+href="([^"]+)"', open('scorm/imsmanifest.xml', encoding='utf-8').read()))
-          missing = sorted(listed - files)
-          unlisted = sorted(files - listed - {'imsmanifest.xml'})
-          for f in unlisted:
+                      files.append(os.path.relpath(os.path.join(folder, n), src).replace(os.sep, '/'))
+          files.sort()
+          # El manifiesto debe listar todos los archivos que existen
+          listed = set(re.findall(r'<file\s+href="([^"]+)"', open(os.path.join(src, 'imsmanifest.xml'), encoding='utf-8').read()))
+          missing = sorted(listed - set(files))
+          for f in sorted(set(files) - listed - {'imsmanifest.xml'}):
               print('::warning::El manifiesto no lista este archivo: ' + f)
           for f in missing:
               print('::error::El manifiesto lista un archivo que no existe: ' + f)
-          print(len(files), 'archivos en scorm/')
-          sys.exit(1 if missing else 0)
+          if missing:
+              sys.exit(1)
+          # imsmanifest.xml en la raíz del ZIP, como lo pide Moodle
+          with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+              for f in files:
+                  z.write(os.path.join(src, f), f)
+          with zipfile.ZipFile(out) as z:
+              names = z.namelist()
+              assert 'imsmanifest.xml' in names, 'falta imsmanifest.xml en la raíz'
+              assert z.testzip() is None, 'el ZIP quedó dañado'
+          print('Paquete listo: %d archivos, %.1f MB' % (len(names), os.path.getsize(out) / 1e6))
           EOF
-
-      - name: Armar el ZIP (imsmanifest.xml en la raíz)
-        run: |
-          cd scorm
-          zip -r -X -D -q "../$ZIP" . -x '.*' '*/.*'
-          cd ..
-          unzip -l "$ZIP" | grep -q ' imsmanifest.xml$'
-          ls -lh "$ZIP"
 
       - name: Actualizar la Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload "$TAG" "$ZIP" --clobber
-          gh release edit "$TAG" --notes "Paquete SCORM ODC Data Driven Manager.
-
-          Actualizado automáticamente el $(date -u +'%d/%m/%Y %H:%M') UTC con el commit ${GITHUB_SHA::7}."
+          gh release edit "$TAG" --notes "Paquete SCORM ODC Data Driven Manager. Actualizado automáticamente el $(date -u +'%d/%m/%Y %H:%M') UTC con el commit ${GITHUB_SHA::7}."
