@@ -1991,6 +1991,30 @@ details.support li { margin-bottom: 6px; }
 .badge-pass.ok { background: var(--ok-bg); color: var(--ok-ink); }
 .badge-pass.no { background: var(--warn-bg); color: var(--warn-ink); }
 .credits-grid, .close-grid { align-items: start; }
+.credits-grid > .plan { margin: 0; } /* la lista de créditos (<dl>) trae margen propio y quedaba más abajo */
+
+/* Créditos: descarga del paquete SCORM (solo en la versión web) */
+.get-scorm {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px 16px;
+  margin-bottom: clamp(12px, 1.1vw, 22px); /* mismo espacio que entre las tarjetas de abajo */
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+}
+.get-scorm-ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; color: #fff; background: var(--primary); }
+.get-scorm-ico .i { width: 26px; height: 26px; }
+.get-scorm h3 { margin: 0 0 4px; font-size: 17px; }
+.get-scorm p { margin: 0; font-size: 14.5px; color: var(--text-muted); }
+.get-scorm .btn { grid-column: 1 / -1; justify-self: start; text-decoration: none; }
+@media (min-width: 760px) {
+  .get-scorm { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .get-scorm .btn { grid-column: auto; }
+}
 .refs { font-size: 13.5px; }
 .refs p { margin: 0 0 10px; padding-left: 1.5em; text-indent: -1.5em; break-inside: avoid; overflow-wrap: anywhere; }
 .meta dt { font-weight: 800; color: var(--heading-color); font-size: 13.5px; }
