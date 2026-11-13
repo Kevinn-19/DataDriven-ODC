@@ -833,6 +833,20 @@
     grip.addEventListener('touchcancel', end);
   })();
 
+  // Orden aleatorio para que las actividades no sean lineales: reordena los elementos
+  // existentes (conservan sus eventos y datos) dentro de su contenedor
+  function shuffleIndexes(n) {
+    var a = [];
+    for (var i = 0; i < n; i++) a.push(i);
+    for (var j = n - 1; j > 0; j--) { var k = Math.floor(Math.random() * (j + 1)); var t = a[j]; a[j] = a[k]; a[k] = t; }
+    return a;
+  }
+  function shuffleChildren(parent, selector) {
+    if (!parent) return;
+    var items = $$(selector, parent).filter(function (el) { return el.parentNode === parent; });
+    shuffleIndexes(items.length).forEach(function (i) { parent.appendChild(items[i]); });
+  }
+
   /* ------------------------------------------------------------------ */
   /* Actividad: arrastrar y soltar (1, 3, 5, 6)                           */
   /* ------------------------------------------------------------------ */
@@ -847,6 +861,7 @@
     var selected = null;
     var dragged = null;
     var checked = false;
+    shuffleChildren(pool, '.chip');
 
     function showScore() {
       var sc = state.s[key] || 0;
@@ -903,6 +918,7 @@
       var attempts = state.t[key] || 0;
       if (checked) { // reintentar: las tarjetas mal ubicadas vuelven a la lista
         chips.forEach(function (c) { if (c.classList.contains('wrong')) pool.appendChild(c); });
+        shuffleChildren(pool, '.chip');
         clearMarks();
         checked = false;
         verifyBtn.textContent = 'Verificar respuestas';
@@ -951,6 +967,9 @@
     var status = $('[data-status]', root);
     var dimBtns = $$('.classify button', root);
     var lastScore = null;
+    // Filas de la tabla y botones de clasificación en orden aleatorio
+    shuffleChildren($('tbody', root), 'tr');
+    shuffleChildren($('.classify', root), 'button');
     var heads = $$('thead th', root).map(function (th) { return th.textContent; });
     $$('tbody tr', root).forEach(function (tr) {
       $$('td', tr).forEach(function (td, c) { td.setAttribute('data-label', heads[c] || ''); });
@@ -1700,7 +1719,8 @@
       var html = side('clipboard-list', 'Elige un caso', attempts() ? 'Te quedan ' + left + ' de ' + MAX_ATTEMPTS + ' intentos' : MAX_ATTEMPTS + ' intentos') +
         '<div class="quiz-main"><div class="qbox"><span class="qnum">' + icon('briefcase') + '</span><span>¿Qué caso vas a analizar como gerente?</span></div>' +
         '<div class="grid g3 lab-cases">';
-      CASES.forEach(function (c, i) {
+      shuffleIndexes(CASES.length).forEach(function (i) {
+        var c = CASES[i];
         html += '<button class="card c-' + c.color + '" data-case="' + i + '"><span class="ico">' + icon(c.icon) + icon(c.icon, 'wm') + '</span>' +
           '<div class="card-body"><h3>' + c.name + '</h3><p class="ex">' + c.sub + '</p></div></button>';
       });
@@ -1727,8 +1747,9 @@
         (i < NF ? '' : '<div class="lab-scenario"><span class="field-ico">' + icon(t.icon) + '</span><div><b>' + escapeHTML(t.name) + '</b><p>' + escapeHTML(t.text) + '</p></div></div>') +
         '<div class="qbox"><span class="qnum">' + (i < NF ? i + 1 : i - NF + 1) + '</span><span>' + escapeHTML(f.q) + '</span></div>' +
         '<div class="options' + (f.multi ? ' multi' : '') + '">';
-      data.o.forEach(function (o, k) {
-        html += '<button class="opt" data-o="' + k + '" aria-pressed="false"><span class="opt-key">' + LETTERS[k] + '</span><span>' + escapeHTML(o) + '</span></button>';
+      // Opciones en orden aleatorio: data-o conserva el índice original (para calificar y SCORM)
+      shuffleIndexes(data.o.length).forEach(function (k, p) {
+        html += '<button class="opt" data-o="' + k + '" aria-pressed="false"><span class="opt-key">' + LETTERS[p] + '</span><span>' + escapeHTML(data.o[k]) + '</span></button>';
       });
       html += '</div><div class="qfoot"><div class="feedback info" data-fb>' + (f.multi ? 'Puede haber varias respuestas correctas.' : 'Elige una opción y comprueba tu respuesta.') + '</div>' +
         '<button class="btn" data-act-btn disabled>Comprobar' + icon('arrow-right') + '</button></div></div>';
