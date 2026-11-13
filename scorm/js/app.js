@@ -990,9 +990,6 @@
     var status = $('[data-status]', root);
     var dimBtns = $$('.classify button', root);
     var lastScore = null;
-    // Filas de la tabla y botones de clasificación en orden aleatorio
-    shuffleChildren($('tbody', root), 'tr');
-    shuffleChildren($('.classify', root), 'button');
     var heads = $$('thead th', root).map(function (th) { return th.textContent; });
     $$('tbody tr', root).forEach(function (tr) {
       $$('td', tr).forEach(function (td, c) { td.setAttribute('data-label', heads[c] || ''); });
@@ -1207,7 +1204,9 @@
       var q = qs[idx];
       if (isFinal) {
         state.q[cfg.offset + idx] = points;
-        SCORM.interaction('final_p' + (cfg.offset + idx + 1), 'choice', 'ABCD'.charAt(choice), points > 0 ? 'correct' : 'wrong');
+        // Letra que el estudiante vio en pantalla (las opciones se muestran en orden aleatorio)
+        var shown = $('.opt[data-o="' + choice + '"] .opt-key', root);
+        SCORM.interaction('final_p' + (cfg.offset + idx + 1), 'choice', shown ? shown.textContent : 'ABCD'.charAt(choice), points > 0 ? 'correct' : 'wrong');
         updateGrade();
         saveState(true);
       } else {
@@ -1834,7 +1833,9 @@
       lab.r[idx] = ok ? 1 : 0;
       saveState(true);
       SCORM.interaction('a7_' + CASES[lab.c].id + (idx < NF ? '_campo' + (idx + 1) : '_nuevo' + (idx - NF + 1)), 'choice',
-        picked.slice().sort().map(function (k) { return LETTERS[k]; }).join(','), ok ? 'correct' : 'wrong');
+        // Letras que el estudiante vio en pantalla (las opciones se muestran en orden aleatorio)
+        picked.map(function (k) { var key = $('.opt[data-o="' + k + '"] .opt-key', root); return key ? key.textContent : LETTERS[k]; })
+          .sort().join(','), ok ? 'correct' : 'wrong');
       fb.className = 'feedback ' + (ok ? 'ok' : 'bad');
       fb.textContent = (ok ? 'Correcto. ' : 'Aún no. ') + data.e;
       phase = 'next';
