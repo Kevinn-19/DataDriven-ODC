@@ -799,6 +799,40 @@
   $('#drawerClose').addEventListener('click', closeDrawer);
   $('#drawerBackdrop').addEventListener('click', closeDrawer);
 
+  // Celulares y tablets: la ventana es una hoja inferior que se cierra deslizándola hacia abajo
+  // desde su barra superior (ver «hoja inferior» en styles.css)
+  (function () {
+    var sheet = $('#drawer'), grip = $('#drawer header');
+    var mq = window.matchMedia('(max-width: 899px)');
+    var startY = null, dy = 0;
+    function settle(close) {
+      sheet.classList.remove('dragging');
+      sheet.classList.add('settling');
+      sheet.style.transform = close ? 'translateY(100%)' : '';
+      setTimeout(function () {
+        sheet.classList.remove('settling');
+        if (close) { closeDrawer(); sheet.style.transform = ''; }
+      }, close ? 200 : 230);
+    }
+    grip.addEventListener('touchstart', function (e) {
+      if (!mq.matches || e.touches.length !== 1 || e.target.closest('button')) return;
+      startY = e.touches[0].clientY; dy = 0;
+      sheet.classList.add('dragging');
+    }, { passive: true });
+    grip.addEventListener('touchmove', function (e) {
+      if (startY == null) return;
+      dy = Math.max(0, e.touches[0].clientY - startY);
+      sheet.style.transform = 'translateY(' + dy + 'px)';
+    }, { passive: true });
+    function end() {
+      if (startY == null) return;
+      startY = null;
+      settle(dy > Math.min(120, sheet.offsetHeight * 0.25));
+    }
+    grip.addEventListener('touchend', end);
+    grip.addEventListener('touchcancel', end);
+  })();
+
   /* ------------------------------------------------------------------ */
   /* Actividad: arrastrar y soltar (1, 3, 5, 6)                           */
   /* ------------------------------------------------------------------ */
@@ -1060,17 +1094,35 @@
     var qs = cfg.questions;
     var results = []; // a4: resultados de la ronda actual
     var idx = 0, tries = 0, choice = null, phase = 'ask';
+    // Orden aleatorio de las preguntas en cada ronda. idx sigue siendo el índice original,
+    // así el progreso guardado, el puntaje y SCORM no cambian.
+    var order = [];
+    function shuffled(n) {
+      var a = [];
+      for (var i = 0; i < n; i++) a.push(i);
+      for (var j = n - 1; j > 0; j--) { var k = Math.floor(Math.random() * (j + 1)); var t = a[j]; a[j] = a[k]; a[k] = t; }
+      return a;
+    }
+    // Las ya respondidas (al volver al curso) van primero para que la numeración siga coherente
+    function reshuffle() {
+      var done = [], pending = [];
+      shuffled(qs.length).forEach(function (i) { (stored(i) == null ? pending : done).push(i); });
+      done.sort(function (a, b) { return a - b; });
+      order = done.concat(pending);
+    }
 
     function stored(i) { return isFinal ? state.q[cfg.offset + i] : results[i]; }
+    reshuffle();
 
     function firstPending() {
-      for (var i = 0; i < qs.length; i++) if (stored(i) == null) return i;
+      for (var p = 0; p < order.length; p++) if (stored(order[p]) == null) return order[p];
       return -1;
     }
 
     function dots() {
       var html = '<div class="qdots">';
-      for (var i = 0; i < qs.length; i++) {
+      for (var p = 0; p < order.length; p++) {
+        var i = order[p];
         var r = stored(i);
         var cls = r == null ? (i === idx ? 'cur' : '') : (r > 0 ? 'r' : 'w');
         html += '<i class="' + cls + '"></i>';
@@ -1080,15 +1132,18 @@
 
     function render() {
       var q = qs[idx];
-      var n = isFinal ? cfg.offset + idx + 1 : idx + 1;
+      var pos = order.indexOf(idx);
+      var n = isFinal ? cfg.offset + pos + 1 : pos + 1;
       var total = isFinal ? cfg.total : qs.length;
       var letters = 'ABCD';
       var html = '<aside class="quiz-side">' + spot(isFinal ? 'trophy' : 'file-question-mark') +
         '<p class="quiz-count"><b>Pregunta ' + n + '</b> de ' + total + '</p>' + dots() +
         (cfg.note ? '<p class="quiz-note">' + icon('info') + cfg.note + '</p>' : '') + '</aside>' +
         '<div class="quiz-main"><div class="qbox"><span class="qnum">' + n + '</span><span>' + escapeHTML(q.q) + '</span></div><div class="options">';
-      q.o.forEach(function (o, i) {
-        html += '<button class="opt" data-o="' + i + '"><span class="opt-key">' + letters[i] + '</span><span>' + escapeHTML(o) + '</span></button>';
+      // Opciones en orden aleatorio: data-o conserva el índice original (para calificar);
+      // la letra corresponde a la posición en pantalla
+      shuffled(q.o.length).forEach(function (i, p) {
+        html += '<button class="opt" data-o="' + i + '"><span class="opt-key">' + letters[p] + '</span><span>' + escapeHTML(q.o[i]) + '</span></button>';
       });
       html += '</div><div class="qfoot"><div class="feedback info" data-fb>Elige una opción y comprueba tu respuesta.</div>' +
         '<button class="btn" data-act-btn disabled>Comprobar' + icon('arrow-right') + '</button></div></div>';
@@ -1198,7 +1253,7 @@
       root.innerHTML = '<aside class="quiz-side">' + spot('award') + '<p class="quiz-count"><b>Resultado</b></p>' + dots() +
         '</aside><div class="quiz-main">' + html + '</div>';
       var retry = $('[data-retry-quiz]', root);
-      if (retry) retry.addEventListener('click', function () { results = []; idx = 0; render(); });
+      if (retry) retry.addEventListener('click', function () { results = []; reshuffle(); idx = order[0]; render(); });
       var reset = $('[data-reset-final]', root);
       if (reset) reset.addEventListener('click', function () {
         state.q = [];
@@ -1221,6 +1276,7 @@
 
     function restart() {
       if (!isFinal && (state.t.a4 || 0) >= MAX_ATTEMPTS) return locked();
+      reshuffle();
       var p = firstPending();
       if (p === -1) summary(); else { idx = p; render(); }
     }

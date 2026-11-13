@@ -4343,3 +4343,78 @@ button.insight-media.is-video::before, button.insight-media.is-video::after { di
 #m7 .card[data-goto="case-walmart"] .ico > .i:first-child { box-shadow: 0 0 0 4px #9CCBF5; }
 :root[data-theme="dark"] #m7 .card[data-goto="case-walmart"] .ico { background: radial-gradient(70% 80% at 100% 0%, rgba(108, 184, 255, .2), transparent 60%), linear-gradient(160deg, #0E2342, #0A1A33); }
 :root[data-theme="dark"] #m7 .card[data-goto="case-walmart"] .ico > .i:first-child { box-shadow: 0 0 0 4px #2F6FB3; }
+
+/* =====================================================================
+   PANEL DE INSIGHT EN CELULARES Y TABLETS: hoja inferior
+   El avatar o el video quedan compactos arriba y la transcripción
+   tiene su propio desplazamiento. Se cierra con la X, tocando fuera
+   o deslizando la hoja hacia abajo desde la barra superior.
+   ===================================================================== */
+@media (max-width: 899px) {
+  .drawer-backdrop { touch-action: none; }
+  .drawer {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 92dvh;
+    border-radius: 24px 24px 0 0;
+    border-bottom: 0;
+    transform: none;
+    animation: sheet-up .3s var(--ease);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    overscroll-behavior: contain;
+  }
+  .drawer.dragging { transition: none; }
+  .drawer.settling { transition: transform .22s var(--ease); }
+  /* Barra para arrastrar */
+  .drawer header { position: relative; padding-top: 18px; touch-action: none; cursor: grab; }
+  .drawer header::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 42px;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--text-muted);
+    opacity: .45;
+    transform: translateX(-50%);
+  }
+  .drawer header .icon-btn { width: 44px; height: 44px; }
+  /* Avatar arriba fijo, transcripción abajo con su propio scroll */
+  .drawer-grid { grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+  .insight-stage { gap: 10px; padding: 12px 16px; }
+  .insight-stage .insight-media { width: min(100%, 300px, 38dvh); border-radius: 16px; }
+  .insight-stage .insight-media.is-video { width: auto; height: min(30dvh, 260px); border-radius: 16px; }
+  .drawer.voice-only .voice-wave { flex-direction: row; justify-content: center; gap: 14px; padding: 12px 16px; border-radius: 16px; }
+  .drawer.voice-only .voice-core { width: 52px; height: 52px; box-shadow: 0 0 0 5px color-mix(in srgb, var(--teal) 14%, transparent); }
+  .drawer.voice-only .voice-core .i { width: 26px; height: 26px; }
+  .drawer.voice-only .voice-bars { height: 34px; }
+  .seek-row { gap: 8px; }
+  .seek-row .icon-btn { width: 38px; height: 38px; }
+  .iv-time { min-width: 76px; font-size: 12.5px; }
+  .insight-stage .controls { gap: 8px; }
+  .insight-stage .controls .btn { min-height: 42px; padding-top: 8px; padding-bottom: 8px; }
+  .drawer .body {
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 14px 16px 20px;
+    border-top: 1px solid var(--card-border);
+  }
+  .drawer .script p { font-size: 15.5px; padding: 8px 12px; }
+}
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+/* Celular acostado: avatar a la izquierda y transcripción a la derecha */
+@media (max-width: 899px) and (max-height: 500px) and (orientation: landscape) {
+  .drawer { max-height: 96dvh; }
+  .drawer-grid { grid-template-rows: none; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+  .drawer .body { border-top: 0; border-left: 1px solid var(--card-border); }
+  .insight-stage .insight-media { width: min(100%, 220px); }
+  .insight-stage .insight-media.is-video { height: min(52dvh, 220px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer, .drawer.settling { animation: none; transition: none; }
+}
