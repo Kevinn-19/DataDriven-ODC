@@ -361,7 +361,28 @@
     if (now) write(); else saveTimer = setTimeout(write, 600);
   }
 
-  function isVisited(i) { return state.v.charAt(i) === '1'; }
+  // Actividades, simuladores y evaluación final: cuentan como vistas solo al terminarlas
+  // (al menos un intento calificado; en la evaluación, las 5 preguntas de esa parte respondidas).
+  // Devuelve null si la pantalla no es una actividad.
+  function activityDone(i) {
+    var s = screens[i];
+    if (!s) return null;
+    var act = $('[data-act], [data-quiz="a4"]', s);
+    if (act) return (state.t[act.dataset.act || 'a4'] || 0) > 0;
+    if ($('[data-sim1]', s)) return (state.t.sim1 || 0) > 0;
+    if ($('[data-sim2]', s)) return (state.t.sim2 || 0) > 0;
+    var fin = $('[data-quiz="final1"], [data-quiz="final2"]', s);
+    if (fin) {
+      var from = fin.dataset.quiz === 'final1' ? 0 : 5;
+      for (var q = from; q < from + 5; q++) if (state.q[q] == null) return false;
+      return true;
+    }
+    return null;
+  }
+  function isVisited(i) { return state.v.charAt(i) === '1' && activityDone(i) !== false; }
+  function refreshSeen() {
+    $$('[data-seen]').forEach(function (el) { el.hidden = !isVisited(indexOfId(el.dataset.seen)); });
+  }
   function markVisited(i) {
     while (state.v.length < screens.length) state.v += '0';
     state.v = state.v.substring(0, i) + '1' + state.v.substring(i + 1);
@@ -402,6 +423,8 @@
     if (g.total > 0 || g.done) SCORM.set('cmi.core.score.raw', g.total);
     if (g.done) SCORM.set('cmi.core.lesson_status', g.total >= PASS_SCORE ? 'passed' : 'failed');
     renderResults();
+    // Al terminar una actividad, el menú y el progreso la muestran como vista
+    if (screens.length && state.v) { refreshSeen(); refreshNav(); }
   }
 
   function stars(score) {
@@ -458,7 +481,7 @@
     pauseCardVideos();
     loadCardVideo(s);
     markVisited(i);
-    $$('[data-seen]').forEach(function (el) { el.hidden = !isVisited(indexOfId(el.dataset.seen)); });
+    refreshSeen();
     refreshNav();
     SCORM.set('cmi.core.lesson_location', String(i));
     saveState();
