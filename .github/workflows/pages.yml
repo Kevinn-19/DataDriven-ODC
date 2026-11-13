@@ -1,0 +1,46 @@
+# Publica la carpeta scorm/ como sitio web en GitHub Pages:
+# https://kevinn-19.github.io/DataDriven-ODC/
+# Corre en cada push a main que cambie scorm/ (o este archivo) y se puede lanzar
+# a mano desde la pestaña Actions.
+# Requisito (una sola vez): Settings → Pages → Source: «GitHub Actions».
+name: GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scorm/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un solo despliegue a la vez; no se cancela el que ya está publicando
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v5
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir la carpeta scorm
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: scorm
+
+      - name: Publicar en GitHub Pages
+        id: despliegue
+        uses: actions/deploy-pages@v4
